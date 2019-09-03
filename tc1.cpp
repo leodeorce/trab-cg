@@ -11,13 +11,27 @@
 #include "tinyxml2.h"
 #include "Circulo.h"
 #include "CirculoModelo.h"
+#include "Janela.h"
 
 using namespace std;
 using namespace tinyxml2;
 
+/* Enumeracao dos tipos de erros possiveis que o programa pode encontrar em execucao */
+
+enum Erros {
+	SUCESSO = 0,
+	ERRO_NENHUM_PARAMETRO = 1,
+	ERRO_ABERTURA_CONFIG = 2,
+	ERRO_LEITURA_CONFIG = 3
+};
+
+/* Declaracao de variaveis globais */
+
 Circulo circuloImpressao;
 CirculoModelo circuloModelo;
 Janela janela;
+
+/* Definicoes de funcoes */
 
 bool LeituraXML(XMLDocument& xmlConfig) {
 	
@@ -79,20 +93,22 @@ bool LeituraXML(XMLDocument& xmlConfig) {
 	
 	janela.setLargura(largura);
 	janela.setAltura(altura);
-	
+		
 	elementoJanela = elemento->FirstChildElement("fundo");
 	if(elementoJanela == nullptr) return false;
 	
-	if( elemento->QueryFloatAttribute("corR", &corR) ) return false;
-	if( elemento->QueryFloatAttribute("corG", &corG) ) return false;
-	if( elemento->QueryFloatAttribute("corB", &corB) ) return false;
+	if( elementoJanela->QueryFloatAttribute("corR", &corR) ) return false;
+	if( elementoJanela->QueryFloatAttribute("corG", &corG) ) return false;
+	if( elementoJanela->QueryFloatAttribute("corB", &corB) ) return false;
 	
 	janela.setCorR(corR);
 	janela.setCorG(corG);
 	janela.setCorB(corB);
+		
+	elementoJanela = elemento->FirstChildElement("titulo");
+	if(elementoJanela == nullptr) return false;
 	
 	const char* strValidacao = nullptr;
-	elementoJanela = elemento->FirstChildElement("titulo");
 	strValidacao = elementoJanela->GetText();
 	if(strValidacao == nullptr) return false;
 	string titulo(strValidacao);
@@ -107,6 +123,10 @@ int main(int argc, char** argv) {
 
 	if(argc > 1) {
 		
+		/* Construindo caminho para arquivo de configuracoes "config.xml" a partir de argv */
+		
+		// Unindo o caminho usado para executar o programa (argv[0]) com o caminho passado como
+		// parametro (argv[1]) temos o caminho para config.xml a partir do diretorio de execucao
 		string prog(argv[0]);
 		string subdir(argv[1]);
     	string dir = prog.substr(0, prog.find_last_of("/"));
@@ -116,48 +136,51 @@ int main(int argc, char** argv) {
     	char chArquivo[n + 1];
     	strcpy(chArquivo, strArquivo.c_str());
 		
+		/* Iniciando abertura e leitura do arquivo config.xml */
+		
 		XMLDocument xmlConfig;
 		XMLError erroLoad = xmlConfig.LoadFile(chArquivo);
 		
+		// erroLoad recebe zero se "LoadFile" for bem sucedida
 		if( !erroLoad ) {
 			
 			bool erroRead = LeituraXML(xmlConfig);
 			if(!erroRead) {
-				cout << "Erro: Falha ao ler arquivo de configuracoes" << endl;
-				return 3;
+				cout << "Erro: Falha ao ler config.xml apos aberto" << endl;
+				return ERRO_LEITURA_CONFIG;
 			}
 			
 		} else {
-			cout << "Erro: Falha ao abrir arquivo de configuracoes" << endl;
-			return 2;
+			cout << "Erro: Falha ao abrir config.xml" << endl;
+			return ERRO_ABERTURA_CONFIG;
 		}
 		
 	} else {
-		cout << "Erro: Nao ha arquivo de configuracoes" << endl;
-		return 1;
+		cout << "Erro: Nao houve caminho passado" << endl;
+		return ERRO_NENHUM_PARAMETRO;
 	}
 	
-	cout << circuloImpressao.getRaio() << endl;
-	cout << circuloImpressao.getCorR() << endl;
-	cout << circuloImpressao.getCorG() << endl;
-	cout << circuloImpressao.getCorB() << endl;
+	// cout << circuloImpressao.getRaio() << endl;
+	// cout << circuloImpressao.getCorR() << endl;
+	// cout << circuloImpressao.getCorG() << endl;
+	// cout << circuloImpressao.getCorB() << endl;
 	
-	cout << circuloModelo.getRaio() << endl;
-	cout << circuloModelo.getCorR() << endl;
-	cout << circuloModelo.getCorG() << endl;
-	cout << circuloModelo.getCorB() << endl;
+	// cout << circuloModelo.getRaio() << endl;
+	// cout << circuloModelo.getCorR() << endl;
+	// cout << circuloModelo.getCorG() << endl;
+	// cout << circuloModelo.getCorB() << endl;
 	
-	cout << circuloModelo.getCorSobreposicaoR() << endl;
-	cout << circuloModelo.getCorSobreposicaoG() << endl;
-	cout << circuloModelo.getCorSobreposicaoB() << endl;
+	// cout << circuloModelo.getCorSobreposicaoR() << endl;
+	// cout << circuloModelo.getCorSobreposicaoG() << endl;
+	// cout << circuloModelo.getCorSobreposicaoB() << endl;
 	
-	cout << janela.getLargura() << endl;
-	cout << janela.getAltura() << endl;
-	cout << janela.getCorR() << endl;
-	cout << janela.getCorG() << endl;
-	cout << janela.getCorB() << endl;
-	cout << janela.getTitulo() << endl;
+	// cout << janela.getLargura() << endl;
+	// cout << janela.getAltura() << endl;
+	// cout << janela.getCorR() << endl;
+	// cout << janela.getCorG() << endl;
+	// cout << janela.getCorB() << endl;
+	// cout << janela.getTitulo() << endl;
 	
-	return 0;
+	return SUCESSO;
 
 }

@@ -14,6 +14,7 @@ class Circulo : public Elemento {
 	int raio;
 public:
 	int getRaio() const;
+	void setRaio(int&);
 };
 
 #endif /* CIRCULO_H */
