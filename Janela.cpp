@@ -9,8 +9,8 @@
 
 int Janela:: getLargura() const { return largura; }
 int Janela:: getAltura() const { return altura; }
-string Janela:: getTitulo() const { return titulo; }
+const char* Janela:: getTitulo() const { return titulo; }
 
 void Janela:: setLargura(int& largura) { this->largura = largura; }
 void Janela:: setAltura(int& altura) { this->altura = altura; }
-void Janela:: setTitulo(string& titulo) { this->titulo = titulo; }
+void Janela:: setTitulo(const char* titulo) { this->titulo = titulo; }

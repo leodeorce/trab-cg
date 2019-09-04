@@ -8,21 +8,20 @@
 #ifndef JANELA_H
 #define JANELA_H
 
-#include <string>
 #include "Elemento.h"
 
 using namespace std;
 
 class Janela : public Elemento {
 	int largura, altura;
-	string titulo;
+	const char* titulo;
 public:
 	int getLargura() const;
 	int getAltura() const;
-	string getTitulo() const;
+	const char* getTitulo() const;
 	void setLargura(int&);
 	void setAltura(int&);
-	void setTitulo(string&);
+	void setTitulo(const char*);
 };
 
 #endif /* JANELA_H */
