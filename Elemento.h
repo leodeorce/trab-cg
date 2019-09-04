@@ -14,9 +14,9 @@ public:
 	float getCorR() const;
 	float getCorG() const;
 	float getCorB() const;
-	void setCorR(float&);
-	void setCorG(float&);
-	void setCorB(float&);
+	void setCorR(const float&);
+	void setCorG(const float&);
+	void setCorB(const float&);
 };
 
 #endif /* ELEMENTO_H */

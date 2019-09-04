@@ -8,4 +8,4 @@
 #include "Circulo.h"
 
 int Circulo:: getRaio() const { return raio; }
-void Circulo:: setRaio(int& raio) { this->raio = raio; }
+void Circulo:: setRaio(const int& raio) { this->raio = raio; }

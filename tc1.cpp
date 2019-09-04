@@ -12,6 +12,7 @@
 #include "tinyxml2.h"
 #include "Circulo.h"
 #include "CirculoModelo.h"
+#include "CirculoImpresso.h"
 #include "Janela.h"
 
 using namespace std;
@@ -28,9 +29,10 @@ enum Erros {
 
 /* Declaracoes de variaveis globais */
 
-vector<Circulo> circuloImpressao;
+Circulo circuloGenerico;
 CirculoModelo circuloModelo;
 Janela janela;
+vector<CirculoImpresso*> circulos;
 
 // Coordenadas do cursor em tempo real
 int mX = 0;
@@ -50,87 +52,86 @@ int qtdeLinhas = 50;
 /* Definicoes de funcoes */
 
 bool LeituraXML(XMLDocument& xmlConfig) {
-	
+
 	XMLNode* raiz = xmlConfig.FirstChild();
-	if(raiz == nullptr) return false;
-	
+	cout << raiz << endl;
+
 	/* Lendo a configuracao do circulo a ser impresso */
-	
+
 	XMLElement* elemento = raiz->FirstChildElement("circulo");
-	if(elemento == nullptr) return false;
-	
+	if(!elemento) return false;
+
 	int raio;
 	if( elemento->QueryIntAttribute("raio", &raio) ) return false;
-	
+
 	float corR, corG, corB;
 	if( elemento->QueryFloatAttribute("corR", &corR) ) return false;
 	if( elemento->QueryFloatAttribute("corG", &corG) ) return false;
 	if( elemento->QueryFloatAttribute("corB", &corB) ) return false;
-	
-	circuloImpressao.setRaio(raio);
-	circuloImpressao.setCorR(corR);
-	circuloImpressao.setCorG(corG);
-	circuloImpressao.setCorB(corB);
-	
+
+	circuloGenerico.setRaio(raio);
+	circuloGenerico.setCorR(corR);
+	circuloGenerico.setCorG(corG);
+	circuloGenerico.setCorB(corB);
+
 	/* Lendo a configuracao do circulo modelo */
-	
+
 	elemento = raiz->FirstChildElement("circuloModelo");
-	if(elemento == nullptr) return false;
-	
+	if(!elemento) return false;
+
 	if( elemento->QueryFloatAttribute("corR", &corR) ) return false;
 	if( elemento->QueryFloatAttribute("corG", &corG) ) return false;
 	if( elemento->QueryFloatAttribute("corB", &corB) ) return false;
-	
+
 	circuloModelo.setRaio(raio);
 	circuloModelo.setCorR(corR);
 	circuloModelo.setCorG(corG);
 	circuloModelo.setCorB(corB);
-	
+
 	float corSobreposicaoR, corSobreposicaoG, corSobreposicaoB;
 	if( elemento->QueryFloatAttribute("corSobreposicaoR", &corSobreposicaoR) ) return false;
 	if( elemento->QueryFloatAttribute("corSobreposicaoG", &corSobreposicaoG) ) return false;
 	if( elemento->QueryFloatAttribute("corSobreposicaoB", &corSobreposicaoB) ) return false;
-		
+
 	circuloModelo.setCorSobreposicaoR(corSobreposicaoR);
 	circuloModelo.setCorSobreposicaoG(corSobreposicaoG);
 	circuloModelo.setCorSobreposicaoB(corSobreposicaoB);
-	
+
 	/* Lendo a configuracao da janela */
-	
+
 	elemento = raiz->FirstChildElement("janela");
-	if(elemento == nullptr) return false;
-	
+	if(!elemento) return false;
+
 	XMLElement* elementoJanela = elemento->FirstChildElement("dimensao");
-	if(elementoJanela == nullptr) return false;
-	
+	if(!elementoJanela) return false;
+
 	int largura, altura;
 	if( elementoJanela->QueryIntAttribute("largura", &largura) ) return false;
 	if( elementoJanela->QueryIntAttribute("altura", &altura) ) return false;
-	
+
 	janela.setLargura(largura);
 	janela.setAltura(altura);
-		
+
 	elementoJanela = elemento->FirstChildElement("fundo");
-	if(elementoJanela == nullptr) return false;
-	
+	if(!elementoJanela) return false;
+
 	if( elementoJanela->QueryFloatAttribute("corR", &corR) ) return false;
 	if( elementoJanela->QueryFloatAttribute("corG", &corG) ) return false;
 	if( elementoJanela->QueryFloatAttribute("corB", &corB) ) return false;
-	
+
 	janela.setCorR(corR);
 	janela.setCorG(corG);
 	janela.setCorB(corB);
-		
+
 	elementoJanela = elemento->FirstChildElement("titulo");
-	if(elementoJanela == nullptr) return false;
-	
+	if(!elementoJanela) return false;
+
 	const char* titulo = elementoJanela->GetText();
-	if(titulo == nullptr) return false;
-	
+
 	janela.setTitulo(titulo);
-	
+
 	return true;
-	
+
 }
 
 void init(void) {
@@ -146,7 +147,7 @@ void mouseEntryState(int state) {
 	glutPostRedisplay();
 }
 
-void drawCircle(float raio, float cX, float cY, float corR, float corG, float corB) {
+void drawCircle(float raio, int cX, int cY, float corR, float corG, float corB) {
 	glBegin(GL_LINE_LOOP);
 		glColor3f(corR, corG, corB);
 		int i;
@@ -154,41 +155,43 @@ void drawCircle(float raio, float cX, float cY, float corR, float corG, float co
 			float angulo = 2.0f * 3.1416f * ((float) i / qtdeLinhas);
 			float x = raio * cosf(angulo);
 			float y = raio * sinf(angulo);
-			glVertex2f(x + cX, y + cY);
+			glVertex2i((int) x + cX, (int) y + cY);
 		}
 	glEnd();
 }
 
 void display(void) {
-	
+
 	glClear(GL_COLOR_BUFFER_BIT);
-	
+
 	glutEntryFunc(mouseEntryState);
-	
-	if(mousePertenceJanela) {		
+
+	if(mousePertenceJanela) {
 		drawCircle(
 			circuloModelo.getRaio(),
-			mX, mY,
+			mX,
+			mY,
 			circuloModelo.getCorR(),
 			circuloModelo.getCorG(),
 			circuloModelo.getCorB()
 			);
 	}
-	
-	// for()
-		if(mouse1PressJanela) {
+
+	if(circulos.size() > 0) {
+		for()  // nao pode for-each
 			drawCircle(
-				circuloImpressao.getRaio(),
-				printX, printY,
-				circuloImpressao.getCorR(),
-				circuloImpressao.getCorG(),
-				circuloImpressao.getCorB()
+				circulo->getRaio(),
+				circulo->getX(),
+				circulo->getY(),
+				circulo->getCorR(),
+				circulo->getCorG(),
+				circulo->getCorB()
 				);
-		}
-	
+	}
+
 	// static int j = 0;
 	// cout << "teste" << j++ << endl;
-	
+
 	glFlush();
 }
 
@@ -210,14 +213,15 @@ void mouseClick(int button, int state, int x, int y) {
 		if(state == GLUT_DOWN)
 			mouse1PressJanela = (mousePertenceJanela) ? true : false;
 		else
-			if(mousePertenceJanela && mouse1PressJanela && x == mx && y == mY) {
-				Circulo circulo;
-				circulo.setRaio(circuloModelo.getRaio());
-				circulo.setCorR(circuloModelo.getCorR());
-				circulo.setCorG(circuloModelo.getCorG());
-				circulo.setCorB(circuloModelo.getCorB());
+			if(mousePertenceJanela && mouse1PressJanela && x == mX && y == mY) {
+				CirculoImpresso* circulo = new CirculoImpresso(x, y);
+				circulo->setRaio(circuloGenerico.getRaio());
+				circulo->setCorR(circuloGenerico.getCorR());
+				circulo->setCorG(circuloGenerico.getCorG());
+				circulo->setCorB(circuloGenerico.getCorB());
+				circulos.push_back(circulo);
 			}
-				
+
 	// mousePositionUpdate(x, y);
 	printX = x;
 	printY = glutGet(GLUT_WINDOW_HEIGHT) - y;
@@ -231,44 +235,44 @@ void mouseClick(int button, int state, int x, int y) {
 int main(int argc, char** argv) {
 
 	if(argc > 1) {
-		
+
 		/* Construindo caminho para arquivo de configuracoes "config.xml" a partir de argv */
-		
+
 		// Unindo o caminho usado para executar o programa (argv[0]) com o caminho passado como
 		// parametro (argv[1]) temos o caminho para config.xml a partir do diretorio de execucao
 		string prog(argv[0]);
 		string subdir(argv[1]);
     	string dir = prog.substr(0, prog.find_last_of("/"));
     	string strArquivo = dir + subdir + "config.xml";
-    	
+
     	int n = strArquivo.length();
     	char chArquivo[n + 1];
     	strcpy(chArquivo, strArquivo.c_str());
-		
+
 		/* Iniciando abertura e leitura do arquivo config.xml */
-		
+
 		XMLDocument xmlConfig;
 		XMLError erroLoad = xmlConfig.LoadFile(chArquivo);
-		
+
 		// erroLoad recebe zero se "LoadFile" for bem sucedida
 		if( !erroLoad ) {
-			
+
 			bool erroRead = LeituraXML(xmlConfig);
 			if(!erroRead) {
 				cout << "Erro: Falha ao ler config.xml apos aberto" << endl;
 				return ERRO_LEITURA_CONFIG;
 			}
-			
+
 		} else {
 			cout << "Erro: Falha ao abrir config.xml" << endl;
 			return ERRO_ABERTURA_CONFIG;
 		}
-		
+
 	} else {
 		cout << "Erro: Nao houve caminho passado" << endl;
 		return ERRO_NENHUM_PARAMETRO;
 	}
-	
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize(janela.getLargura(), janela.getAltura());
@@ -280,7 +284,10 @@ int main(int argc, char** argv) {
 	glutDisplayFunc(display);
 	// glutIdleFunc(idle);
 	glutMainLoop();
-		
+
+	for() // nao pode for-each
+		delete(circulo);
+
 	return SUCESSO;
 
 }

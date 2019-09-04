@@ -11,6 +11,6 @@ float Elemento:: getCorR() const { return corR; }
 float Elemento:: getCorG() const { return corG; }
 float Elemento:: getCorB() const { return corB; }
 
-void Elemento:: setCorR(float& corR) { this->corR = corR; }
-void Elemento:: setCorG(float& corG) { this->corG = corG; }
-void Elemento:: setCorB(float& corB) { this->corB = corB; }
+void Elemento:: setCorR(const float& corR) { this->corR = corR; }
+void Elemento:: setCorG(const float& corG) { this->corG = corG; }
+void Elemento:: setCorB(const float& corB) { this->corB = corB; }
