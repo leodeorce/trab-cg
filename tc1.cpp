@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <vector>
 #include <GL/glut.h>
 #include "tinyxml2.h"
 #include "Circulo.h"
@@ -25,16 +26,26 @@ enum Erros {
 	ERRO_LEITURA_CONFIG = 3
 };
 
-/* Declaracao de variaveis globais */
+/* Declaracoes de variaveis globais */
 
-Circulo circuloImpressao;
+vector<Circulo> circuloImpressao;
 CirculoModelo circuloModelo;
 Janela janela;
 
-// Coordenadas do cursor
+// Coordenadas do cursor em tempo real
 int mX = 0;
 int mY = 0;
+
+// Coordenadas do cursor no momento de clique do mouse1
+int printX = 0;
+int printY = 0;
+
+// Verificacoes de acoes do mouse
 bool mousePertenceJanela = false;
+bool mouse1PressJanela = false;
+
+// Quantidade de linhas definindo circunferencia do circulo
+int qtdeLinhas = 50;
 
 /* Definicoes de funcoes */
 
@@ -135,36 +146,81 @@ void mouseEntryState(int state) {
 	glutPostRedisplay();
 }
 
+void drawCircle(float raio, float cX, float cY, float corR, float corG, float corB) {
+	glBegin(GL_LINE_LOOP);
+		glColor3f(corR, corG, corB);
+		int i;
+		for(i = 0; i < qtdeLinhas; i++) {
+			float angulo = 2.0f * 3.1416f * ((float) i / qtdeLinhas);
+			float x = raio * cosf(angulo);
+			float y = raio * sinf(angulo);
+			glVertex2f(x + cX, y + cY);
+		}
+	glEnd();
+}
+
 void display(void) {
 	
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glutEntryFunc(mouseEntryState);
 	
-	if(mousePertenceJanela) {
-		glColor3f(circuloModelo.getCorR(), circuloModelo.getCorG(), circuloModelo.getCorB());		
-		glBegin(GL_LINE_LOOP);
-			int qtdeLinhas = 50;
-			int i;
-			for(i = 0; i < qtdeLinhas; i++) {
-				float angulo = 2.0f * 3.1416f * ((float) i / qtdeLinhas);
-				float x = circuloModelo.getRaio() * cosf(angulo);
-				float y = circuloModelo.getRaio() * sinf(angulo);
-				glVertex2f(x + mX, y + mY);
-			}
-		glEnd();
+	if(mousePertenceJanela) {		
+		drawCircle(
+			circuloModelo.getRaio(),
+			mX, mY,
+			circuloModelo.getCorR(),
+			circuloModelo.getCorG(),
+			circuloModelo.getCorB()
+			);
 	}
 	
-	static int j = 0;
-	cout << "teste" << j++ << endl;
+	// for()
+		if(mouse1PressJanela) {
+			drawCircle(
+				circuloImpressao.getRaio(),
+				printX, printY,
+				circuloImpressao.getCorR(),
+				circuloImpressao.getCorG(),
+				circuloImpressao.getCorB()
+				);
+		}
+	
+	// static int j = 0;
+	// cout << "teste" << j++ << endl;
 	
 	glFlush();
 }
 
+// void mousePositionUpdate(int& x, int& y) {
+// 	mX = x;
+// 	mY = glutGet(GLUT_WINDOW_HEIGHT) - y;
+// }
+
 void mouseMotion(int x, int y) {
+	// mousePositionUpdate(x, y);
 	mX = x;
-	mY = janela.getAltura() - y;
+	mY = glutGet(GLUT_WINDOW_HEIGHT) - y;
 	mousePertenceJanela = true;
+	glutPostRedisplay();
+}
+
+void mouseClick(int button, int state, int x, int y) {
+	if(button == GLUT_LEFT_BUTTON)
+		if(state == GLUT_DOWN)
+			mouse1PressJanela = (mousePertenceJanela) ? true : false;
+		else
+			if(mousePertenceJanela && mouse1PressJanela && x == mx && y == mY) {
+				Circulo circulo;
+				circulo.setRaio(circuloModelo.getRaio());
+				circulo.setCorR(circuloModelo.getCorR());
+				circulo.setCorG(circuloModelo.getCorG());
+				circulo.setCorB(circuloModelo.getCorB());
+			}
+				
+	// mousePositionUpdate(x, y);
+	printX = x;
+	printY = glutGet(GLUT_WINDOW_HEIGHT) - y;
 	glutPostRedisplay();
 }
 
@@ -220,6 +276,7 @@ int main(int argc, char** argv) {
 	glutCreateWindow(janela.getTitulo());
 	init();
 	glutPassiveMotionFunc(mouseMotion);
+	glutMouseFunc(mouseClick);
 	glutDisplayFunc(display);
 	// glutIdleFunc(idle);
 	glutMainLoop();
