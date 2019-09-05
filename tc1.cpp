@@ -44,7 +44,7 @@ int printY = 0;
 
 // Verificacoes de acoes do mouse
 bool mousePertenceJanela = false;
-bool mouse1PressJanela = false;
+bool mouse1Press = false;
 
 // Quantidade de linhas definindo circunferencia do circulo
 int qtdeLinhas = 50;
@@ -54,7 +54,6 @@ int qtdeLinhas = 50;
 bool LeituraXML(XMLDocument& xmlConfig) {
 
 	XMLNode* raiz = xmlConfig.FirstChild();
-	cout << raiz << endl;
 
 	/* Lendo a configuracao do circulo a ser impresso */
 
@@ -177,20 +176,17 @@ void display(void) {
 			);
 	}
 
-	if(circulos.size() > 0) {
-		for()  // nao pode for-each
-			drawCircle(
-				circulo->getRaio(),
-				circulo->getX(),
-				circulo->getY(),
-				circulo->getCorR(),
-				circulo->getCorG(),
-				circulo->getCorB()
-				);
+	vector<CirculoImpresso*>::iterator itr;
+	for(itr = circulos.begin(); itr != circulos.end(); itr++) {
+		drawCircle(
+			(*itr)->getRaio(),
+			(*itr)->getX(),
+			(*itr)->getY(),
+			(*itr)->getCorR(),
+			(*itr)->getCorG(),
+			(*itr)->getCorB()
+			);
 	}
-
-	// static int j = 0;
-	// cout << "teste" << j++ << endl;
 
 	glFlush();
 }
@@ -209,11 +205,21 @@ void mouseMotion(int x, int y) {
 }
 
 void mouseClick(int button, int state, int x, int y) {
-	if(button == GLUT_LEFT_BUTTON)
-		if(state == GLUT_DOWN)
-			mouse1PressJanela = (mousePertenceJanela) ? true : false;
-		else
-			if(mousePertenceJanela && mouse1PressJanela && x == mX && y == mY) {
+
+	cout << "1: " << state << endl;
+	if(button == GLUT_LEFT_BUTTON) {
+
+		if(state == GLUT_DOWN) {
+			cout << "2: " << state << endl;
+			mouse1Press = true;
+		} else {
+			cout << "3: " << state << endl;
+			cout << "x: " << x << endl;
+			cout << "y: " << y << endl;
+			cout << "printX: " << printX << endl;
+			cout << "printY: " << printY << endl;
+			if(x == printX && (glutGet(GLUT_WINDOW_HEIGHT) - y) == printY) {
+				cout << "4: " << mouse1Press << endl;
 				CirculoImpresso* circulo = new CirculoImpresso(x, y);
 				circulo->setRaio(circuloGenerico.getRaio());
 				circulo->setCorR(circuloGenerico.getCorR());
@@ -221,6 +227,9 @@ void mouseClick(int button, int state, int x, int y) {
 				circulo->setCorB(circuloGenerico.getCorB());
 				circulos.push_back(circulo);
 			}
+			mouse1Press = false;
+		}
+	}
 
 	// mousePositionUpdate(x, y);
 	printX = x;
@@ -285,8 +294,9 @@ int main(int argc, char** argv) {
 	// glutIdleFunc(idle);
 	glutMainLoop();
 
-	for() // nao pode for-each
-		delete(circulo);
+	vector<CirculoImpresso*>::iterator itr;
+	for(itr = circulos.begin(); itr != circulos.end(); itr++)
+		delete(*itr);
 
 	return SUCESSO;
 
