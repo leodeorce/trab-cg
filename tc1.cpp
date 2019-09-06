@@ -137,8 +137,7 @@ void init(void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0f, janela.getLargura(), 0.0f, janela.getAltura(), 0.0f, 1.0f);
-	// glOrtho(0.0f, janela.getLargura(), janela.getAltura(), 0.0f, 0.0f, 1.0f);
+	glOrtho(0.0f, janela.getLargura(), janela.getAltura(), 0.0f, 0.0f, 1.0f);
 }
 
 void mouseEntryState(int state) {
@@ -151,7 +150,7 @@ void drawCircle(float raio, int cX, int cY, float corR, float corG, float corB) 
 		glColor3f(corR, corG, corB);
 		int i;
 		for(i = 0; i < qtdeLinhas; i++) {
-			float angulo = 2.0f * 3.1416f * ((float) i / qtdeLinhas);
+			float angulo = 2.0f * 3.141593f * ((float) i / qtdeLinhas);
 			float x = raio * cosf(angulo);
 			float y = raio * sinf(angulo);
 			glVertex2i((int) x + cX, (int) y + cY);
@@ -162,7 +161,6 @@ void drawCircle(float raio, int cX, int cY, float corR, float corG, float corB) 
 void display(void) {
 
 	glClear(GL_COLOR_BUFFER_BIT);
-
 	glutEntryFunc(mouseEntryState);
 
 	if(mousePertenceJanela) {
@@ -191,35 +189,17 @@ void display(void) {
 	glFlush();
 }
 
-// void mousePositionUpdate(int& x, int& y) {
-// 	mX = x;
-// 	mY = glutGet(GLUT_WINDOW_HEIGHT) - y;
-// }
-
 void mouseMotion(int x, int y) {
-	// mousePositionUpdate(x, y);
 	mX = x;
-	mY = glutGet(GLUT_WINDOW_HEIGHT) - y;
+	mY = y;
 	mousePertenceJanela = true;
 	glutPostRedisplay();
 }
 
 void mouseClick(int button, int state, int x, int y) {
-
-	cout << "1: " << state << endl;
 	if(button == GLUT_LEFT_BUTTON) {
-
 		if(state == GLUT_DOWN) {
-			cout << "2: " << state << endl;
-			mouse1Press = true;
-		} else {
-			cout << "3: " << state << endl;
-			cout << "x: " << x << endl;
-			cout << "y: " << y << endl;
-			cout << "printX: " << printX << endl;
-			cout << "printY: " << printY << endl;
-			if(x == printX && (glutGet(GLUT_WINDOW_HEIGHT) - y) == printY) {
-				cout << "4: " << mouse1Press << endl;
+			if(mousePertenceJanela == true) {
 				CirculoImpresso* circulo = new CirculoImpresso(x, y);
 				circulo->setRaio(circuloGenerico.getRaio());
 				circulo->setCorR(circuloGenerico.getCorR());
@@ -227,19 +207,13 @@ void mouseClick(int button, int state, int x, int y) {
 				circulo->setCorB(circuloGenerico.getCorB());
 				circulos.push_back(circulo);
 			}
-			mouse1Press = false;
 		}
 	}
-
-	// mousePositionUpdate(x, y);
-	printX = x;
-	printY = glutGet(GLUT_WINDOW_HEIGHT) - y;
-	glutPostRedisplay();
 }
 
-// void idle(void) {
-// 	glutPostRedisplay();
-// }
+void idle(void) {
+	glutPostRedisplay();
+}
 
 int main(int argc, char** argv) {
 
@@ -248,7 +222,7 @@ int main(int argc, char** argv) {
 		/* Construindo caminho para arquivo de configuracoes "config.xml" a partir de argv */
 
 		// Unindo o caminho usado para executar o programa (argv[0]) com o caminho passado como
-		// parametro (argv[1]) temos o caminho para config.xml a partir do diretorio de execucao
+		// parametro (argv[1]) temos o caminho para config.xml a partir do diretorio de execucao.
 		string prog(argv[0]);
 		string subdir(argv[1]);
     	string dir = prog.substr(0, prog.find_last_of("/"));
@@ -263,11 +237,11 @@ int main(int argc, char** argv) {
 		XMLDocument xmlConfig;
 		XMLError erroLoad = xmlConfig.LoadFile(chArquivo);
 
-		// erroLoad recebe zero se "LoadFile" for bem sucedida
-		if( !erroLoad ) {
+		// erroLoad recebe zero se "LoadFile" for bem sucedida.
+		if( erroLoad == 0 ) {
 
-			bool erroRead = LeituraXML(xmlConfig);
-			if(!erroRead) {
+			bool leituraSucesso = LeituraXML(xmlConfig);
+			if(leituraSucesso == false) {
 				cout << "Erro: Falha ao ler config.xml apos aberto" << endl;
 				return ERRO_LEITURA_CONFIG;
 			}
@@ -291,7 +265,7 @@ int main(int argc, char** argv) {
 	glutPassiveMotionFunc(mouseMotion);
 	glutMouseFunc(mouseClick);
 	glutDisplayFunc(display);
-	// glutIdleFunc(idle);
+	glutIdleFunc(idle);
 	glutMainLoop();
 
 	vector<CirculoImpresso*>::iterator itr;
