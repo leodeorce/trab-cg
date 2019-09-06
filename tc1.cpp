@@ -18,7 +18,7 @@
 using namespace std;
 using namespace tinyxml2;
 
-/* Enumeracao dos tipos de erros possiveis que o programa pode encontrar em execucao */
+/* Enumeracao dos tipos de erros verificados que o programa pode encontrar em execucao */
 
 enum Erros {
 	SUCESSO = 0,
@@ -33,6 +33,7 @@ Circulo circuloGenerico;
 CirculoModelo circuloModelo;
 Janela janela;
 vector<CirculoImpresso*> circulos;
+vector<CirculoImpresso*>::iterator itr;
 
 // Coordenadas do cursor em tempo real
 int mX = 0;
@@ -45,9 +46,10 @@ int printY = 0;
 // Verificacoes de acoes do mouse
 bool mousePertenceJanela = false;
 bool mouse1Press = false;
+bool conflitoModelo = false;
 
 // Quantidade de linhas definindo circunferencia do circulo
-int qtdeLinhas = 50;
+int qtdeLinhas = 25;
 
 /* Definicoes de funcoes */
 
@@ -130,7 +132,10 @@ bool LeituraXML(XMLDocument& xmlConfig) {
 	janela.setTitulo(titulo);
 
 	return true;
+}
 
+float distPontos(const int& x1, const int& y1, const int& x2, const int& y2) {
+	return sqrt(pow((x1 - x2), 2) + pow((y1 - y2), 2));
 }
 
 void init(void) {
@@ -145,66 +150,109 @@ void mouseEntryState(int state) {
 	glutPostRedisplay();
 }
 
-void drawCircle(float raio, int cX, int cY, float corR, float corG, float corB) {
-	glBegin(GL_LINE_LOOP);
-		glColor3f(corR, corG, corB);
-		int i;
-		for(i = 0; i < qtdeLinhas; i++) {
-			float angulo = 2.0f * 3.141593f * ((float) i / qtdeLinhas);
-			float x = raio * cosf(angulo);
-			float y = raio * sinf(angulo);
-			glVertex2i((int) x + cX, (int) y + cY);
-		}
-	glEnd();
-}
-
 void display(void) {
+	
+	int i;
+	int centroX, centroY;
+	int raio = circuloGenerico.getRaio();
+	float corR, corG, corB;
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glutEntryFunc(mouseEntryState);
 
-	if(mousePertenceJanela) {
-		drawCircle(
-			circuloModelo.getRaio(),
-			mX,
-			mY,
-			circuloModelo.getCorR(),
-			circuloModelo.getCorG(),
-			circuloModelo.getCorB()
-			);
-	}
-
-	vector<CirculoImpresso*>::iterator itr;
 	for(itr = circulos.begin(); itr != circulos.end(); itr++) {
-		drawCircle(
-			(*itr)->getRaio(),
-			(*itr)->getX(),
-			(*itr)->getY(),
-			(*itr)->getCorR(),
-			(*itr)->getCorG(),
-			(*itr)->getCorB()
-			);
+		
+		corR = circuloGenerico.getCorR();
+		corG = circuloGenerico.getCorG();
+		corB = circuloGenerico.getCorB();
+		centroX = (*itr)->getX();
+		centroY = (*itr)->getY();
+		
+		glColor3f(corR, corG, corB);
+		glBegin(GL_POLYGON);
+		
+			for(i = 0; i < qtdeLinhas; i++) {
+				
+				float angulo = 2.0f * 3.141593f * ((float) i / qtdeLinhas);
+				float x = raio * cosf(angulo);
+				float y = raio * sinf(angulo);
+				
+				glVertex2i((int) x + centroX, (int) y + centroY);
+			}
+			
+		glEnd();
+	}
+	
+	if(mousePertenceJanela == true) {
+				
+		if(conflitoModelo == true) {
+			corR = circuloModelo.getCorSobreposicaoR();
+			corG = circuloModelo.getCorSobreposicaoG();
+			corB = circuloModelo.getCorSobreposicaoB();
+		} else {
+			corR = circuloModelo.getCorR();
+			corG = circuloModelo.getCorG();
+			corB = circuloModelo.getCorB();
+		}
+		
+		centroX = mX;
+		centroY = mY;
+		
+		glColor3f(corR, corG, corB);
+		glBegin(GL_LINE_LOOP);
+			
+			for(i = 0; i < qtdeLinhas; i++) {
+				
+				float angulo = 2.0f * 3.141593f * ((float) i / qtdeLinhas);
+				float x = raio * cosf(angulo);
+				float y = raio * sinf(angulo);
+				
+				glVertex2i((int) x + centroX, (int) y + centroY);
+			}
+		
+		glEnd();
 	}
 
 	glFlush();
 }
 
 void mouseMotion(int x, int y) {
+	
 	mX = x;
 	mY = y;
+	
+	for(itr = circulos.begin(); itr != circulos.end(); itr++) {
+		
+		float dist = distPontos(x, y, (*itr)->getX(), (*itr)->getY());
+		int raio = (*itr)->getRaio();
+		
+		if(dist <= 2 * raio) {
+			conflitoModelo = true;
+			break;
+		}
+		
+		conflitoModelo = false;
+	}
+	
 	mousePertenceJanela = true;
 	glutPostRedisplay();
 }
 
 void mouseClick(int button, int state, int x, int y) {
+	
 	if(button == GLUT_LEFT_BUTTON) {
+		
 		if(state == GLUT_DOWN) {
-			if(mousePertenceJanela == true) {
+			
+			if(mousePertenceJanela == true && conflitoModelo == false) {
+				
 				CirculoImpresso* circulo = new CirculoImpresso(x, y);
+				
 				circulo->setRaio(circuloGenerico.getRaio());
 				circulo->setCorR(circuloGenerico.getCorR());
 				circulo->setCorG(circuloGenerico.getCorG());
 				circulo->setCorB(circuloGenerico.getCorB());
+				
 				circulos.push_back(circulo);
 			}
 		}
@@ -241,6 +289,7 @@ int main(int argc, char** argv) {
 		if( erroLoad == 0 ) {
 
 			bool leituraSucesso = LeituraXML(xmlConfig);
+			
 			if(leituraSucesso == false) {
 				cout << "Erro: Falha ao ler config.xml apos aberto" << endl;
 				return ERRO_LEITURA_CONFIG;
@@ -268,10 +317,8 @@ int main(int argc, char** argv) {
 	glutIdleFunc(idle);
 	glutMainLoop();
 
-	vector<CirculoImpresso*>::iterator itr;
 	for(itr = circulos.begin(); itr != circulos.end(); itr++)
 		delete(*itr);
 
 	return SUCESSO;
-
 }
