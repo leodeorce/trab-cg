@@ -1,5 +1,8 @@
 ### Makefile ###
 
+# Leonardo Deorce Lima de Oliveira
+# TC1 - Computacao Grafica - 2019/2
+
 CC = g++
 
 FLAGS = -lGL -lGLU -lglut

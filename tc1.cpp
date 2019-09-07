@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <math.h>
-#include <vector>
+#include <list>
 #include <GL/glut.h>
 #include "tinyxml2.h"
 #include "Circulo.h"
@@ -32,24 +32,30 @@ enum Erros {
 Circulo circuloGenerico;
 CirculoModelo circuloModelo;
 Janela janela;
-vector<CirculoImpresso*> circulos;
-vector<CirculoImpresso*>::iterator itr;
+list<CirculoImpresso*> circulos;
+list<CirculoImpresso*>::iterator itr;
+CirculoImpresso* circuloArrastado;
 
-// Coordenadas do cursor em tempo real
+// Coordenadas do cursor em tempo real.
 int mX = 0;
 int mY = 0;
 
-// Coordenadas do cursor no momento de clique do mouse1
+// Coordenadas do cursor no momento de clique do mouse1.
 int printX = 0;
 int printY = 0;
+
+// Diferenca entre as coordenadas do clique mouse2 e o centro do circulo.
+int dragX = 0;
+int dragY = 0;
 
 // Verificacoes de acoes do mouse
 bool mousePertenceJanela = false;
 bool mouse1Press = false;
 bool conflitoModelo = false;
+bool arrastarCirculo = false;
 
-// Quantidade de linhas definindo circunferencia do circulo
-int qtdeLinhas = 25;
+// Quantidade de linhas definindo circunferencia do circulo.
+int qtdeLinhas = 50;
 
 /* Definicoes de funcoes */
 
@@ -151,7 +157,7 @@ void mouseEntryState(int state) {
 }
 
 void display(void) {
-	
+		
 	int i;
 	int centroX, centroY;
 	int raio = circuloGenerico.getRaio();
@@ -159,12 +165,33 @@ void display(void) {
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glutEntryFunc(mouseEntryState);
+	
+	corR = circuloGenerico.getCorR();
+	corG = circuloGenerico.getCorG();
+	corB = circuloGenerico.getCorB();
+	
+	if(arrastarCirculo == true) {
+		
+		centroX = mX - dragX;
+		centroY = mY - dragY;
+		
+		glColor3f(corR, corG, corB);
+		glBegin(GL_POLYGON);
+		
+			for(i = 0; i < qtdeLinhas; i++) {
+				
+				float angulo = 2.0f * 3.141593f * ((float) i / qtdeLinhas);
+				float x = raio * cosf(angulo);
+				float y = raio * sinf(angulo);
+				
+				glVertex2i((int) x + centroX, (int) y + centroY);
+			}
+			
+		glEnd();
+	}
 
 	for(itr = circulos.begin(); itr != circulos.end(); itr++) {
 		
-		corR = circuloGenerico.getCorR();
-		corG = circuloGenerico.getCorG();
-		corB = circuloGenerico.getCorB();
 		centroX = (*itr)->getX();
 		centroY = (*itr)->getY();
 		
@@ -183,7 +210,7 @@ void display(void) {
 		glEnd();
 	}
 	
-	if(mousePertenceJanela == true) {
+	if(mousePertenceJanela == true && arrastarCirculo == false) {
 				
 		if(conflitoModelo == true) {
 			corR = circuloModelo.getCorSobreposicaoR();
@@ -217,37 +244,55 @@ void display(void) {
 }
 
 void mouseMotion(int x, int y) {
-	
 	mX = x;
 	mY = y;
+	glutPostRedisplay();
+}
+
+/* Funcao que verifica se existe algum tipo de conflito baseando-se na posicao fornecida.
+*/
+bool verificarConflito(int x, int y) {
 	
 	for(itr = circulos.begin(); itr != circulos.end(); itr++) {
 		
 		float dist = distPontos(x, y, (*itr)->getX(), (*itr)->getY());
-		int raio = (*itr)->getRaio();
+		int raio = circuloGenerico.getRaio();
 		
 		if(dist <= 2 * raio) {
-			conflitoModelo = true;
-			break;
+			return true;
 		}
-		
-		conflitoModelo = false;
 	}
 	
+	return false;
+}
+
+void mousePassiveMotion(int x, int y) {
+	
+	mX = x;
+	mY = y;
+	
+	if(verificarConflito(x, y) == true) {
+		conflitoModelo = true;
+	} else {
+		conflitoModelo = false;
+	}
+		
 	mousePertenceJanela = true;
 	glutPostRedisplay();
 }
 
 void mouseClick(int button, int state, int x, int y) {
-	
-	if(button == GLUT_LEFT_BUTTON) {
 		
-		if(state == GLUT_DOWN) {
-			
+	if(state == GLUT_DOWN) {
+	
+		if(button == GLUT_LEFT_BUTTON) {
+					
 			if(mousePertenceJanela == true && conflitoModelo == false) {
 				
-				CirculoImpresso* circulo = new CirculoImpresso(x, y);
+				CirculoImpresso* circulo = new CirculoImpresso();
 				
+				circulo->setX(x);
+				circulo->setY(y);
 				circulo->setRaio(circuloGenerico.getRaio());
 				circulo->setCorR(circuloGenerico.getCorR());
 				circulo->setCorG(circuloGenerico.getCorG());
@@ -255,8 +300,54 @@ void mouseClick(int button, int state, int x, int y) {
 				
 				circulos.push_back(circulo);
 			}
+		
+		} else if(button == GLUT_RIGHT_BUTTON) {
+			
+			for(itr = circulos.begin(); itr != circulos.end(); itr++) {
+		
+				float dist = distPontos(x, y, (*itr)->getX(), (*itr)->getY());
+				int raio = circuloGenerico.getRaio();
+				
+				if(dist <= raio) {
+										
+					arrastarCirculo = true;
+					circuloArrastado = new CirculoImpresso(*itr);
+					
+					int centroX = circuloArrastado->getX();
+					int centroY = circuloArrastado->getY();
+					
+					dragX = x - centroX;
+					dragY = y - centroY;
+					
+					CirculoImpresso* circuloDesaloc = *itr;
+					circulos.erase(itr);
+					delete(circuloDesaloc);
+					break;
+				}
+			}
+		}
+		
+	} else if(state == GLUT_UP) {
+		
+		if(button == GLUT_RIGHT_BUTTON) {
+		
+			if(arrastarCirculo == true) {
+				
+				int centroX = x - dragX;
+				int centroY = y - dragY;
+				
+				if(verificarConflito(centroX, centroY) == false) {
+					circuloArrastado->setX(x - dragX);
+					circuloArrastado->setY(y - dragY);
+				}
+				
+				circulos.push_back(circuloArrastado);
+				arrastarCirculo = false;
+			}
 		}
 	}
+	
+	glutPostRedisplay();
 }
 
 void idle(void) {
@@ -264,45 +355,46 @@ void idle(void) {
 }
 
 int main(int argc, char** argv) {
-
+	
+	string strArquivo;
+	
 	if(argc > 1) {
-
-		/* Construindo caminho para arquivo de configuracoes "config.xml" a partir de argv */
-
-		// Unindo o caminho usado para executar o programa (argv[0]) com o caminho passado como
-		// parametro (argv[1]) temos o caminho para config.xml a partir do diretorio de execucao.
-		string prog(argv[0]);
+    	
 		string subdir(argv[1]);
-    	string dir = prog.substr(0, prog.find_last_of("/"));
-    	string strArquivo = dir + subdir + "config.xml";
+    	strArquivo = subdir + "config.xml";
+  		
+  		if(strArquivo.at(0) != '.') {
+  			strArquivo = "." + strArquivo;
+  		}
+    	
+    } else {
+    	
+    	strArquivo = "./config.xml";
+	}
+	
+	char chArquivo[strArquivo.length() + 1];
+	strcpy(chArquivo, strArquivo.c_str());
+    
+	cout << chArquivo << endl;
+		
+	/* Iniciando abertura e leitura do arquivo config.xml */
 
-    	int n = strArquivo.length();
-    	char chArquivo[n + 1];
-    	strcpy(chArquivo, strArquivo.c_str());
+	XMLDocument xmlConfig;
+	XMLError erroLoad = xmlConfig.LoadFile(chArquivo);
 
-		/* Iniciando abertura e leitura do arquivo config.xml */
+	// erroLoad recebe zero se "LoadFile" for bem sucedida.
+	if( erroLoad == 0 ) {
 
-		XMLDocument xmlConfig;
-		XMLError erroLoad = xmlConfig.LoadFile(chArquivo);
-
-		// erroLoad recebe zero se "LoadFile" for bem sucedida.
-		if( erroLoad == 0 ) {
-
-			bool leituraSucesso = LeituraXML(xmlConfig);
-			
-			if(leituraSucesso == false) {
-				cout << "Erro: Falha ao ler config.xml apos aberto" << endl;
-				return ERRO_LEITURA_CONFIG;
-			}
-
-		} else {
-			cout << "Erro: Falha ao abrir config.xml" << endl;
-			return ERRO_ABERTURA_CONFIG;
+		bool leituraSucesso = LeituraXML(xmlConfig);
+		
+		if(leituraSucesso == false) {
+			cout << "Erro: Falha ao ler config.xml apos aberto" << endl;
+			return ERRO_LEITURA_CONFIG;
 		}
 
 	} else {
-		cout << "Erro: Nao houve caminho passado" << endl;
-		return ERRO_NENHUM_PARAMETRO;
+		cout << "Erro: Falha ao abrir config.xml" << endl;
+		return ERRO_ABERTURA_CONFIG;
 	}
 
 	glutInit(&argc, argv);
@@ -311,14 +403,16 @@ int main(int argc, char** argv) {
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow(janela.getTitulo());
 	init();
-	glutPassiveMotionFunc(mouseMotion);
+	glutPassiveMotionFunc(mousePassiveMotion);
 	glutMouseFunc(mouseClick);
+	glutMotionFunc(mouseMotion);
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 	glutMainLoop();
 
 	for(itr = circulos.begin(); itr != circulos.end(); itr++)
 		delete(*itr);
+	delete(circuloArrastado);
 
 	return SUCESSO;
 }

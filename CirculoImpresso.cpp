@@ -7,8 +7,20 @@
 
 #include "CirculoImpresso.h"
 
-CirculoImpresso:: CirculoImpresso(const int& x, const int& y) {
+CirculoImpresso:: CirculoImpresso(const CirculoImpresso* circulo) {
+	this->x = circulo->x;
+	this->y = circulo->y;
+	this->setRaio( circulo->getRaio() );
+	this->setCorR( circulo->getCorR() );
+	this->setCorG( circulo->getCorG() );
+	this->setCorB( circulo->getCorB() );
+}
+
+void CirculoImpresso:: setX(const int& x) {
 	this->x = x;
+}
+
+void CirculoImpresso:: setY(const int& y) {
 	this->y = y;
 }
 

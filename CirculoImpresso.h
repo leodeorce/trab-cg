@@ -13,7 +13,10 @@
 class CirculoImpresso : public Circulo {
 	int x, y;
 public:
-	CirculoImpresso(const int&, const int&);
+	CirculoImpresso() { }
+	CirculoImpresso(const CirculoImpresso*);
+	void setX(const int&);
+	void setY(const int&);
 	int getX() const;
 	int getY() const;
 };
