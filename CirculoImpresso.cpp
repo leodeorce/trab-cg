@@ -16,18 +16,8 @@ CirculoImpresso:: CirculoImpresso(const CirculoImpresso* circulo) {
 	this->setCorB( circulo->getCorB() );
 }
 
-void CirculoImpresso:: setX(const int& x) {
-	this->x = x;
-}
+void CirculoImpresso:: setX(const int& x) { this->x = x; }
+void CirculoImpresso:: setY(const int& y) { this->y = y; }
 
-void CirculoImpresso:: setY(const int& y) {
-	this->y = y;
-}
-
-int CirculoImpresso:: getX() const {
-	return x;
-}
-
-int CirculoImpresso:: getY() const {
-	return y;
-}
+int CirculoImpresso:: getX() const { return x; }
+int CirculoImpresso:: getY() const { return y; }
