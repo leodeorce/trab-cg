@@ -2,26 +2,27 @@
  * Arquivo: Janela.h
  * Autor: Leonardo Oliveira
  * Disciplina: Computacao Grafica 2019/2
- * Descricao: TC1
+ * Descricao: TC2
 */
 
 #ifndef JANELA_H
 #define JANELA_H
 
+#include <string>
 #include "Elemento.h"
 
 using namespace std;
 
-class Janela : public Elemento {
+class Janela {
 	int largura, altura;
-	const char* titulo;
+	string titulo;
 public:
-	int getLargura() const;
-	int getAltura() const;
-	const char* getTitulo() const;
+	int getLargura(void) const;
+	int getAltura(void) const;
+	string getTitulo(void) const;
 	void setLargura(int&);
 	void setAltura(int&);
-	void setTitulo(const char*);
+	void setTitulo(string);
 };
 
 #endif /* JANELA_H */

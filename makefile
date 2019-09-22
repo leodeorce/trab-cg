@@ -1,11 +1,13 @@
 ### Makefile ###
 
 # Leonardo Deorce Lima de Oliveira
-# TC1 - Computacao Grafica - 2019/2
+# TC2 - Computacao Grafica - 2019/2
 
 CC = g++
 
 FLAGS = -lGL -lGLU -lglut
+
+PARAMETROS = ../cfg/
 
 FONTES = $(wildcard *.cpp)
 
@@ -20,6 +22,9 @@ $(EXECUTAVEL): $(OBJETOS)
 
 %.o: %.cpp
 	$(CC) -c $^
+
+run:
+	./$(EXECUTAVEL) $(PARAMETROS)
 
 clean:
 	rm -rf *.o
