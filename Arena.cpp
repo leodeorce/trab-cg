@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void Arena:: setArquivo(string& arquivo) { this->arquivo = arquivo; }
+void Arena:: setArquivo(string arquivo) { this->arquivo = arquivo; }
 void Arena:: setCirculo(Circulo& circulo) { this->circulo = new Circulo(circulo); }
 
 string Arena:: getArquivo(void) const { return arquivo; }

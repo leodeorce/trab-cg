@@ -16,7 +16,7 @@ class Jogador {
 	float multiplicador;
 	Circulo* circulo;
 public:
-	void setMultiplicador(float&);
+	void setMultiplicador(float);
 	void setCirculo(Circulo&);
 	float getMultiplicador(void) const;
 	Circulo* getCirculo(void) const;

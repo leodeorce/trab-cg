@@ -14,14 +14,19 @@
 using namespace std;
 
 class Janela {
-	int largura, altura;
+	int xInicial, xFinal;
+	int yInicial, yFinal;
 	string titulo;
 public:
-	int getLargura(void) const;
-	int getAltura(void) const;
+	int getXInicial(void) const;
+	int getXFinal(void) const;
+	int getYInicial(void) const;
+	int getYFinal(void) const;
 	string getTitulo(void) const;
-	void setLargura(int&);
-	void setAltura(int&);
+	void setXInicial(int);
+	void setXFinal(int);
+	void setYInicial(int);
+	void setYFinal(int);
 	void setTitulo(string);
 };
 

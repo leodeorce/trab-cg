@@ -7,7 +7,7 @@
 
 #include "Jogador.h"
 
-void Jogador:: setMultiplicador(float& multiplicador) { this->multiplicador = multiplicador; }
+void Jogador:: setMultiplicador(float multiplicador) { this->multiplicador = multiplicador; }
 void Jogador:: setCirculo(Circulo& circulo) { this->circulo = new Circulo(circulo); }
 
 float Jogador:: getMultiplicador(void) const { return multiplicador; }

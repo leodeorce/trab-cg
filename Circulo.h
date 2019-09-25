@@ -15,14 +15,14 @@ class Circulo : public Elemento {
 	int cX;
 	int cY;
 public:
-	Circulo(float&, float&, float&);
+	Circulo(float, float, float);
 	Circulo(Circulo&);
 	int getRaio(void) const;
 	int getCX(void) const;
 	int getCY(void) const;
-	void setRaio(int&);
-	void setCX(int&);
-	void setCY(int&);
+	void setRaio(int);
+	void setCX(int);
+	void setCY(int);
 };
 
 #endif /* CIRCULO_H */

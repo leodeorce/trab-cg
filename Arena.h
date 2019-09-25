@@ -17,7 +17,7 @@ class Arena {
 	string arquivo;
 	Circulo* circulo;
 public:
-	void setArquivo(string&);
+	void setArquivo(string);
 	void setCirculo(Circulo&);
 	string getArquivo(void) const;
 	Circulo* getCirculo(void) const;
