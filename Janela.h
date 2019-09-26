@@ -8,25 +8,25 @@
 #ifndef JANELA_H
 #define JANELA_H
 
+#include <GL/glut.h>
 #include <string>
-#include "Elemento.h"
 
 using namespace std;
 
 class Janela {
-	int xInicial, xFinal;
-	int yInicial, yFinal;
+	GLint xInicial, xFinal;
+	GLint yInicial, yFinal;
 	string titulo;
 public:
-	int getXInicial(void) const;
-	int getXFinal(void) const;
-	int getYInicial(void) const;
-	int getYFinal(void) const;
+	GLint getXInicial(void) const;
+	GLint getXFinal(void) const;
+	GLint getYInicial(void) const;
+	GLint getYFinal(void) const;
 	string getTitulo(void) const;
-	void setXInicial(int);
-	void setXFinal(int);
-	void setYInicial(int);
-	void setYFinal(int);
+	void setXInicial(GLint);
+	void setXFinal(GLint);
+	void setYInicial(GLint);
+	void setYFinal(GLint);
 	void setTitulo(string);
 };
 

@@ -7,16 +7,16 @@
 
 #include "Elemento.h"
 
-Elemento:: Elemento(float& corR, float& corG, float& corB) {
+Elemento:: Elemento(GLfloat& corR, GLfloat& corG, GLfloat& corB) {
 	this->corR = corR;
 	this->corG = corG;
 	this->corB = corB;
 }
 
-float Elemento:: getCorR(void) const { return corR; }
-float Elemento:: getCorG(void) const { return corG; }
-float Elemento:: getCorB(void) const { return corB; }
+GLfloat Elemento:: getCorR(void) const { return corR; }
+GLfloat Elemento:: getCorG(void) const { return corG; }
+GLfloat Elemento:: getCorB(void) const { return corB; }
 
-void Elemento:: setCorR(float& corR) { this->corR = corR; }
-void Elemento:: setCorG(float& corG) { this->corG = corG; }
-void Elemento:: setCorB(float& corB) { this->corB = corB; }
+void Elemento:: setCorR(GLfloat& corR) { this->corR = corR; }
+void Elemento:: setCorG(GLfloat& corG) { this->corG = corG; }
+void Elemento:: setCorB(GLfloat& corB) { this->corB = corB; }

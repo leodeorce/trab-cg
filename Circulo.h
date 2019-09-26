@@ -8,21 +8,23 @@
 #ifndef CIRCULO_H
 #define CIRCULO_H
 
+#include <GL/glut.h>
 #include "Elemento.h"
 
 class Circulo : public Elemento {
-	int raio;
-	int cX;
-	int cY;
+	GLint raio;
+	GLint cX;
+	GLint cY;
 public:
-	Circulo(float, float, float);
+	Circulo(GLfloat, GLfloat, GLfloat);
 	Circulo(Circulo&);
-	int getRaio(void) const;
-	int getCX(void) const;
-	int getCY(void) const;
-	void setRaio(int);
-	void setCX(int);
-	void setCY(int);
+	GLint getRaio(void) const;
+	GLint getCX(void) const;
+	GLint getCY(void) const;
+	void setRaio(GLint);
+	void setCX(GLint);
+	void setCY(GLint);
+	void Desenha(void) const;
 };
 
 #endif /* CIRCULO_H */

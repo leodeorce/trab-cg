@@ -37,6 +37,7 @@ Arena* arena = new Arena();
 Jogador* jogador = new Jogador();
 Janela* janela = new Janela();
 Linha* linha = new Linha(1.0f, 1.0f, 1.0f);
+
 list<Circulo*> inimigosVoadores;
 list<Circulo*> inimigosTerrestres;
 
@@ -48,19 +49,13 @@ list<Circulo*> inimigosTerrestres;
  * Entrada: Objeto do tipo XMLDocument representando o arquivo ja' aberto.
  * Saida: Boolean indicando sucesso ou fracasso na leitura do arquivo.
  */
-bool LeituraConfig(XMLDocument& xmlConfig);
+bool LeituraConfig(XMLDocument&);
 
 /* Descricao: Funcao de leitura do arquivo arena.svg.
  * Entrada: Objeto do tipo XMLDocument representando o arquivo ja' aberto.
  * Saida: Boolean indicando sucesso ou fracasso na leitura do arquivo.
  */
-bool LeituraArena(XMLDocument& xmlArena);
-
-// /* Descricao: Calcula a distancia entre dois pontos.
-//  * Entrada: Coordenadas X e Y de dois pontos.
-//  * Saida: Distancia entre os pontos passados.
-//  */
-// float distPontos(int x1, int y1, int x2, int y2);
+bool LeituraArena(XMLDocument&);
 
 /* Descricao: Define configuracoes da janela.
  * Entrada: Nenhuma.
@@ -74,11 +69,23 @@ void init(void);
  */
 void display(void);
 
-// /* Descricao: (callback) Chama atualizacao da tela.
-//  * Entrada: Nenhuma.
-//  * Saida: Nenhuma.
-//  */
-// void idle(void);
+/* Descricao:
+ * Entrada: Nenhuma.
+ * Saida: Nenhuma.
+ */
+void idle(void);
+
+/* Descricao: Libera toda memoria alocada dinamicamente.
+ * Entrada: Nenhuma.
+ * Saida: Nenhuma.
+ */
+void LiberarListaCirculos(list<Circulo*>&);
+
+/* Descricao: Libera toda memoria alocada dinamicamente.
+ * Entrada: Nenhuma.
+ * Saida: Nenhuma.
+ */
+void LiberarMemoria(void);
 
 /*
  * Definicoes de funcoes:
@@ -116,7 +123,7 @@ bool LeituraConfig(XMLDocument& xmlConfig) {
 	string arquivo = strCaminho + strNome + "." + strTipo;
 	janela->setTitulo(strNome);
 
-	arena->setArquivo(arquivo);
+	arena->setNomeArquivo(arquivo);
 
 	/*
 	 * Lendo o multiplicador da velocidade do jogador:
@@ -125,7 +132,7 @@ bool LeituraConfig(XMLDocument& xmlConfig) {
 	elemento1 = raiz->FirstChildElement("jogador");
 	if(!elemento1) return false;
 
-	float multiplicador;
+	GLfloat multiplicador;
 	if( elemento1->QueryFloatAttribute("vel", &multiplicador) ) return false;
 
 	jogador->setMultiplicador(multiplicador);
@@ -138,9 +145,9 @@ bool LeituraArena(XMLDocument& xmlArena) {
 	XMLNode* raiz = xmlArena.FirstChild();
 	XMLNode* svg = raiz->NextSibling();
 
-	int cX;
-	int cY;
-	int r;
+	GLint cX;
+	GLint cY;
+	GLint r;
 	const char* fill;
 	XMLElement* elemento;
 
@@ -160,7 +167,7 @@ bool LeituraArena(XMLDocument& xmlArena) {
 		if(!strcmp(fill, "blue")) cor = BLUE;
 		if(!strcmp(fill, "orange")) cor = ORANGE;
 
-		float rgb[3];
+		GLfloat rgb[3];
 		switch(cor) {
 			case RED:
 				rgb[0] = 1.0f; rgb[1] = 0.0f; rgb[2] = 0.0f; break;
@@ -216,8 +223,8 @@ bool LeituraArena(XMLDocument& xmlArena) {
 	elemento = svg->FirstChildElement("line");
 	if(!elemento) return false;
 
-	int x1, y1;
-	int x2, y2;
+	GLint x1, y1;
+	GLint x2, y2;
 
 	elemento->QueryIntAttribute("x1", &x1);
 	elemento->QueryIntAttribute("y1", &y1);
@@ -232,10 +239,6 @@ bool LeituraArena(XMLDocument& xmlArena) {
 	return true;
 }
 
-// float distPontos(int x1, int y1, int x2, int y2) {
-// 	return sqrt(pow((x1 - x2), 2) + pow((y1 - y2), 2));
-// }
-
 void init(void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glMatrixMode(GL_PROJECTION);
@@ -245,63 +248,64 @@ void init(void) {
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
+	arena->Desenha();
 	glutSwapBuffers();
 }
 
-void LiberarMemoria() {
+void idle(void) {
+	glutPostRedisplay();
+}
 
+void LiberarListaCirculos(list<Circulo*>& listaCirculos) {
+	
+	if(listaCirculos.size() > 0) {
+		
+		list<Circulo*>::iterator itr = listaCirculos.begin();
+		
+		while(itr != listaCirculos.end()) {
+			delete *itr;
+			itr = listaCirculos.erase(itr);
+		}
+	}
+}
+
+void LiberarMemoria(void) {
 	delete janela;
 	delete jogador;
 	delete arena;
 	delete linha;
-
-	list<Circulo*>::iterator itr;
-
-	if(inimigosVoadores.size() > 0) {
-		itr = inimigosVoadores.begin();
-		while(itr != inimigosVoadores.end()) {
-			delete *itr;
-			itr = inimigosVoadores.erase(itr);
-		}
-	}
-
-	if(inimigosTerrestres.size() > 0) {
-		itr = inimigosTerrestres.begin();
-		while(itr != inimigosTerrestres.end()) {
-			delete *itr;
-			itr = inimigosTerrestres.erase(itr);
-		}
-	}
+	LiberarListaCirculos(inimigosVoadores);
+	LiberarListaCirculos(inimigosTerrestres);
 }
 
 int main(int argc, char** argv) {
 
-	string strArquivo;
+	string strArqConfig;
 
 	// Se houve passagem de argumento, considera o caminho passado.
 	if(argc > 1) {
 
 		string subdir(argv[1]);
-    	strArquivo = subdir + "config.xml";
+    	strArqConfig = subdir + "config.xml";
 
-  		if(strArquivo.at(0) != '.') {
-  			strArquivo = "." + strArquivo;
+  		if(strArqConfig.at(0) != '.') {
+  			strArqConfig = "." + strArqConfig;
   		}
 
     // Se nao houve passagem de argumento, considera a pasta de execucao.
     } else {
-    	strArquivo = "./config.xml";
+    	strArqConfig = "./config.xml";
 	}
 
-	char chArquivo[strArquivo.length() + 1];
-	strcpy(chArquivo, strArquivo.c_str());
+	char chArqConfig[strArqConfig.length() + 1];
+	strcpy(chArqConfig, strArqConfig.c_str());
 
 	/*
 	 * Abertura e leitura do arquivo config.xml:
 	 */
 
 	XMLDocument xmlConfig;
-	XMLError erroLoad = xmlConfig.LoadFile(chArquivo);
+	XMLError erroLoad = xmlConfig.LoadFile(chArqConfig);
 
 	// "erroLoad" recebe zero se "LoadFile" for bem sucedida.
 	if( erroLoad != 0 ) {
@@ -323,7 +327,9 @@ int main(int argc, char** argv) {
 	 */
 
 	XMLDocument xmlArena;
-	erroLoad = xmlArena.LoadFile(arena->getArquivo().c_str());
+	string strArqArena = arena->getNomeArquivo();
+	const char* chArqArena = strArqArena.c_str();
+	erroLoad = xmlArena.LoadFile(chArqArena);
 
 	// "erroLoad" recebe zero se "LoadFile" for bem sucedida.
 	if( erroLoad != 0 ) {
@@ -347,15 +353,15 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	
-	int larguraJanela = abs(janela->getXFinal() - janela->getXInicial());
-	int alturaJanela = abs(janela->getYFinal() - janela->getYInicial());
+	GLint larguraJanela = abs(janela->getXFinal() - janela->getXInicial());
+	GLint alturaJanela = abs(janela->getYFinal() - janela->getYInicial());
 	glutInitWindowSize(larguraJanela, alturaJanela);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow(janela->getTitulo().c_str());
 	
 	init();
 	glutDisplayFunc(display);
-	// glutIdleFunc(idle);
+	glutIdleFunc(idle);
 	glutMainLoop();
 	
 	LiberarMemoria();

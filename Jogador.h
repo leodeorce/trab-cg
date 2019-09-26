@@ -8,17 +8,18 @@
 #ifndef JOGADOR_H
 #define JOGADOR_H
 
+#include <GL/glut.h>
 #include "Circulo.h"
 
 using namespace std;
 
 class Jogador {
-	float multiplicador;
+	GLfloat multiplicador;
 	Circulo* circulo;
 public:
-	void setMultiplicador(float);
+	void setMultiplicador(GLfloat);
 	void setCirculo(Circulo&);
-	float getMultiplicador(void) const;
+	GLfloat getMultiplicador(void) const;
 	Circulo* getCirculo(void) const;
 	~Jogador();
 };

@@ -9,11 +9,18 @@
 
 using namespace std;
 
-void Arena:: setArquivo(string arquivo) { this->arquivo = arquivo; }
+void Arena:: setNomeArquivo(string arquivo) { this->arquivo = arquivo; }
 void Arena:: setCirculo(Circulo& circulo) { this->circulo = new Circulo(circulo); }
 
-string Arena:: getArquivo(void) const { return arquivo; }
+string Arena:: getNomeArquivo(void) const { return arquivo; }
 Circulo* Arena:: getCirculo(void) const { return circulo; }
+
+void Arena:: Desenha(void) const {
+	glPushMatrix();
+	glTranslatef(circulo->getCX(), circulo->getCY(), 0);
+	circulo->Desenha();
+	glPopMatrix();
+}
 
 Arena:: ~Arena() {
 	delete circulo;

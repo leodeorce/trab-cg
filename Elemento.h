@@ -8,6 +8,8 @@
 #ifndef ELEMENTO_H
 #define ELEMENTO_H
 
+#include <GL/glut.h>
+
 enum Cor {
 	RED = 0,
 	GREEN = 1,
@@ -16,18 +18,18 @@ enum Cor {
 };
 
 class Elemento {
-	float corR;
-	float corG;
-	float corB;
+	GLfloat corR;
+	GLfloat corG;
+	GLfloat corB;
 public:
-	Elemento(float&, float&, float&);
+	Elemento(GLfloat&, GLfloat&, GLfloat&);
 	Elemento() { }
-	float getCorR(void) const;
-	float getCorG(void) const;
-	float getCorB(void) const;
-	void setCorR(float&);
-	void setCorG(float&);
-	void setCorB(float&);
+	GLfloat getCorR(void) const;
+	GLfloat getCorG(void) const;
+	GLfloat getCorB(void) const;
+	void setCorR(GLfloat&);
+	void setCorG(GLfloat&);
+	void setCorB(GLfloat&);
 };
 
 #endif /* ELEMENTO_H */
