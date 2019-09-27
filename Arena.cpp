@@ -10,14 +10,14 @@
 using namespace std;
 
 void Arena:: setNomeArquivo(string arquivo) { this->arquivo = arquivo; }
-void Arena:: setCirculo(Circulo& circulo) { this->circulo = new Circulo(circulo); }
+void Arena:: setCirculo(Circulo* circulo) { this->circulo = circulo; }
 
 string Arena:: getNomeArquivo(void) const { return arquivo; }
 Circulo* Arena:: getCirculo(void) const { return circulo; }
 
 void Arena:: Desenha(void) const {
 	glPushMatrix();
-	glTranslatef(circulo->getCX(), circulo->getCY(), 0);
+	glTranslatef(circulo->getCX(), circulo->getCY(), 0.0f);
 	circulo->Desenha();
 	glPopMatrix();
 }

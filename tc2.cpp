@@ -36,7 +36,7 @@ enum Erros {
 Arena* arena = new Arena();
 Jogador* jogador = new Jogador();
 Janela* janela = new Janela();
-Linha* linha = new Linha(1.0f, 1.0f, 1.0f);
+Linha* linha = new Linha(0.0f, 0.0f, 0.0f);
 
 list<Circulo*> inimigosVoadores;
 list<Circulo*> inimigosTerrestres;
@@ -181,18 +181,15 @@ bool LeituraArena(XMLDocument& xmlArena) {
 				return false;
 		}
 
-		Circulo circulo(rgb[0], rgb[1], rgb[2]);
-		circulo.setRaio(r);
-		circulo.setCX(cX);
-		circulo.setCY(cY);
-
-		Circulo* ptrCirculo;
+		Circulo* circulo = new Circulo(rgb[0], rgb[1], rgb[2]);
+		circulo->setRaio(r);
+		circulo->setCX(cX);
+		circulo->setCY(cY);
 
 		switch(cor) {
 
 			case RED:
-				ptrCirculo = new Circulo(circulo);
-				inimigosVoadores.push_back(ptrCirculo);
+				inimigosVoadores.push_back(circulo);
 				break;
 
 			case GREEN:
@@ -201,18 +198,18 @@ bool LeituraArena(XMLDocument& xmlArena) {
 
 			case BLUE:
 				arena->setCirculo(circulo);
-				janela->setXInicial(circulo.getCX() - circulo.getRaio());
-				janela->setXFinal(circulo.getCX() + circulo.getRaio());
-				janela->setYInicial(circulo.getCY() + circulo.getRaio());
-				janela->setYFinal(circulo.getCY() - circulo.getRaio());
+				janela->setXI(circulo->getCX() - circulo->getRaio());
+				janela->setXF(circulo->getCX() + circulo->getRaio());
+				janela->setYI(circulo->getCY() + circulo->getRaio());
+				janela->setYF(circulo->getCY() - circulo->getRaio());
 				break;
 
 			case ORANGE:
-				ptrCirculo = new Circulo(circulo);
-				inimigosTerrestres.push_back(ptrCirculo);
+				inimigosTerrestres.push_back(circulo);
 				break;
 
 			default:
+				delete circulo;
 				return false;
 		}
 
@@ -240,15 +237,16 @@ bool LeituraArena(XMLDocument& xmlArena) {
 }
 
 void init(void) {
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(janela->getXInicial(), janela->getXFinal(), janela->getYInicial(), janela->getYFinal(), 0.0f, 1.0f);
+	glOrtho(janela->getXI(), janela->getXF(), janela->getYI(), janela->getYF(), 0.0f, 1.0f);
 }
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	arena->Desenha();
+	linha->Desenha();
 	glutSwapBuffers();
 }
 
@@ -353,12 +351,12 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	
-	GLint larguraJanela = abs(janela->getXFinal() - janela->getXInicial());
-	GLint alturaJanela = abs(janela->getYFinal() - janela->getYInicial());
-	glutInitWindowSize(larguraJanela, alturaJanela);
+	GLint larguraJanela = abs(janela->getXF() - janela->getXI());
+	GLint alturaJanela = abs(janela->getYF() - janela->getYI());
+	glutInitWindowSize(larguraJanela, alturaJanela); 					// Modificar aqui
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow(janela->getTitulo().c_str());
-	
+		
 	init();
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);

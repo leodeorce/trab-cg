@@ -18,18 +18,18 @@ enum Cor {
 };
 
 class Elemento {
+protected:
 	GLfloat corR;
 	GLfloat corG;
 	GLfloat corB;
 public:
-	Elemento(GLfloat&, GLfloat&, GLfloat&);
-	Elemento() { }
+	Elemento(GLfloat, GLfloat, GLfloat);
 	GLfloat getCorR(void) const;
 	GLfloat getCorG(void) const;
 	GLfloat getCorB(void) const;
-	void setCorR(GLfloat&);
-	void setCorG(GLfloat&);
-	void setCorB(GLfloat&);
+	void setCorR(GLfloat);
+	void setCorG(GLfloat);
+	void setCorB(GLfloat);
 };
 
 #endif /* ELEMENTO_H */

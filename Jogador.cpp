@@ -8,7 +8,7 @@
 #include "Jogador.h"
 
 void Jogador:: setMultiplicador(GLfloat multiplicador) { this->multiplicador = multiplicador; }
-void Jogador:: setCirculo(Circulo& circulo) { this->circulo = new Circulo(circulo); }
+void Jogador:: setCirculo(Circulo* circulo) { this->circulo = circulo; }
 
 GLfloat Jogador:: getMultiplicador(void) const { return multiplicador; }
 Circulo* Jogador:: getCirculo(void) const { return circulo; }

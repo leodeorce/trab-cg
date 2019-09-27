@@ -7,14 +7,14 @@
 
 #include "Janela.h"
 
-GLint Janela:: getXInicial(void) const { return xInicial; }
-GLint Janela:: getXFinal(void) const { return xFinal; }
-GLint Janela:: getYInicial(void) const { return yInicial; }
-GLint Janela:: getYFinal(void) const { return yFinal; }
+GLint Janela:: getXI(void) const { return xI; }
+GLint Janela:: getXF(void) const { return xF; }
+GLint Janela:: getYI(void) const { return yI; }
+GLint Janela:: getYF(void) const { return yF; }
 string Janela:: getTitulo(void) const { return titulo; }
 
-void Janela:: setXInicial(GLint xInicial) { this->xInicial = xInicial; }
-void Janela:: setXFinal(GLint xFinal) { this->xFinal = xFinal; }
-void Janela:: setYInicial(GLint yInicial) { this->yInicial = yInicial; }
-void Janela:: setYFinal(GLint yFinal) { this->yFinal = yFinal; }
+void Janela:: setXI(GLint xI) { this->xI = xI; }
+void Janela:: setXF(GLint xF) { this->xF = xF; }
+void Janela:: setYI(GLint yI) { this->yI = yI; }
+void Janela:: setYF(GLint yF) { this->yF = yF; }
 void Janela:: setTitulo(string titulo) { this->titulo = titulo; }

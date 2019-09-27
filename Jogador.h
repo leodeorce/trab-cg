@@ -18,7 +18,7 @@ class Jogador {
 	Circulo* circulo;
 public:
 	void setMultiplicador(GLfloat);
-	void setCirculo(Circulo&);
+	void setCirculo(Circulo*);
 	GLfloat getMultiplicador(void) const;
 	Circulo* getCirculo(void) const;
 	~Jogador();

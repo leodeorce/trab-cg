@@ -17,7 +17,6 @@ class Circulo : public Elemento {
 	GLint cY;
 public:
 	Circulo(GLfloat, GLfloat, GLfloat);
-	Circulo(Circulo&);
 	GLint getRaio(void) const;
 	GLint getCX(void) const;
 	GLint getCY(void) const;

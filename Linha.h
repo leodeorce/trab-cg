@@ -11,18 +11,19 @@
 #include "Elemento.h"
 
 class Linha : public Elemento {
-	int x1, y1;
-    int x2, y2;
+	GLint x1, y1;
+    GLint x2, y2;
 public:
-	Linha(float, float, float);
-	int getX1(void) const;
-	int getY1(void) const;
-	int getX2(void) const;
-	int getY2(void) const;
-	void setX1(int);
-	void setY1(int);
-	void setX2(int);
-	void setY2(int);
+	Linha(GLfloat, GLfloat, GLfloat);
+	GLint getX1(void) const;
+	GLint getY1(void) const;
+	GLint getX2(void) const;
+	GLint getY2(void) const;
+	void setX1(GLint);
+	void setY1(GLint);
+	void setX2(GLint);
+	void setY2(GLint);
+	void Desenha(void) const;
 };
 
 #endif /* LINHA_H */

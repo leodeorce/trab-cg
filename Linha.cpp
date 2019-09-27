@@ -7,15 +7,23 @@
 
 #include "Linha.h"
 
-Linha:: Linha(float corR, float corG, float corB)
+Linha:: Linha(GLfloat corR, GLfloat corG, GLfloat corB)
 	: Elemento(corR, corG, corB) { }
 
-int Linha:: getX1(void) const { return x1; }
-int Linha:: getY1(void) const { return y1; }
-int Linha:: getX2(void) const { return x2; }
-int Linha:: getY2(void) const { return y2; }
+GLint Linha:: getX1(void) const { return x1; }
+GLint Linha:: getY1(void) const { return y1; }
+GLint Linha:: getX2(void) const { return x2; }
+GLint Linha:: getY2(void) const { return y2; }
 
-void Linha:: setX1(int x1) { this->x1 = x1; }
-void Linha:: setY1(int y1) { this->y1 = y1; }
-void Linha:: setX2(int x2) { this->x2 = x2; }
-void Linha:: setY2(int y2) { this->y2 = y2; }
+void Linha:: setX1(GLint x1) { this->x1 = x1; }
+void Linha:: setY1(GLint y1) { this->y1 = y1; }
+void Linha:: setX2(GLint x2) { this->x2 = x2; }
+void Linha:: setY2(GLint y2) { this->y2 = y2; }
+
+void Linha:: Desenha(void) const {
+	glColor3f(corR, corG, corB);
+	glBegin(GL_LINES);
+		glVertex2f(x1, y1);
+		glVertex2f(x2, y2);
+	glEnd();
+}

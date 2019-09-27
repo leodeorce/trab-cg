@@ -19,7 +19,7 @@ class Arena {
 	Circulo* circulo;
 public:
 	void setNomeArquivo(string);
-	void setCirculo(Circulo&);
+	void setCirculo(Circulo*);
 	string getNomeArquivo(void) const;
 	Circulo* getCirculo(void) const;
 	void Desenha(void) const;

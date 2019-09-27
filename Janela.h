@@ -14,19 +14,21 @@
 using namespace std;
 
 class Janela {
-	GLint xInicial, xFinal;
-	GLint yInicial, yFinal;
+	GLint xI = 0;
+	GLint xF = 0;
+	GLint yI = 0;
+	GLint yF = 0;
 	string titulo;
 public:
-	GLint getXInicial(void) const;
-	GLint getXFinal(void) const;
-	GLint getYInicial(void) const;
-	GLint getYFinal(void) const;
+	GLint getXI(void) const;
+	GLint getXF(void) const;
+	GLint getYI(void) const;
+	GLint getYF(void) const;
 	string getTitulo(void) const;
-	void setXInicial(GLint);
-	void setXFinal(GLint);
-	void setYInicial(GLint);
-	void setYFinal(GLint);
+	void setXI(GLint);
+	void setXF(GLint);
+	void setYI(GLint);
+	void setYF(GLint);
 	void setTitulo(string);
 };
 

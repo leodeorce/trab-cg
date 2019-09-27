@@ -11,23 +11,6 @@
 Circulo:: Circulo(GLfloat corR, GLfloat corG, GLfloat corB)
 	: Elemento(corR, corG, corB) { }
 
-Circulo:: Circulo(Circulo& circulo) {
-
-	GLfloat corR = circulo.getCorR();
-	GLfloat corG = circulo.getCorG();
-	GLfloat corB = circulo.getCorB();
-	GLint raio = circulo.getRaio();
-	GLint cX = circulo.getCX();
-	GLint cY = circulo.getCY();
-
-	this->setCorR(corR);
-	this->setCorG(corG);
-	this->setCorB(corB);
-	this->setRaio(raio);
-	this->setCX(cX);
-	this->setCY(cY);
-}
-
 GLint Circulo:: getRaio(void) const { return raio; }
 GLint Circulo:: getCX(void) const { return cX; }
 GLint Circulo:: getCY(void) const { return cY; }
@@ -38,11 +21,11 @@ void Circulo:: setCY(GLint cY) { this->cY = cY; }
 
 void Circulo:: Desenha(void) const {
 	
-	glColor3f(1, 1, 1);
+	glColor3f(corR, corG, corB);
 	glBegin(GL_POLYGON);
 	
 		GLint i;
-		GLint step = 18;
+		GLint step = 54;
 		GLint voltaCompleta = 360;
 		
 		for(i = 0; i < voltaCompleta; i += voltaCompleta / step) {
