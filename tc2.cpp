@@ -5,16 +5,15 @@
  * Descricao: TC2
  */
 
-#include <cmath>
 #include <GL/glut.h>
 #include <iostream>
-#include <list>
 #include <string>
 #include "Arena.h"
 #include "Circulo.h"
+#include "Inimigos.h"
 #include "Janela.h"
 #include "Jogador.h"
-#include "Linha.h"
+#include "Pista.h"
 #include "tinyxml2.h"
 
 using namespace std;
@@ -30,62 +29,15 @@ enum Erros {
 };
 
 /*
- * Declaracoes de variaveis globais:
+ * Definicoes de variaveis globais:
  */
 
 Arena* arena = new Arena();
 Jogador* jogador = new Jogador();
 Janela* janela = new Janela();
-Linha* linha = new Linha(0.0f, 0.0f, 0.0f);
-
-list<Circulo*> inimigosVoadores;
-list<Circulo*> inimigosTerrestres;
-
-/*
- * Declaracoes de funcoes:
- */
-
-/* Descricao: Funcao de leitura do arquivo config.xml.
- * Entrada: Objeto do tipo XMLDocument representando o arquivo ja' aberto.
- * Saida: Boolean indicando sucesso ou fracasso na leitura do arquivo.
- */
-bool LeituraConfig(XMLDocument&);
-
-/* Descricao: Funcao de leitura do arquivo arena.svg.
- * Entrada: Objeto do tipo XMLDocument representando o arquivo ja' aberto.
- * Saida: Boolean indicando sucesso ou fracasso na leitura do arquivo.
- */
-bool LeituraArena(XMLDocument&);
-
-/* Descricao: Define configuracoes da janela.
- * Entrada: Nenhuma.
- * Saida: Nenhuma.
- */
-void init(void);
-
-/* Descricao: (callback) Atualiza a tela com as informacoes do mundo virtual.
- * Entrada: Nenhuma.
- * Saida: Nenhuma.
- */
-void display(void);
-
-/* Descricao:
- * Entrada: Nenhuma.
- * Saida: Nenhuma.
- */
-void idle(void);
-
-/* Descricao: Libera toda memoria alocada dinamicamente.
- * Entrada: Nenhuma.
- * Saida: Nenhuma.
- */
-void LiberarListaCirculos(list<Circulo*>&);
-
-/* Descricao: Libera toda memoria alocada dinamicamente.
- * Entrada: Nenhuma.
- * Saida: Nenhuma.
- */
-void LiberarMemoria(void);
+Pista* pista = new Pista(0.0f, 0.0f, 0.0f);
+Inimigos* inimigosVoadores = new Inimigos();
+Inimigos* inimigosTerrestres = new Inimigos();
 
 /*
  * Definicoes de funcoes:
@@ -100,22 +52,22 @@ bool LeituraConfig(XMLDocument& xmlConfig) {
 	 */
 
 	XMLElement* elemento1 = raiz->FirstChildElement("arquivoDaArena");
-	if(!elemento1) return false;
+	if(elemento1 == 0) return false;
 
 	XMLElement* elemento2 = elemento1->FirstChildElement("nome");
-	if(!elemento2) return false;
+	if(elemento2 == 0) return false;
 	const char* nome = elemento2->GetText();
-	if( nome[0] == '\0' ) return false;
+	if(nome[0] == '\0') return false;
 
 	elemento2 = elemento1->FirstChildElement("tipo");
-	if(!elemento2) return false;
+	if(elemento2 == 0) return false;
 	const char* tipo = elemento2->GetText();
-	if( tipo[0] == '\0' ) return false;
+	if(tipo[0] == '\0') return false;
 
 	 elemento2 = elemento1->FirstChildElement("caminho");
-	if(!elemento2) return false;
+	if(elemento2 == 0) return false;
 	const char* caminho = elemento2->GetText();
-	if( caminho[0] == '\0' ) return false;
+	if(caminho[0] == '\0') return false;
 
 	string strNome(nome);
 	string strTipo(tipo);
@@ -130,10 +82,10 @@ bool LeituraConfig(XMLDocument& xmlConfig) {
 	 */
 
 	elemento1 = raiz->FirstChildElement("jogador");
-	if(!elemento1) return false;
+	if(elemento1 == 0) return false;
 
 	GLfloat multiplicador;
-	if( elemento1->QueryFloatAttribute("vel", &multiplicador) ) return false;
+	if(elemento1->QueryFloatAttribute("vel", &multiplicador)) return false;
 
 	jogador->setMultiplicador(multiplicador);
 
@@ -152,7 +104,7 @@ bool LeituraArena(XMLDocument& xmlArena) {
 	XMLElement* elemento;
 
 	elemento = svg->FirstChildElement("circle");
-	if(!elemento) return false;
+	if(elemento == 0) return false;
 
 	do {
 
@@ -162,10 +114,10 @@ bool LeituraArena(XMLDocument& xmlArena) {
 		fill = elemento->Attribute("fill");
 
 		Cor cor;
-		if(!strcmp(fill, "red")) cor = RED;
-		if(!strcmp(fill, "green")) cor = GREEN;
-		if(!strcmp(fill, "blue")) cor = BLUE;
-		if(!strcmp(fill, "orange")) cor = ORANGE;
+		if(strcmp(fill, "red") == 0) cor = RED;
+		if(strcmp(fill, "green") == 0) cor = GREEN;
+		if(strcmp(fill, "blue") == 0) cor = BLUE;
+		if(strcmp(fill, "orange") == 0) cor = ORANGE;
 
 		GLfloat rgb[3];
 		switch(cor) {
@@ -189,7 +141,7 @@ bool LeituraArena(XMLDocument& xmlArena) {
 		switch(cor) {
 
 			case RED:
-				inimigosVoadores.push_back(circulo);
+				inimigosVoadores->Adicionar(circulo);
 				break;
 
 			case GREEN:
@@ -205,7 +157,7 @@ bool LeituraArena(XMLDocument& xmlArena) {
 				break;
 
 			case ORANGE:
-				inimigosTerrestres.push_back(circulo);
+				inimigosTerrestres->Adicionar(circulo);
 				break;
 
 			default:
@@ -218,7 +170,7 @@ bool LeituraArena(XMLDocument& xmlArena) {
 	} while(elemento != 0);
 
 	elemento = svg->FirstChildElement("line");
-	if(!elemento) return false;
+	if(elemento == 0) return false;
 
 	GLint x1, y1;
 	GLint x2, y2;
@@ -228,10 +180,10 @@ bool LeituraArena(XMLDocument& xmlArena) {
 	elemento->QueryIntAttribute("x2", &x2);
 	elemento->QueryIntAttribute("y2", &y2);
 	
-	linha->setX1(x1);
-	linha->setY1(y1);
-	linha->setX2(x2);
-	linha->setY2(y2);
+	pista->setX1(x1);
+	pista->setY1(y1);
+	pista->setX2(x2);
+	pista->setY2(y2);
 	
 	return true;
 }
@@ -244,9 +196,15 @@ void init(void) {
 }
 
 void display(void) {
+	
 	glClear(GL_COLOR_BUFFER_BIT);
+	
 	arena->Desenha();
-	linha->Desenha();
+	pista->Desenha();
+	jogador->Desenha();
+	inimigosVoadores->Desenha();
+	inimigosTerrestres->Desenha();
+	
 	glutSwapBuffers();
 }
 
@@ -254,30 +212,49 @@ void idle(void) {
 	glutPostRedisplay();
 }
 
-void LiberarListaCirculos(list<Circulo*>& listaCirculos) {
-	
-	if(listaCirculos.size() > 0) {
-		
-		list<Circulo*>::iterator itr = listaCirculos.begin();
-		
-		while(itr != listaCirculos.end()) {
-			delete *itr;
-			itr = listaCirculos.erase(itr);
-		}
-	}
-}
-
 void LiberarMemoria(void) {
 	delete janela;
 	delete jogador;
 	delete arena;
-	delete linha;
-	LiberarListaCirculos(inimigosVoadores);
-	LiberarListaCirculos(inimigosTerrestres);
+	delete pista;
+	delete inimigosVoadores;
+	delete inimigosTerrestres;
+}
+
+int RetornaErro(Erros erro) {
+	
+	switch(erro) {
+		
+		case ERRO_ABERTURA_CONFIG_XML:
+			cout << "Erro: Falha ao abrir config.xml" << endl;
+			break;
+			
+		case ERRO_LEITURA_CONFIG_XML:
+			cout << "Erro: Falha ao ler config.xml apos aberto" << endl;
+			break;
+			
+		case ERRO_ABERTURA_ARENA_SVG:
+			cout << "Erro: Falha ao abrir arena.svg" << endl;
+			break;
+			
+		case ERRO_LEITURA_ARENA_SVG:
+			cout << "Erro: Falha ao ler arena.svg apos aberto" << endl;
+			break;
+			
+		default:
+			break;
+	}
+	
+	LiberarMemoria();
+	return erro;
 }
 
 int main(int argc, char** argv) {
-
+	
+	/*
+	 * Abertura e leitura do arquivo config.xml:
+	 */
+	
 	string strArqConfig;
 
 	// Se houve passagem de argumento, considera o caminho passado.
@@ -298,26 +275,18 @@ int main(int argc, char** argv) {
 	char chArqConfig[strArqConfig.length() + 1];
 	strcpy(chArqConfig, strArqConfig.c_str());
 
-	/*
-	 * Abertura e leitura do arquivo config.xml:
-	 */
-
 	XMLDocument xmlConfig;
 	XMLError erroLoad = xmlConfig.LoadFile(chArqConfig);
 
 	// "erroLoad" recebe zero se "LoadFile" for bem sucedida.
 	if( erroLoad != 0 ) {
-		cout << "Erro: Falha ao abrir config.xml" << endl;
-		LiberarMemoria();
-		return ERRO_ABERTURA_CONFIG_XML;
+		return RetornaErro(ERRO_ABERTURA_CONFIG_XML);
 	}
 
 	bool leituraConfigSucesso = LeituraConfig(xmlConfig);
 
 	if(leituraConfigSucesso == false) {
-		cout << "Erro: Falha ao ler config.xml apos aberto" << endl;
-		LiberarMemoria();
-		return ERRO_LEITURA_CONFIG_XML;
+		return RetornaErro(ERRO_LEITURA_CONFIG_XML);
 	}
 
 	/*
@@ -331,17 +300,13 @@ int main(int argc, char** argv) {
 
 	// "erroLoad" recebe zero se "LoadFile" for bem sucedida.
 	if( erroLoad != 0 ) {
-		cout << "Erro: Falha ao abrir arena.svg" << endl;
-		LiberarMemoria();
-		return ERRO_ABERTURA_ARENA_SVG;
+		return RetornaErro(ERRO_ABERTURA_ARENA_SVG);
 	}
 
 	bool leituraArenaSucesso = LeituraArena(xmlArena);
 
 	if(leituraArenaSucesso == false) {
-		cout << "Erro: Falha ao ler arena.svg apos aberto" << endl;
-		LiberarMemoria();
-		return ERRO_LEITURA_ARENA_SVG;
+		return RetornaErro(ERRO_LEITURA_ARENA_SVG);
 	}
 	
 	/*
@@ -349,11 +314,8 @@ int main(int argc, char** argv) {
 	 */
 
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	
-	GLint larguraJanela = abs(janela->getXF() - janela->getXI());
-	GLint alturaJanela = abs(janela->getYF() - janela->getYI());
-	glutInitWindowSize(larguraJanela, alturaJanela); 					// Modificar aqui
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);	
+	glutInitWindowSize(janela->Largura(), janela->Altura());
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow(janela->getTitulo().c_str());
 		

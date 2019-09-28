@@ -16,9 +16,12 @@ string Arena:: getNomeArquivo(void) const { return arquivo; }
 Circulo* Arena:: getCirculo(void) const { return circulo; }
 
 void Arena:: Desenha(void) const {
+	
 	glPushMatrix();
+	
 	glTranslatef(circulo->getCX(), circulo->getCY(), 0.0f);
 	circulo->Desenha();
+	
 	glPopMatrix();
 }
 

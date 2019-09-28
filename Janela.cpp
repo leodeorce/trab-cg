@@ -5,6 +5,7 @@
  * Descricao: TC2
 */
 
+#include <cmath>
 #include "Janela.h"
 
 GLint Janela:: getXI(void) const { return xI; }
@@ -18,3 +19,11 @@ void Janela:: setXF(GLint xF) { this->xF = xF; }
 void Janela:: setYI(GLint yI) { this->yI = yI; }
 void Janela:: setYF(GLint yF) { this->yF = yF; }
 void Janela:: setTitulo(string titulo) { this->titulo = titulo; }
+
+GLint Janela:: Largura(void) const {
+	return abs(xF - xI);
+}
+
+GLint Janela:: Altura(void) const {
+	return abs(yF - yI);
+}

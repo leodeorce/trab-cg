@@ -12,9 +12,10 @@
 #include "Elemento.h"
 
 class Circulo : public Elemento {
-	GLint raio;
-	GLint cX;
-	GLint cY;
+	GLint step;
+	GLint raio = 0;
+	GLint cX = 0;
+	GLint cY = 0;
 public:
 	Circulo(GLfloat, GLfloat, GLfloat);
 	GLint getRaio(void) const;

@@ -30,6 +30,8 @@ public:
 	void setYI(GLint);
 	void setYF(GLint);
 	void setTitulo(string);
+	GLint Largura(void) const;
+	GLint Altura(void) const;
 };
 
 #endif /* JANELA_H */

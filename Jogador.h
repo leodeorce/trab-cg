@@ -21,6 +21,7 @@ public:
 	void setCirculo(Circulo*);
 	GLfloat getMultiplicador(void) const;
 	Circulo* getCirculo(void) const;
+	void Desenha(void) const;
 	~Jogador();
 };
 
