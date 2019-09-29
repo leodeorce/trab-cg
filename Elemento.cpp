@@ -7,16 +7,36 @@
 
 #include "Elemento.h"
 
-Elemento:: Elemento(GLfloat corR, GLfloat corG, GLfloat corB) {
-	this->corR = corR;
-	this->corG = corG;
-	this->corB = corB;
+void Elemento:: setCirculo(Circulo* circulo) {
+	this->circulo = circulo;
 }
 
-GLfloat Elemento:: getCorR(void) const { return corR; }
-GLfloat Elemento:: getCorG(void) const { return corG; }
-GLfloat Elemento:: getCorB(void) const { return corB; }
+void Elemento:: Desenhar(void) {
+	
+	glPushMatrix();
+	
+	glTranslatef(gX, gY, 0.0f);
+	circulo->Desenhar();
+	
+	glPopMatrix();
+}
 
-void Elemento:: setCorR(GLfloat corR) { this->corR = corR; }
-void Elemento:: setCorG(GLfloat corG) { this->corG = corG; }
-void Elemento:: setCorB(GLfloat corB) { this->corB = corB; }
+void Elemento:: setGX(GLint gX) {
+	this->gX = gX;
+}
+
+void Elemento:: setGY(GLint gY) {
+	this->gY = gY;
+}
+
+void Elemento:: MoverX(GLfloat dX) {
+	gX = gX + (GLint) dX;
+}
+
+void Elemento:: MoverY(GLfloat dY) {
+	gY = gY + (GLint) dY;
+}
+
+Elemento:: ~Elemento() {
+	delete circulo;
+}

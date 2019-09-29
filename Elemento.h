@@ -9,27 +9,20 @@
 #define ELEMENTO_H
 
 #include <GL/glut.h>
-
-enum Cor {
-	RED = 0,
-	GREEN = 1,
-	BLUE = 2,
-	ORANGE = 3
-};
+#include "Circulo.h"
 
 class Elemento {
-protected:
-	GLfloat corR;
-	GLfloat corG;
-	GLfloat corB;
+	Circulo* circulo;
+	GLint gX = 0;
+	GLint gY = 0;
 public:
-	Elemento(GLfloat, GLfloat, GLfloat);
-	GLfloat getCorR(void) const;
-	GLfloat getCorG(void) const;
-	GLfloat getCorB(void) const;
-	void setCorR(GLfloat);
-	void setCorG(GLfloat);
-	void setCorB(GLfloat);
+	void setCirculo(Circulo*);
+	void Desenhar(void);
+	void setGX(GLint);
+	void setGY(GLint);
+	void MoverX(GLfloat);
+	void MoverY(GLfloat);
+	~Elemento();
 };
 
 #endif /* ELEMENTO_H */

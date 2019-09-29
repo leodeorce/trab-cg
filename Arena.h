@@ -10,20 +10,15 @@
 
 #include <GL/glut.h>
 #include <string>
-#include "Circulo.h"
+#include "Elemento.h"
 
 using namespace std;
 
-class Arena {
+class Arena : public Elemento {
 	string arquivo;
-	Circulo* circulo;
 public:
 	void setNomeArquivo(string);
-	void setCirculo(Circulo*);
 	string getNomeArquivo(void) const;
-	Circulo* getCirculo(void) const;
-	void Desenha(void) const;
-	~Arena();
 };
 
 #endif /* ARENA_H */

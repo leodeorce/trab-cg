@@ -9,20 +9,17 @@
 #define JOGADOR_H
 
 #include <GL/glut.h>
-#include "Circulo.h"
+#include "Elemento.h"
 
 using namespace std;
 
-class Jogador {
+class Jogador : public Elemento {
+	bool Decolou = false;
 	GLfloat multiplicador;
-	Circulo* circulo;
 public:
 	void setMultiplicador(GLfloat);
-	void setCirculo(Circulo*);
 	GLfloat getMultiplicador(void) const;
-	Circulo* getCirculo(void) const;
-	void Desenha(void) const;
-	~Jogador();
+	void Decolar(void);
 };
 
 #endif /* JOGADOR_H */

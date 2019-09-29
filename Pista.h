@@ -8,11 +8,13 @@
 #ifndef PISTA_H
 #define PISTA_H
 
-#include "Elemento.h"
+#include "Figura.h"
 
-class Pista : public Elemento {
-	GLint x1, y1;
-    GLint x2, y2;
+class Pista : public Figura {
+	GLint x1 = 0;
+	GLint y1 = 0;
+    GLint x2 = 0;
+	GLint y2 = 0;
 public:
 	Pista(GLfloat, GLfloat, GLfloat);
 	GLint getX1(void) const;
@@ -23,7 +25,7 @@ public:
 	void setY1(GLint);
 	void setX2(GLint);
 	void setY2(GLint);
-	void Desenha(void) const;
+	void Desenhar(void) const;
 };
 
 #endif /* PISTA_H */

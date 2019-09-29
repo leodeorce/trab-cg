@@ -7,22 +7,25 @@
 
 #include "Jogador.h"
 
-void Jogador:: setMultiplicador(GLfloat multiplicador) { this->multiplicador = multiplicador; }
-void Jogador:: setCirculo(Circulo* circulo) { this->circulo = circulo; }
-
-GLfloat Jogador:: getMultiplicador(void) const { return multiplicador; }
-Circulo* Jogador:: getCirculo(void) const { return circulo; }
-
-void Jogador:: Desenha(void) const {
-	
-	glPushMatrix();
-	
-	glTranslatef(circulo->getCX(), circulo->getCY(), 0.0f);
-	circulo->Desenha();
-	
-	glPopMatrix();
+void Jogador:: setMultiplicador(GLfloat multiplicador) {
+	this->multiplicador = multiplicador;
 }
 
-Jogador:: ~Jogador() {
-	delete circulo;
+GLfloat Jogador:: getMultiplicador(void) const {
+	return multiplicador;
+}
+
+void Jogador:: Decolar(void) {
+	
+	if(Decolou == false) {
+		
+		GLfloat dX;
+		GLfloat dY;
+		
+		MoverX(dX);
+		MoverY(dY);
+		
+		// if()
+		Decolou = true;
+	}
 }

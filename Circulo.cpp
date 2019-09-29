@@ -9,21 +9,18 @@
 #include "Circulo.h"
 
 Circulo:: Circulo(GLfloat corR, GLfloat corG, GLfloat corB)
-	: Elemento(corR, corG, corB) { }
+	: Figura(corR, corG, corB) { }
 
-GLint Circulo:: getCX(void) const { return cX; }
-GLint Circulo:: getCY(void) const { return cY; }
-GLint Circulo:: getRaio(void) const { return raio; }
-
-void Circulo:: setCX(GLint cX) { this->cX = cX; }
-void Circulo:: setCY(GLint cY) { this->cY = cY; }
+GLint Circulo:: getRaio(void) const {
+	return raio;
+}
 
 void Circulo:: setRaio(GLint raio) {
 	this->raio = raio;
 	step = round((9.0f * (float) raio / 70.0f) + (108.0f / 7.0f));
 }
 
-void Circulo:: Desenha(void) const {
+void Circulo:: Desenhar(void) const {
 	
 	glColor3f(corR, corG, corB);
 	glBegin(GL_POLYGON);
