@@ -1,5 +1,5 @@
 /*
- * Arquivo: tc2.cpp
+ * Arquivo: main.cpp
  * Autor: Leonardo Oliveira
  * Disciplina: Computacao Grafica 2019/2
  * Descricao: TC2
