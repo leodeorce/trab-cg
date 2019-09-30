@@ -303,20 +303,63 @@ void TC2:: Atualizar(GLint frametime) {
 	
 	if(jogador->getDecolou() == true) {
 		
-		if(keyStatus[keyCima] == 1 && PossivelConflitoY( -frametime) == false) {
-			jogador->MoverCorrigidoY( -frametime);
+		if(keyStatus[keyCima] == 1 && keyStatus[keyBaixo] == 0) {
+			
+			if(keyStatus[keyEsquerda] == 1) {
+				
+				if(PossivelConflitoX( -frametime) == false && PossivelConflitoY( -frametime) == false) {
+					jogador->MoverCorrigidoY( -frametime);
+					jogador->MoverCorrigidoX( -frametime);
+				}
+				
+			} else if(keyStatus[keyDireita] == 1){
+				
+				if(PossivelConflitoY( -frametime) == false && PossivelConflitoX( +frametime) == false) {
+					jogador->MoverCorrigidoY( -frametime);
+					jogador->MoverCorrigidoX( +frametime);
+				}
+				
+			} else {
+				
+				if(PossivelConflitoY( -frametime) == false) {
+					jogador->MoverCorrigidoY( - 2.0f * frametime);
+				}
+			}
 		}
 		
-		if(keyStatus[keyEsquerda] == 1 && PossivelConflitoX( -frametime) == false) {
-			jogador->MoverCorrigidoX( -frametime);
+		if(keyStatus[keyBaixo] == 1 && keyStatus[keyCima] == 0) {
+			
+			if(keyStatus[keyEsquerda] == 1) {
+				
+				if(PossivelConflitoX( +frametime) == false && PossivelConflitoY( -frametime) == false) {
+					jogador->MoverCorrigidoY( +frametime);
+					jogador->MoverCorrigidoX( -frametime);
+				}
+				
+			} else if(keyStatus[keyDireita] == 1){
+				
+				if(PossivelConflitoY( +frametime) == false && PossivelConflitoX( +frametime) == false) {
+					jogador->MoverCorrigidoY( +frametime);
+					jogador->MoverCorrigidoX( +frametime);
+				}
+				
+			} else {
+				
+				if(PossivelConflitoY( +frametime) == false) {
+					jogador->MoverCorrigidoY( + 2.0f * frametime);
+				}
+			}
 		}
 		
-		if(keyStatus[keyBaixo] == 1 && PossivelConflitoY( +frametime) == false) {
-			jogador->MoverCorrigidoY( +frametime);
-		}
-		
-		if(keyStatus[keyDireita] == 1 && PossivelConflitoX( +frametime) == false) {
-			jogador->MoverCorrigidoX( +frametime);
+		if(keyStatus[keyCima] == 0 && keyStatus[keyBaixo] == 0) {
+			
+			if(keyStatus[keyEsquerda] == 1 && PossivelConflitoX( -frametime) == false) {
+				jogador->MoverCorrigidoX( - 2.0f * frametime);
+			}
+			
+			if(keyStatus[keyDireita] == 1 && PossivelConflitoX( +frametime) == false) {
+				jogador->MoverCorrigidoX( + 2.0f * frametime);
+			}
 		}
 		
 	} else {
