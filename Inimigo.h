@@ -15,7 +15,7 @@ using namespace std;
 
 class Inimigo : public Elemento {
 public:
-	bool existeConflito(GLint raio, GLint x, GLint y);
+	bool ExisteConflito(GLfloat raio, GLfloat x, GLfloat y);
 };
 
 #endif /* INIMIGO_H */

@@ -5,7 +5,6 @@
  * Descricao: TC2
 */
 
-#include <iostream>
 #include <string>
 #include "TC2.h"
 
@@ -102,9 +101,9 @@ Erros TC2:: LeituraArena(XMLDocument& xmlArena) {
 	XMLNode* raiz = xmlArena.FirstChild();
 	XMLNode* svg = raiz->NextSibling();
 
-	GLint cX;
-	GLint cY;
-	GLint r;
+	GLfloat cX;
+	GLfloat cY;
+	GLfloat r;
 	const char* fill;
 	XMLElement* elemento;
 
@@ -113,9 +112,9 @@ Erros TC2:: LeituraArena(XMLDocument& xmlArena) {
 
 	do {
 
-		elemento->QueryIntAttribute("cx", &cX);
-		elemento->QueryIntAttribute("cy", &cY);
-		elemento->QueryIntAttribute("r", &r);
+		elemento->QueryFloatAttribute("cx", &cX);
+		elemento->QueryFloatAttribute("cy", &cY);
+		elemento->QueryFloatAttribute("r", &r);
 		fill = elemento->Attribute("fill");
 
 		Cor cor;
@@ -189,13 +188,13 @@ Erros TC2:: LeituraArena(XMLDocument& xmlArena) {
 	elemento = svg->FirstChildElement("line");
 	if(elemento == 0) return ERRO_LEITURA_ARENA_SVG;
 
-	GLint x1, y1;
-	GLint x2, y2;
+	GLfloat x1, y1;
+	GLfloat x2, y2;
 
-	elemento->QueryIntAttribute("x1", &x1);
-	elemento->QueryIntAttribute("y1", &y1);
-	elemento->QueryIntAttribute("x2", &x2);
-	elemento->QueryIntAttribute("y2", &y2);
+	elemento->QueryFloatAttribute("x1", &x1);
+	elemento->QueryFloatAttribute("y1", &y1);
+	elemento->QueryFloatAttribute("x2", &x2);
+	elemento->QueryFloatAttribute("y2", &y2);
 	
 	pista = new Pista(0.0f, 0.0f, 0.0f);
 	pista->setX1(x1);
@@ -246,27 +245,85 @@ void TC2:: KeyDown(unsigned char key) {
 }
 
 void TC2:: KeyUp(unsigned char key) {
-	keyStatus[key] = 0;
+	if(key != keyDecolar) {
+		keyStatus[key] = 0;
+	}
 }
 
-void TC2:: Atualizar(void) {
+bool TC2:: PossivelConflitoX(GLfloat frametime) {
+		
+	GLfloat gX = jogador->getGX();
+	GLfloat gY = jogador->getGY();
+	GLfloat possivelX = gX + jogador->getVXFinal() * frametime;
 	
-	GLfloat delta = 1.0f;
+	return PossivelConflitoInimigos(possivelX, gY) || PossivelConflitoArena(possivelX, gY);
+}
+
+bool TC2:: PossivelConflitoY(GLfloat frametime) {
+		
+	GLfloat gX = jogador->getGX();
+	GLfloat gY = jogador->getGY();
+	GLfloat possivelY = gY + jogador->getVYFinal() * frametime;
 	
-	if(keyStatus[keyDecolar] == 1) {
-		jogador->Decolar();
+	return PossivelConflitoInimigos(gX, possivelY) || PossivelConflitoArena(gX, possivelY);
+}
+
+bool TC2:: PossivelConflitoInimigos(GLfloat x, GLfloat y) {
+	
+	list<Inimigo*>::iterator itr;
+	Circulo* circulo = jogador->getCirculo();
+	GLfloat raio = circulo->getRaio();
+		
+	for(itr = inimigosVoadores.begin(); itr != inimigosVoadores.end(); ++itr) {
+		
+		Inimigo* inimigo = *itr;
+		
+		if(inimigo->ExisteConflito(raio, x, y) == true) {
+			return true;
+		}
 	}
-	if(keyStatus[keyCima] == 1) {
-		jogador->MoverY(+ delta);
+	
+	return false;
+}
+
+bool TC2:: PossivelConflitoArena(GLfloat x, GLfloat y) {
+	
+	list<Inimigo*>::iterator itr;
+	Circulo* circulo = jogador->getCirculo();
+	GLfloat raio = circulo->getRaio();
+		
+	if(arena->ExisteConflito(raio, x, y) == true) {
+		return true;
+	} else {
+		return false;
 	}
-	if(keyStatus[keyEsquerda] == 1) {
-		jogador->MoverX(- delta);
-	}
-	if(keyStatus[keyBaixo] == 1) {
-		jogador->MoverY(- delta);
-	}
-	if(keyStatus[keyDireita] == 1) {
-		jogador->MoverX(+ delta);
+}
+
+void TC2:: Atualizar(GLint frametime) {
+	
+	if(jogador->getDecolou() == true) {
+		
+		if(keyStatus[keyCima] == 1 && PossivelConflitoY( -frametime) == false) {
+			jogador->MoverCorrigidoY( -frametime);
+		}
+		
+		if(keyStatus[keyEsquerda] == 1 && PossivelConflitoX( -frametime) == false) {
+			jogador->MoverCorrigidoX( -frametime);
+		}
+		
+		if(keyStatus[keyBaixo] == 1 && PossivelConflitoY( +frametime) == false) {
+			jogador->MoverCorrigidoY( +frametime);
+		}
+		
+		if(keyStatus[keyDireita] == 1 && PossivelConflitoX( +frametime) == false) {
+			jogador->MoverCorrigidoX( +frametime);
+		}
+		
+	} else {
+		
+		if(keyStatus[keyDecolar] == 1) {
+			jogador->Decolar(frametime, pista->getX2(), pista->getY2());
+		}
 	}
 }
 

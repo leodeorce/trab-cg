@@ -11,20 +11,20 @@
 #include "Figura.h"
 
 class Pista : public Figura {
-	GLint x1 = 0;
-	GLint y1 = 0;
-    GLint x2 = 0;
-	GLint y2 = 0;
+	GLfloat x1 = 0.0f;
+	GLfloat y1 = 0.0f;
+    GLfloat x2 = 0.0f;
+	GLfloat y2 = 0.0f;
 public:
 	Pista(GLfloat, GLfloat, GLfloat);
-	GLint getX1(void) const;
-	GLint getY1(void) const;
-	GLint getX2(void) const;
-	GLint getY2(void) const;
-	void setX1(GLint);
-	void setY1(GLint);
-	void setX2(GLint);
-	void setY2(GLint);
+	GLfloat getX1(void) const;
+	GLfloat getY1(void) const;
+	GLfloat getX2(void) const;
+	GLfloat getY2(void) const;
+	void setX1(GLfloat);
+	void setY1(GLfloat);
+	void setX2(GLfloat);
+	void setY2(GLfloat);
 	void Desenhar(void) const;
 };
 

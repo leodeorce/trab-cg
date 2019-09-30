@@ -7,8 +7,28 @@
 
 #include "Elemento.h"
 
+void Elemento:: setGX(GLfloat gX) {
+	this->gX = gX;
+}
+
+void Elemento:: setGY(GLfloat gY) {
+	this->gY = gY;
+}
+
 void Elemento:: setCirculo(Circulo* circulo) {
 	this->circulo = circulo;
+}
+
+GLfloat Elemento:: getGX(void) const {
+	return gX;
+}
+
+GLfloat Elemento:: getGY(void) const {
+	return gY;
+}
+
+Circulo* Elemento:: getCirculo(void) const {
+	return circulo;
 }
 
 void Elemento:: Desenhar(void) {
@@ -21,20 +41,12 @@ void Elemento:: Desenhar(void) {
 	glPopMatrix();
 }
 
-void Elemento:: setGX(GLint gX) {
-	this->gX = gX;
-}
-
-void Elemento:: setGY(GLint gY) {
-	this->gY = gY;
-}
-
 void Elemento:: MoverX(GLfloat dX) {
-	gX = gX + (GLint) dX;
+	gX = gX + dX;
 }
 
 void Elemento:: MoverY(GLfloat dY) {
-	gY = gY + (GLint) dY;
+	gY = gY + dY;
 }
 
 Elemento:: ~Elemento() {

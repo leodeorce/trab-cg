@@ -13,13 +13,16 @@
 
 class Elemento {
 	Circulo* circulo;
-	GLint gX = 0;
-	GLint gY = 0;
+	GLfloat gX = 0.0f;
+	GLfloat gY = 0.0f;
 public:
+	void setGX(GLfloat);
+	void setGY(GLfloat);
 	void setCirculo(Circulo*);
+	GLfloat getGX(void) const;
+	GLfloat getGY(void) const;
+	Circulo* getCirculo(void) const;
 	void Desenhar(void);
-	void setGX(GLint);
-	void setGY(GLint);
 	void MoverX(GLfloat);
 	void MoverY(GLfloat);
 	~Elemento();

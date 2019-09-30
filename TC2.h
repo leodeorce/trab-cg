@@ -51,7 +51,11 @@ public:
 	void DesenharInimigosTerrestres(void);
 	void KeyDown(unsigned char);
 	void KeyUp(unsigned char);
-	void Atualizar(void);
+	bool PossivelConflitoX(GLfloat);
+	bool PossivelConflitoY(GLfloat);
+	bool PossivelConflitoInimigos(GLfloat, GLfloat);
+	bool PossivelConflitoArena(GLfloat, GLfloat);
+	void Atualizar(GLint);
 	~TC2();
 private:
 	Erros LeituraConfig(XMLDocument&);

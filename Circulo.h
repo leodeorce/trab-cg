@@ -13,11 +13,11 @@
 
 class Circulo : public Figura {
 	GLint step;
-	GLint raio = 0;
+	GLfloat raio = 0.0f;
 public:
 	Circulo(GLfloat, GLfloat, GLfloat);
-	GLint getRaio(void) const;
-	void setRaio(GLint);
+	GLfloat getRaio(void) const;
+	void setRaio(GLfloat);
 	void Desenhar(void) const;
 };
 

@@ -34,20 +34,28 @@ void keyUp(unsigned char key, int x, int y) {
 }
 
 void display(void) {
-
+		
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	tc2.DesenharArena();
 	tc2.DesenharPista();
-	tc2.DesenharJogador();
 	tc2.DesenharInimigosVoadores();
 	tc2.DesenharInimigosTerrestres();
+	tc2.DesenharJogador();
 
 	glutSwapBuffers();
 }
 
 void idle(void) {
-	tc2.Atualizar();
+	
+	static GLint tempoAnterior = 0;
+	
+	GLint tempoAtual = glutGet(GLUT_ELAPSED_TIME);
+	GLint frametime = tempoAtual - tempoAnterior;
+	
+	tempoAnterior = tempoAtual;
+	
+	tc2.Atualizar(frametime);
 	glutPostRedisplay();
 }
 
@@ -115,6 +123,7 @@ int main(int argc, char** argv) {
 	
 	glutKeyboardFunc(keyDown);
 	glutKeyboardUpFunc(keyUp);
+	
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 	

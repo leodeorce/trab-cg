@@ -14,12 +14,19 @@
 using namespace std;
 
 class Jogador : public Elemento {
-	bool Decolou = false;
+	bool decolou = false;
 	GLfloat multiplicador;
+	GLfloat vXFinal;
+	GLfloat vYFinal;
 public:
 	void setMultiplicador(GLfloat);
 	GLfloat getMultiplicador(void) const;
-	void Decolar(void);
+	bool getDecolou(void) const;
+	GLfloat getVXFinal(void) const;
+	GLfloat getVYFinal(void) const;
+	void MoverCorrigidoX(GLfloat);
+	void MoverCorrigidoY(GLfloat);
+	void Decolar(GLint, GLfloat, GLfloat);
 };
 
 #endif /* JOGADOR_H */

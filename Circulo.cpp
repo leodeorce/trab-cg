@@ -9,13 +9,14 @@
 #include "Circulo.h"
 
 Circulo:: Circulo(GLfloat corR, GLfloat corG, GLfloat corB)
-	: Figura(corR, corG, corB) { }
+	: Figura(corR, corG, corB) {
+}
 
-GLint Circulo:: getRaio(void) const {
+GLfloat Circulo:: getRaio(void) const {
 	return raio;
 }
 
-void Circulo:: setRaio(GLint raio) {
+void Circulo:: setRaio(GLfloat raio) {
 	this->raio = raio;
 	step = round((9.0f * (float) raio / 70.0f) + (108.0f / 7.0f));
 }

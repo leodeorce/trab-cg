@@ -19,6 +19,7 @@ class Arena : public Elemento {
 public:
 	void setNomeArquivo(string);
 	string getNomeArquivo(void) const;
+	bool ExisteConflito(GLfloat, GLfloat, GLfloat) const;
 };
 
 #endif /* ARENA_H */

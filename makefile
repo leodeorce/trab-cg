@@ -7,8 +7,6 @@ CC = g++
 
 FLAGS = -lGL -lGLU -lglut
 
-PARAMETROS = ../cfg/
-
 FONTES = $(wildcard *.cpp)
 
 OBJETOS = $(FONTES:.cpp=.o)
@@ -22,9 +20,6 @@ $(EXECUTAVEL): $(OBJETOS)
 
 %.o: %.cpp
 	$(CC) -c $^
-
-run:
-	./$(EXECUTAVEL) $(PARAMETROS)
 
 clean:
 	rm -rf *.o

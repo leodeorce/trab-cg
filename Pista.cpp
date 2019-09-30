@@ -10,15 +10,15 @@
 Pista:: Pista(GLfloat corR, GLfloat corG, GLfloat corB)
 	: Figura(corR, corG, corB) { }
 
-GLint Pista:: getX1(void) const { return x1; }
-GLint Pista:: getY1(void) const { return y1; }
-GLint Pista:: getX2(void) const { return x2; }
-GLint Pista:: getY2(void) const { return y2; }
+GLfloat Pista:: getX1(void) const { return x1; }
+GLfloat Pista:: getY1(void) const { return y1; }
+GLfloat Pista:: getX2(void) const { return x2; }
+GLfloat Pista:: getY2(void) const { return y2; }
 
-void Pista:: setX1(GLint x1) { this->x1 = x1; }
-void Pista:: setY1(GLint y1) { this->y1 = y1; }
-void Pista:: setX2(GLint x2) { this->x2 = x2; }
-void Pista:: setY2(GLint y2) { this->y2 = y2; }
+void Pista:: setX1(GLfloat x1) { this->x1 = x1; }
+void Pista:: setY1(GLfloat y1) { this->y1 = y1; }
+void Pista:: setX2(GLfloat x2) { this->x2 = x2; }
+void Pista:: setY2(GLfloat y2) { this->y2 = y2; }
 
 void Pista:: Desenhar(void) const {
 	
