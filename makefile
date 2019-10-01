@@ -5,7 +5,9 @@
 
 CC = g++
 
-FLAGS = -lGL -lGLU -lglut
+LFLAGS = -lGL -lGLU -lglut
+
+CFLAGS = -std=c++11
 
 FONTES = $(wildcard *.cpp)
 
@@ -16,10 +18,10 @@ EXECUTAVEL = trabalhocg
 all: $(EXECUTAVEL)
 
 $(EXECUTAVEL): $(OBJETOS)
-	$(CC) $^ $(FLAGS) -o $@
+	$(CC) $^ $(LFLAGS) -o $@
 
 %.o: %.cpp
-	$(CC) -c $^
+	$(CC) $(CFLAGS) -c $^
 
 clean:
 	rm -rf *.o
