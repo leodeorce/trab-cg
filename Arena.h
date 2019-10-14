@@ -2,7 +2,7 @@
  * Arquivo: Arena.h
  * Autor: Leonardo Oliveira
  * Disciplina: Computacao Grafica 2019/2
- * Descricao: TC2
+ * Descricao: TC3
 */
 
 #ifndef ARENA_H

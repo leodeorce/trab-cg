@@ -2,18 +2,37 @@
  * Arquivo: Jogador.cpp
  * Autor: Leonardo Oliveira
  * Disciplina: Computacao Grafica 2019/2
- * Descricao: TC2
+ * Descricao: TC3
 */
 
+#include <iostream>
 #include <cmath>
 #include "Jogador.h"
 
-void Jogador:: setMultiplicador(GLfloat multiplicador) {
-	this->multiplicador = multiplicador;
+using namespace std;
+
+void Jogador:: setMultVelAviao(GLfloat multVelAviao) {
+	this->multVelAviao = multVelAviao;
 }
 
-GLfloat Jogador:: getMultiplicador(void) const {
-	return multiplicador;
+void Jogador:: setMultVelTiro(GLfloat multVelTiro) {
+	this->multVelTiro = multVelTiro;
+}
+
+void Jogador:: setAnguloAviao(GLfloat anguloAviao) {
+	this->anguloAviao = anguloAviao;
+}
+
+GLfloat Jogador:: getMultVelAviao(void) const {
+	return multVelAviao;
+}
+
+GLfloat Jogador:: getMultVelTiro(void) const {
+	return multVelTiro;
+}
+
+GLfloat Jogador:: getAnguloAviao(void) const {
+	return anguloAviao;
 }
 
 bool Jogador:: getDecolou(void) const {
@@ -118,8 +137,187 @@ void Jogador:: Decolar(GLint frametime, GLfloat xFinal, GLfloat yFinal) {
 			vXFinal = vResultante * cos(45.0f * 3.141593f / 180.0f);
 			vYFinal = vXFinal;
 			
-			vXFinal = vXFinal * multiplicador;
-			vYFinal = vYFinal * multiplicador;
+			vXFinal = vXFinal * multVelAviao;
+			vYFinal = vYFinal * multVelAviao;
 		}
 	}
+}
+
+void Jogador:: Desenhar(void) {
+	
+	Circulo* circulo = this->getCirculo();
+	GLfloat raio = circulo->getRaio();
+	GLfloat raioProp = proporcaoAviao * raio;
+		
+	GLfloat larguraCanhao = raio / 7.0f;
+	GLfloat alturaCanhao = 2.5f * larguraCanhao;
+	GLfloat offsetYCanhao = raio + (0.5f * alturaCanhao);
+	
+	glPushMatrix();
+	glTranslatef(this->getGX(), this->getGY(), 0.0f);
+	
+	this->DesenharCanhao(offsetYCanhao, larguraCanhao, alturaCanhao);
+	this->DesenharCorpo(circulo);
+	this->DesenharCabine(circulo);
+	
+	GLfloat larguraTurbina = larguraCanhao;
+	GLfloat alturaTurbina = 4.25f * larguraTurbina;
+	GLfloat offsetXTurbina = 2.35f * raioProp;
+	
+	this->DesenharTurbinas(offsetXTurbina, alturaTurbina, larguraTurbina);
+	
+	GLfloat larguraAsa = 2.25f * raioProp;
+	GLfloat alturaAsa = 1.5f * larguraAsa;
+	GLfloat offsetXAsa = 2.125f * raioProp;
+	GLfloat offsetYAsa = 0.25f * raioProp;
+	
+	this->DesenharAsas(offsetXAsa, offsetYAsa, larguraAsa, alturaAsa);
+	
+	GLfloat larguraCalda = larguraCanhao;
+	GLfloat alturaCalda = 4.25f * larguraCalda;
+	GLfloat offsetY = raio - (alturaCalda / 2.0f);
+	
+	this->DesenharCalda(offsetY, larguraCalda, alturaCalda);
+	
+	GLfloat larguraHelice = 1.4f * raioProp;
+	GLfloat alturaHelice = raio / 5.0f;
+	GLfloat offsetXHelice = 2.35f * raioProp;
+	GLfloat offsetYHelice = 2.125f * raio / 7.0f;
+	
+	this->DesenharHelices(offsetXHelice, offsetYHelice, larguraHelice, alturaHelice);
+	
+	glPopMatrix();
+}
+
+void Jogador:: DesenharCanhao(GLfloat offsetY, GLfloat largura, GLfloat altura) {
+			
+	glPushMatrix();
+	
+	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
+	glTranslatef(0.0f, -offsetY, 0.0f);
+	
+	glTranslatef(0.0f, +altura / 2.0f, 0.0f);
+	glRotatef(anguloCanhao, 0.0f, 0.0f, 1.0f);
+	glTranslatef(0.0f, -altura / 2.0f, 0.0f);
+	
+	glScalef(largura, altura, 1.0f);
+	
+	retangulo->Desenhar();
+	
+	glPopMatrix();
+}
+
+void Jogador:: DesenharCorpo(Circulo* circulo) {
+		
+	glPushMatrix();
+	
+	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
+	glScalef(proporcaoAviao, 1.0f, 1.0f);
+	circulo->Desenhar();
+	
+	glPopMatrix();
+}
+
+void Jogador:: DesenharCabine(Circulo* circulo) {
+		
+	GLfloat corOriginalR = circulo->getCorR();
+	GLfloat corOriginalG = circulo->getCorG();
+	GLfloat corOriginalB = circulo->getCorB();
+	
+	circulo->setCorR(0.0f);
+	circulo->setCorG(0.0f);
+	circulo->setCorB(0.0f);
+	
+	glPushMatrix();
+	
+	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
+	glTranslatef(0.0f, -circulo->getRaio() / 2.0f, 0.0f);
+	glScalef(proporcaoAviao / 2.5f, 1.25f * proporcaoAviao, 1.0f);
+	circulo->Desenhar();
+	
+	glPopMatrix();
+	
+	circulo->setCorR(corOriginalR);
+	circulo->setCorG(corOriginalG);
+	circulo->setCorB(corOriginalB);
+}
+
+void Jogador:: DesenharTurbinas(GLfloat offsetX, GLfloat largura, GLfloat altura) {
+	this->DesenharTurbina(-offsetX, largura, altura);
+	this->DesenharTurbina(offsetX, largura, altura);
+}
+
+void Jogador:: DesenharTurbina(GLfloat offsetX, GLfloat largura, GLfloat altura) {
+	
+	glPushMatrix();
+	
+	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
+	glTranslatef(offsetX, 0.0f, 0.0f);
+	glScalef(largura, altura, 1.0f);
+	retangulo->Desenhar();
+	
+	glPopMatrix();
+}
+
+void Jogador:: DesenharAsas(GLfloat offsetX, GLfloat offsetY, GLfloat largura, GLfloat altura) {
+	this->DesenharAsa( -offsetX, offsetY, +largura, altura);
+	this->DesenharAsa( +offsetX, offsetY, -largura, altura);
+}
+
+void Jogador:: DesenharAsa(GLfloat offsetX, GLfloat offsetY, GLfloat largura, GLfloat altura) {
+	
+	glPushMatrix();
+	
+	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
+	glTranslatef(offsetX, offsetY, 0.0f);
+	glScalef(largura, altura, 1.0f);
+	retangulo->DesenharCisalhado();
+	
+	glPopMatrix();
+}
+
+void Jogador:: DesenharCalda(GLfloat offsetY, GLfloat largura, GLfloat altura) {
+	
+	glPushMatrix();
+	
+	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
+	glTranslatef(0.0f, offsetY, 0.0f);
+	glScalef(largura, altura, 1.0f);
+	retangulo->Desenhar();
+	
+	glPopMatrix();
+}
+
+void Jogador:: DesenharHelices(GLfloat offsetX, GLfloat offsetY, GLfloat largura, GLfloat altura) {
+		
+	GLfloat corOriginalR = retangulo->getCorR();
+	GLfloat corOriginalG = retangulo->getCorG();
+	GLfloat corOriginalB = retangulo->getCorB();
+	
+	retangulo->setCorR(1.0f);
+	retangulo->setCorG(1.0f);
+	retangulo->setCorB(0.0f);
+	
+	this->DesenharHelice( -offsetX, -offsetY, largura, altura);
+	this->DesenharHelice( +offsetX, -offsetY, largura, altura);
+	
+	retangulo->setCorR(corOriginalR);
+	retangulo->setCorG(corOriginalG);
+	retangulo->setCorB(corOriginalB);
+}
+
+void Jogador:: DesenharHelice(GLfloat offsetX, GLfloat offsetY, GLfloat largura, GLfloat altura) {
+	
+	glPushMatrix();
+	
+	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
+	glTranslatef(offsetX, offsetY, 0.0f);
+	glScalef(largura, altura, 1.0f);
+	retangulo->DesenharHelice();
+	
+	glPopMatrix();
+}
+
+Jogador:: ~Jogador() {
+	delete retangulo;
 }

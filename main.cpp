@@ -2,46 +2,46 @@
  * Arquivo: main.cpp
  * Autor: Leonardo Oliveira
  * Disciplina: Computacao Grafica 2019/2
- * Descricao: TC2
+ * Descricao: TC3
  */
 
 #include <GL/glut.h>
 #include <iostream>
 #include <string>
-#include "TC2.h"
+#include "TC3.h"
 
 using namespace std;
 
-TC2 tc2;
+TC3 tc3;
 
 void initialize(void) {
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(
-		tc2.janela->getXI(), tc2.janela->getXF(),
-		tc2.janela->getYI(), tc2.janela->getYF(),
+		tc3.janela->getXI(), tc3.janela->getXF(),
+		tc3.janela->getYI(), tc3.janela->getYF(),
 		0.0f, 1.0f
 	);
 }
 
 void keyDown(unsigned char key, int x, int y) {
-	tc2.KeyDown(key);
+	tc3.KeyDown(key);
 }
 
 void keyUp(unsigned char key, int x, int y) {
-	tc2.KeyUp(key);
+	tc3.KeyUp(key);
 }
 
 void display(void) {
-		
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	tc2.DesenharArena();
-	tc2.DesenharPista();
-	tc2.DesenharInimigosVoadores();
-	tc2.DesenharInimigosTerrestres();
-	tc2.DesenharJogador();
+	
+	glClear (GL_COLOR_BUFFER_BIT);
+	
+	tc3.DesenharArena();
+	tc3.DesenharPista();
+	tc3.DesenharInimigosVoadores();
+	tc3.DesenharInimigosTerrestres();
+	tc3.DesenharJogador();
 
 	glutSwapBuffers();
 }
@@ -55,7 +55,7 @@ void idle(void) {
 	
 	tempoAnterior = tempoAtual;
 	
-	tc2.Atualizar(frametime);
+	tc3.Atualizar(frametime);
 	glutPostRedisplay();
 }
 
@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
 	}
 	
 	const char* chArqConfig = strArqConfig.c_str();
-	Erros erroArquivo = tc2.LeituraArquivos(chArqConfig);
+	Erros erroArquivo = tc3.LeituraArquivos(chArqConfig);
 	
 	if(erroArquivo != SUCESSO) {
 		return RetornaErro(erroArquivo);
@@ -115,9 +115,9 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowSize(tc2.janela->Largura(), tc2.janela->Altura());
+	glutInitWindowSize(tc3.janela->Largura(), tc3.janela->Altura());
 	glutInitWindowPosition(100, 100);
-	glutCreateWindow(tc2.janela->getTitulo().c_str());
+	glutCreateWindow(tc3.janela->getTitulo().c_str());
 	
 	initialize();
 	
