@@ -1,7 +1,7 @@
 ### Makefile ###
 
 # Leonardo Deorce Lima de Oliveira
-# TC2 - Computacao Grafica - 2019/2
+# TC3 - Computacao Grafica - 2019/2
 
 CC = g++
 
