@@ -39,22 +39,19 @@ bool Jogador:: getDecolou(void) const {
 	return decolou;
 }
 
-GLfloat Jogador:: getVXFinal(void) const {
-	return vXFinal;
+GLfloat Jogador:: getVFinal(void) const {
+	return vFinal;
 }
 
-GLfloat Jogador:: getVYFinal(void) const {
-	return vYFinal;
+void Jogador:: Mover(GLfloat frametime) {
+	this->MoverCorrigidoX(frametime);
+	this->MoverCorrigidoY(frametime);
 }
 
-void Jogador:: MoverCorrigidoX(GLfloat frametime) {
-	GLfloat dX = vXFinal * frametime;
-	this->MoverX(dX);
-}
-
-void Jogador:: MoverCorrigidoY(GLfloat frametime) {
-	GLfloat dY = vYFinal * frametime;
-	this->MoverY(dY);
+void Jogador:: AjustarAnguloAviao(GLint frametime) {
+	GLfloat vAngAviao = 1 / 10.0f;
+	GLfloat dA = vAngAviao * (GLfloat) frametime;
+	anguloAviao += dA;
 }
 
 void Jogador:: Decolar(GLint frametime, GLfloat xFinal, GLfloat yFinal) {
@@ -129,18 +126,28 @@ void Jogador:: Decolar(GLint frametime, GLfloat xFinal, GLfloat yFinal) {
 		}
 		
 		if(xChegou == true && yChegou == true) {
-			
 			decolou = true;
-			
 			GLfloat vResultante = sqrt(pow(vX, 2) + pow(vY, 2));
-						
-			vXFinal = vResultante * cos(45.0f * 3.141593f / 180.0f);
-			vYFinal = vXFinal;
-			
-			vXFinal = vXFinal * multVelAviao;
-			vYFinal = vYFinal * multVelAviao;
+			this->vFinal = vResultante;
+			// vXFinal = vResultante * cos(45.0f * 3.141593f / 180.0f);
+			// vYFinal = vXFinal;
+			//
+			// vXFinal = vXFinal * multVelAviao;
+			// vYFinal = vYFinal * multVelAviao;
 		}
 	}
+}
+
+void Jogador:: MoverCorrigidoX(GLfloat frametime) {
+	GLfloat vX = cos(anguloAviao) * vFinal;
+	GLfloat dX = vX * frametime;
+	this->MoverX(dX);
+}
+
+void Jogador:: MoverCorrigidoY(GLfloat frametime) {
+	GLfloat vY = sin(anguloAviao) * vFinal;
+	GLfloat dY = vY * frametime;
+	this->MoverY(dY);
 }
 
 void Jogador:: Desenhar(void) {

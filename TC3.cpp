@@ -260,22 +260,20 @@ void TC3:: KeyUp(unsigned char key) {
 	}
 }
 
-bool TC3:: PossivelConflitoX(GLfloat frametime) {
+bool TC3:: PossivelConflito(GLfloat frametime) {
 		
 	GLfloat gX = jogador->getGX();
 	GLfloat gY = jogador->getGY();
-	GLfloat possivelX = gX + jogador->getVXFinal() * frametime;
+	GLfloat anguloAviao = jogador->getAnguloAviao();
+	GLfloat vX = jogador->getVFinal() * cos(anguloAviao);
+	GLfloat vY = jogador->getVFinal() * sin(anguloAviao);
+	GLfloat dX = vX * frametime;
+	GLfloat dY = vY * frametime;
 	
-	return PossivelConflitoInimigos(possivelX, gY) || PossivelConflitoArena(possivelX, gY);
-}
-
-bool TC3:: PossivelConflitoY(GLfloat frametime) {
-		
-	GLfloat gX = jogador->getGX();
-	GLfloat gY = jogador->getGY();
-	GLfloat possivelY = gY + jogador->getVYFinal() * frametime;
+	GLfloat possivelGX = gX + dX;
+	GLfloat possivelGY = gY + dY;
 	
-	return PossivelConflitoInimigos(gX, possivelY) || PossivelConflitoArena(gX, possivelY);
+	return PossivelConflitoInimigos(possivelGX, possivelGY) || PossivelConflitoArena(possivelGX, possivelGY);
 }
 
 bool TC3:: PossivelConflitoInimigos(GLfloat x, GLfloat y) {
@@ -311,111 +309,21 @@ bool TC3:: PossivelConflitoArena(GLfloat x, GLfloat y) {
 
 void TC3:: Atualizar(GLint frametime) {
 	
-	GLint frametimeCorrigido = frametime * sqrt(2) / 2.0f;
+	// GLint frametimeCorrigido = frametime * sqrt(2) / 2.0f;
+	
+	cout << jogador->getAnguloAviao() << endl;
 	
 	if(jogador->getDecolou() == true) {
 		
-		if(keyStatus[keyCima] == 1 && keyStatus[keyBaixo] == 0) {
+		if(keyStatus[keyEsquerda] == 1 && keyStatus[keyDireita] == 0) {
 			
-			if(keyStatus[keyEsquerda] == 1 && keyStatus[keyDireita] == 0) {
-				
-				if(PossivelConflitoX( -frametime) == false && PossivelConflitoY( -frametime) == true) {
-					
-					jogador->MoverCorrigidoX( -frametime);
-					
-				} else if(PossivelConflitoX( -frametime) == true && PossivelConflitoY( -frametime) == false) {
-					
-					jogador->MoverCorrigidoY( -frametime);
-					
-				} else if(PossivelConflitoX( -frametimeCorrigido) == false && PossivelConflitoY( -frametimeCorrigido) == false) {
-					
-					jogador->MoverCorrigidoX( -frametimeCorrigido);
-					jogador->MoverCorrigidoY( -frametimeCorrigido);
-					
-				}
-				
-			} else if(keyStatus[keyEsquerda] == 0 && keyStatus[keyDireita] == 1){
-				
-				if(PossivelConflitoX( +frametime) == false && PossivelConflitoY( -frametime) == true) {
-					
-					jogador->MoverCorrigidoX( +frametime);
-					
-				} else if(PossivelConflitoX( +frametime) == true && PossivelConflitoY( -frametime) == false) {
-					
-					jogador->MoverCorrigidoY( -frametime);
-					
-				} else if(PossivelConflitoX( +frametimeCorrigido) == false && PossivelConflitoY( -frametimeCorrigido) == false) {
-					
-					jogador->MoverCorrigidoX( +frametimeCorrigido);
-					jogador->MoverCorrigidoY( -frametimeCorrigido);
-					
-				}
-				
-			} else if(keyStatus[keyDireita] == 0 && keyStatus[keyEsquerda] == 0){
-				
-				if(PossivelConflitoY( -frametime) == false) {
-					jogador->MoverCorrigidoY( -frametime);
-				}
-			}
+			jogador->AjustarAnguloAviao( -frametime);
 			
-		} else if(keyStatus[keyCima] == 0 && keyStatus[keyBaixo] == 1) {
+		} else if(keyStatus[keyEsquerda] == 0 && keyStatus[keyDireita] == 1){
 			
-			if(keyStatus[keyEsquerda] == 1 && keyStatus[keyDireita] == 0) {
-								
-				if(PossivelConflitoX( -frametime) == false && PossivelConflitoY( +frametime) == true) {
-					
-					jogador->MoverCorrigidoX( -frametime);
-					
-				} else if(PossivelConflitoX( -frametime) == true && PossivelConflitoY( +frametime) == false) {
-					
-					jogador->MoverCorrigidoY( +frametime);
-					
-				} else if(PossivelConflitoX( -frametimeCorrigido) == false && PossivelConflitoY( +frametimeCorrigido) == false) {
-					
-					jogador->MoverCorrigidoX( -frametimeCorrigido);
-					jogador->MoverCorrigidoY( +frametimeCorrigido);
-					
-				}
-				
-			} else if(keyStatus[keyEsquerda] == 0 && keyStatus[keyDireita] == 1){
-				
-				if(PossivelConflitoX( +frametime) == false && PossivelConflitoY( +frametime) == true) {
-					
-					jogador->MoverCorrigidoX( +frametime);
-					
-				} else if(PossivelConflitoX( +frametime) == true && PossivelConflitoY( +frametime) == false) {
-					
-					jogador->MoverCorrigidoY( +frametime);
-					
-				} else if(PossivelConflitoX( +frametimeCorrigido) == false && PossivelConflitoY( +frametimeCorrigido) == false) {
-					
-					jogador->MoverCorrigidoX( +frametimeCorrigido);
-					jogador->MoverCorrigidoY( +frametimeCorrigido);
-					
-				}
-				
-			} else {
-				
-				if(PossivelConflitoY( +frametime) == false) {
-					jogador->MoverCorrigidoY( +frametime);
-				}
-			}
-			
-		} else if(keyStatus[keyCima] == 0 && keyStatus[keyBaixo] == 0) {
-			
-			if(keyStatus[keyEsquerda] == 1 && keyStatus[keyDireita] == 0) {
-				if(PossivelConflitoX( -frametime) == false) {
-					jogador->MoverCorrigidoX( -frametime);
-				}
-			}
-			
-			if(keyStatus[keyEsquerda] == 0 && keyStatus[keyDireita] == 1) {
-				if(PossivelConflitoX( +frametime) == false) {
-					jogador->MoverCorrigidoX( +frametime);
-				}
-			}
+			jogador->AjustarAnguloAviao( +frametime);
 		}
-		
+				
 	} else {
 		
 		if(keyStatus[keyDecolar] == 1) {

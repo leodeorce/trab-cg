@@ -36,9 +36,7 @@ class TC3 {
 	list<Inimigo*> inimigosTerrestres;
 	char keyStatus[256] = {0};
 	const unsigned char keyDecolar = 'u';
-	const unsigned char keyCima = 'w';
 	const unsigned char keyEsquerda = 'a';
-	const unsigned char keyBaixo = 's';
 	const unsigned char keyDireita = 'd';
 public:
 	Janela* janela;
@@ -51,8 +49,7 @@ public:
 	void DesenharInimigosTerrestres(void);
 	void KeyDown(unsigned char);
 	void KeyUp(unsigned char);
-	bool PossivelConflitoX(GLfloat);
-	bool PossivelConflitoY(GLfloat);
+	bool PossivelConflito(GLfloat);
 	bool PossivelConflitoInimigos(GLfloat, GLfloat);
 	bool PossivelConflitoArena(GLfloat, GLfloat);
 	void Atualizar(GLint);

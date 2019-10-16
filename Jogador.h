@@ -18,8 +18,7 @@ class Jogador : public Elemento {
 	bool decolou = false;
 	GLfloat multVelAviao;
 	GLfloat multVelTiro;
-	GLfloat vXFinal;
-	GLfloat vYFinal;
+	GLfloat vFinal = 0.0f;
 	GLfloat anguloCanhao = 0.0f;
 	GLfloat anguloAviao = 0.0f;
 	const GLfloat proporcaoAviao = 0.3f;
@@ -32,14 +31,15 @@ public:
 	GLfloat getMultVelTiro(void) const;
 	GLfloat getAnguloAviao(void) const;
 	bool getDecolou(void) const;
-	GLfloat getVXFinal(void) const;
-	GLfloat getVYFinal(void) const;
-	void MoverCorrigidoX(GLfloat);
-	void MoverCorrigidoY(GLfloat);
+	GLfloat getVFinal(void) const;
+	void Mover(GLfloat);
+	void AjustarAnguloAviao(GLint);
 	void Decolar(GLint, GLfloat, GLfloat);
 	void Desenhar(void);
 	~Jogador();
 private:
+	void MoverCorrigidoX(GLfloat);
+	void MoverCorrigidoY(GLfloat);
 	void DesenharCanhao(GLfloat, GLfloat, GLfloat);
 	void DesenharCorpo(Circulo*);
 	void DesenharCabine(Circulo*);
