@@ -10,7 +10,6 @@
 #include <string>
 #include "TC3.h"
 
-
 Erros TC3:: LeituraArquivos(const char* chArqConfig) {
 	
 	XMLDocument xmlConfig;
@@ -202,9 +201,33 @@ Erros TC3:: LeituraArena(XMLDocument& xmlArena) {
 	elemento->QueryFloatAttribute("x2", &x2);
 	elemento->QueryFloatAttribute("y2", &y2);
 	
-	GLfloat anguloLinha = atan((y2 - y1) / (x2 - x1)) * 180.0f / 3.14159f;
-	GLfloat anguloAviao = 90 + anguloLinha;
-	jogador->setAnguloAviao(anguloAviao);
+	GLdouble tangente = 0.0f;
+	GLdouble anguloLinhaRadianos;
+	GLdouble anguloLinhaGraus;
+	
+	if(x1 <= x2 && y1 <= y2) {
+		tangente = - (y2 - y1) / (x2 - x1);
+		anguloLinhaRadianos = 360.0f + atan(tangente);
+	}
+	if(x1 <= x2 && y1  > y2) {
+		tangente = + (y1 - y2) / (x2 - x1);
+		anguloLinhaRadianos = atan(tangente);
+	}
+	if(x1  > x2 && y1 <= y2) {
+		tangente = - (y2 - y1) / (x1 - x2);
+		anguloLinhaRadianos = 180.0f + atan(tangente);
+	}
+	if(x1  > x2 && y1  > y2) {
+		tangente = + (y1 - y2) / (x1 - x2);
+		anguloLinhaRadianos = 180.0f + atan(tangente);
+	}
+	
+	anguloLinhaGraus = anguloLinhaRadianos * 180.0f / 3.14159f;
+	
+	GLdouble anguloAviaoRadianos = anguloLinhaRadianos;
+	GLdouble anguloAviaoGraus = anguloLinhaGraus;
+	jogador->setAnguloAviaoGraus(anguloAviaoGraus);
+	jogador->setAnguloAviaoRadianos(anguloAviaoRadianos);
 	
 	pista = new Pista(0.0f, 0.0f, 0.0f);
 	pista->setX1(x1);
@@ -264,7 +287,7 @@ bool TC3:: PossivelConflito(GLfloat frametime) {
 		
 	GLfloat gX = jogador->getGX();
 	GLfloat gY = jogador->getGY();
-	GLfloat anguloAviao = jogador->getAnguloAviao();
+	GLfloat anguloAviao = jogador->getAnguloAviaoRadianos();
 	GLfloat vX = jogador->getVFinal() * cos(anguloAviao);
 	GLfloat vY = jogador->getVFinal() * sin(anguloAviao);
 	GLfloat dX = vX * frametime;
@@ -311,18 +334,20 @@ void TC3:: Atualizar(GLint frametime) {
 	
 	// GLint frametimeCorrigido = frametime * sqrt(2) / 2.0f;
 	
-	cout << jogador->getAnguloAviao() << endl;
+	cout << jogador->getAnguloAviaoGraus() << endl;
 	
 	if(jogador->getDecolou() == true) {
 		
 		if(keyStatus[keyEsquerda] == 1 && keyStatus[keyDireita] == 0) {
 			
-			jogador->AjustarAnguloAviao( -frametime);
+			jogador->AjustarAnguloAviao( +frametime);
 			
 		} else if(keyStatus[keyEsquerda] == 0 && keyStatus[keyDireita] == 1){
 			
-			jogador->AjustarAnguloAviao( +frametime);
+			jogador->AjustarAnguloAviao( -frametime);
 		}
+		
+		jogador->Mover(frametime);
 				
 	} else {
 		

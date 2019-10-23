@@ -29,7 +29,7 @@ void Circulo:: Desenhar(void) const {
 		GLint i;
 		GLint voltaCompleta = 360;
 		
-		for(i = 0; i < voltaCompleta; i += voltaCompleta / step) {
+		for(i = voltaCompleta; i > 0; i -= voltaCompleta / step) {
 			
 			GLfloat angulo = 2.0f * 3.141593f * ((GLfloat) i / voltaCompleta);
 			GLfloat x = raio * cos(angulo);

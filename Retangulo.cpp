@@ -36,10 +36,10 @@ void Retangulo:: Desenhar(void) const {
 	glColor3f(corR, corG, corB);
 	glBegin(GL_QUADS);
 	
-		glVertex2f( -x, +y);
-		glVertex2f( -x, -y);
-		glVertex2f( +x, -y);
 		glVertex2f( +x, +y);
+		glVertex2f( +x, -y);
+		glVertex2f( -x, -y);
+		glVertex2f( -x, +y);
 		
 	glEnd();
 }
@@ -51,11 +51,11 @@ void Retangulo:: DesenharCisalhado(void) const {
 	
 	glColor3f(corR, corG, corB);
 	glBegin(GL_POLYGON);
-	
-		glVertex2f( -x, + 0.75f * y);
-		glVertex2f( -x, - 0.25f * y);
-		glVertex2f( +x, - 0.75f * y);
+		
 		glVertex2f( +x, + 0.25f * y);
+		glVertex2f( +x, - 0.75f * y);
+		glVertex2f( -x, - 0.25f * y);
+		glVertex2f( -x, + 0.75f * y);
 		
 	glEnd();
 }
@@ -68,16 +68,16 @@ void Retangulo:: DesenharHelice(void) const {
 	glColor3f(corR, corG, corB);
 	glBegin(GL_POLYGON);
 	
-		glVertex2f( -x, +y);
 		glVertex2f( -x, -y);
+		glVertex2f( -x, +y);
 		glVertex2f( 0.0f, 0.0f);
 		
 	glEnd();
 	glBegin(GL_POLYGON);
 	
-		glVertex2f( +x, +y);
-		glVertex2f( 0.0f, 0.0f);
 		glVertex2f( +x, -y);
+		glVertex2f( 0.0f, 0.0f);
+		glVertex2f( +x, +y);
 		
 	glEnd();
 }

@@ -19,8 +19,12 @@ void Jogador:: setMultVelTiro(GLfloat multVelTiro) {
 	this->multVelTiro = multVelTiro;
 }
 
-void Jogador:: setAnguloAviao(GLfloat anguloAviao) {
-	this->anguloAviao = anguloAviao;
+void Jogador:: setAnguloAviaoGraus(GLdouble anguloAviaoGraus) {
+	this->anguloAviaoGraus = anguloAviaoGraus;
+}
+
+void Jogador:: setAnguloAviaoRadianos(GLdouble anguloAviaoRadianos) {
+	this->anguloAviaoRadianos = anguloAviaoRadianos;
 }
 
 GLfloat Jogador:: getMultVelAviao(void) const {
@@ -31,8 +35,12 @@ GLfloat Jogador:: getMultVelTiro(void) const {
 	return multVelTiro;
 }
 
-GLfloat Jogador:: getAnguloAviao(void) const {
-	return anguloAviao;
+GLdouble Jogador:: getAnguloAviaoGraus(void) const {
+	return anguloAviaoGraus;
+}
+
+GLdouble Jogador:: getAnguloAviaoRadianos(void) const {
+	return anguloAviaoRadianos;
 }
 
 bool Jogador:: getDecolou(void) const {
@@ -43,15 +51,28 @@ GLfloat Jogador:: getVFinal(void) const {
 	return vFinal;
 }
 
-void Jogador:: Mover(GLfloat frametime) {
+void Jogador:: Mover(GLint frametime) {
 	this->MoverCorrigidoX(frametime);
 	this->MoverCorrigidoY(frametime);
 }
 
 void Jogador:: AjustarAnguloAviao(GLint frametime) {
-	GLfloat vAngAviao = 1 / 10.0f;
+	
+	GLfloat vAngAviao = 1.0f / 10.0f;
 	GLfloat dA = vAngAviao * (GLfloat) frametime;
-	anguloAviao += dA;
+	
+	anguloAviaoGraus += dA;
+	
+	if(anguloAviaoGraus > 360.0f) {
+		
+		GLfloat correcao = anguloAviaoGraus - 360.0f;
+		anguloAviaoGraus = correcao;
+		
+	} else if(anguloAviaoGraus < 0.0f) {
+		anguloAviaoGraus = 360.0f + anguloAviaoGraus;
+	}
+	
+	anguloAviaoRadianos = anguloAviaoGraus * 3.14159f / 180.0f;
 }
 
 void Jogador:: Decolar(GLint frametime, GLfloat xFinal, GLfloat yFinal) {
@@ -138,15 +159,15 @@ void Jogador:: Decolar(GLint frametime, GLfloat xFinal, GLfloat yFinal) {
 	}
 }
 
-void Jogador:: MoverCorrigidoX(GLfloat frametime) {
-	GLfloat vX = cos(anguloAviao) * vFinal;
-	GLfloat dX = vX * frametime;
+void Jogador:: MoverCorrigidoX(GLint frametime) {
+	GLdouble vX = cos(anguloAviaoRadianos) * (GLdouble) vFinal;
+	GLdouble dX = vX * (GLdouble) frametime;
 	this->MoverX(dX);
 }
 
-void Jogador:: MoverCorrigidoY(GLfloat frametime) {
-	GLfloat vY = sin(anguloAviao) * vFinal;
-	GLfloat dY = vY * frametime;
+void Jogador:: MoverCorrigidoY(GLint frametime) {
+	GLdouble vY = - sin(anguloAviaoRadianos) * (GLdouble) vFinal;
+	GLdouble dY = vY * (GLdouble) frametime;
 	this->MoverY(dY);
 }
 
@@ -161,37 +182,38 @@ void Jogador:: Desenhar(void) {
 	GLfloat offsetYCanhao = raio + (0.5f * alturaCanhao);
 	
 	glPushMatrix();
-	glTranslatef(this->getGX(), this->getGY(), 0.0f);
 	
-	this->DesenharCanhao(offsetYCanhao, larguraCanhao, alturaCanhao);
-	this->DesenharCorpo(circulo);
-	this->DesenharCabine(circulo);
-	
-	GLfloat larguraTurbina = larguraCanhao;
-	GLfloat alturaTurbina = 4.25f * larguraTurbina;
-	GLfloat offsetXTurbina = 2.35f * raioProp;
-	
-	this->DesenharTurbinas(offsetXTurbina, alturaTurbina, larguraTurbina);
-	
-	GLfloat larguraAsa = 2.25f * raioProp;
-	GLfloat alturaAsa = 1.5f * larguraAsa;
-	GLfloat offsetXAsa = 2.125f * raioProp;
-	GLfloat offsetYAsa = 0.25f * raioProp;
-	
-	this->DesenharAsas(offsetXAsa, offsetYAsa, larguraAsa, alturaAsa);
-	
-	GLfloat larguraCalda = larguraCanhao;
-	GLfloat alturaCalda = 4.25f * larguraCalda;
-	GLfloat offsetY = raio - (alturaCalda / 2.0f);
-	
-	this->DesenharCalda(offsetY, larguraCalda, alturaCalda);
-	
-	GLfloat larguraHelice = 1.4f * raioProp;
-	GLfloat alturaHelice = raio / 5.0f;
-	GLfloat offsetXHelice = 2.35f * raioProp;
-	GLfloat offsetYHelice = 2.125f * raio / 7.0f;
-	
-	this->DesenharHelices(offsetXHelice, offsetYHelice, larguraHelice, alturaHelice);
+		glTranslatef(this->getGX(), this->getGY(), 0.0f);
+		
+		this->DesenharCanhao(offsetYCanhao, larguraCanhao, alturaCanhao);
+		this->DesenharCorpo(circulo);
+		this->DesenharCabine(circulo);
+		
+		GLfloat larguraTurbina = larguraCanhao;
+		GLfloat alturaTurbina = 4.25f * larguraTurbina;
+		GLfloat offsetXTurbina = 2.35f * raioProp;
+		
+		this->DesenharTurbinas(offsetXTurbina, alturaTurbina, larguraTurbina);
+		
+		GLfloat larguraAsa = 2.25f * raioProp;
+		GLfloat alturaAsa = 1.5f * larguraAsa;
+		GLfloat offsetXAsa = 2.125f * raioProp;
+		GLfloat offsetYAsa = 0.25f * raioProp;
+		
+		this->DesenharAsas(offsetXAsa, offsetYAsa, larguraAsa, alturaAsa);
+		
+		GLfloat larguraCalda = larguraCanhao;
+		GLfloat alturaCalda = 4.25f * larguraCalda;
+		GLfloat offsetY = raio - (alturaCalda / 2.0f);
+		
+		this->DesenharCalda(offsetY, larguraCalda, alturaCalda);
+		
+		GLfloat larguraHelice = 1.4f * raioProp;
+		GLfloat alturaHelice = raio / 5.0f;
+		GLfloat offsetXHelice = 2.35f * raioProp;
+		GLfloat offsetYHelice = 2.125f * raio / 7.0f;
+		
+		this->DesenharHelices(offsetXHelice, offsetYHelice, larguraHelice, alturaHelice);
 	
 	glPopMatrix();
 }
@@ -199,17 +221,17 @@ void Jogador:: Desenhar(void) {
 void Jogador:: DesenharCanhao(GLfloat offsetY, GLfloat largura, GLfloat altura) {
 			
 	glPushMatrix();
-	
-	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
-	glTranslatef(0.0f, -offsetY, 0.0f);
-	
-	glTranslatef(0.0f, +altura / 2.0f, 0.0f);
-	glRotatef(anguloCanhao, 0.0f, 0.0f, 1.0f);
-	glTranslatef(0.0f, -altura / 2.0f, 0.0f);
-	
-	glScalef(largura, altura, 1.0f);
-	
-	retangulo->Desenhar();
+		
+		glRotatef(anguloAviaoGraus - 90, 0.0f, 0.0f, -1.0f);
+		glTranslatef(0.0f, -offsetY, 0.0f);
+		
+		glTranslatef(0.0f, +altura / 2.0f, 0.0f);
+		glRotatef(anguloCanhao, 0.0f, 0.0f, 1.0f);
+		glTranslatef(0.0f, -altura / 2.0f, 0.0f);
+		
+		glScalef(largura, altura, 1.0f);
+		
+		retangulo->Desenhar();
 	
 	glPopMatrix();
 }
@@ -218,9 +240,9 @@ void Jogador:: DesenharCorpo(Circulo* circulo) {
 		
 	glPushMatrix();
 	
-	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
-	glScalef(proporcaoAviao, 1.0f, 1.0f);
-	circulo->Desenhar();
+		glRotatef(anguloAviaoGraus - 90, 0.0f, 0.0f, -1.0f);
+		glScalef(proporcaoAviao, 1.0f, 1.0f);
+		circulo->Desenhar();
 	
 	glPopMatrix();
 }
@@ -237,10 +259,10 @@ void Jogador:: DesenharCabine(Circulo* circulo) {
 	
 	glPushMatrix();
 	
-	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
-	glTranslatef(0.0f, -circulo->getRaio() / 2.0f, 0.0f);
-	glScalef(proporcaoAviao / 2.5f, 1.25f * proporcaoAviao, 1.0f);
-	circulo->Desenhar();
+		glRotatef(anguloAviaoGraus - 90, 0.0f, 0.0f, -1.0f);
+		glTranslatef(0.0f, -circulo->getRaio() / 2.0f, 0.0f);
+		glScalef(proporcaoAviao / 2.5f, 1.25f * proporcaoAviao, 1.0f);
+		circulo->Desenhar();
 	
 	glPopMatrix();
 	
@@ -258,10 +280,10 @@ void Jogador:: DesenharTurbina(GLfloat offsetX, GLfloat largura, GLfloat altura)
 	
 	glPushMatrix();
 	
-	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
-	glTranslatef(offsetX, 0.0f, 0.0f);
-	glScalef(largura, altura, 1.0f);
-	retangulo->Desenhar();
+		glRotatef(anguloAviaoGraus - 90, 0.0f, 0.0f, -1.0f);
+		glTranslatef(offsetX, 0.0f, 0.0f);
+		glScalef(largura, altura, 1.0f);
+		retangulo->Desenhar();
 	
 	glPopMatrix();
 }
@@ -275,10 +297,10 @@ void Jogador:: DesenharAsa(GLfloat offsetX, GLfloat offsetY, GLfloat largura, GL
 	
 	glPushMatrix();
 	
-	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
-	glTranslatef(offsetX, offsetY, 0.0f);
-	glScalef(largura, altura, 1.0f);
-	retangulo->DesenharCisalhado();
+		glRotatef(anguloAviaoGraus - 90, 0.0f, 0.0f, -1.0f);
+		glTranslatef(offsetX, offsetY, 0.0f);
+		glScalef(largura, altura, 1.0f);
+		retangulo->DesenharCisalhado();
 	
 	glPopMatrix();
 }
@@ -287,10 +309,10 @@ void Jogador:: DesenharCalda(GLfloat offsetY, GLfloat largura, GLfloat altura) {
 	
 	glPushMatrix();
 	
-	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
-	glTranslatef(0.0f, offsetY, 0.0f);
-	glScalef(largura, altura, 1.0f);
-	retangulo->Desenhar();
+		glRotatef(anguloAviaoGraus - 90, 0.0f, 0.0f, -1.0f);
+		glTranslatef(0.0f, offsetY, 0.0f);
+		glScalef(largura, altura, 1.0f);
+		retangulo->Desenhar();
 	
 	glPopMatrix();
 }
@@ -317,10 +339,10 @@ void Jogador:: DesenharHelice(GLfloat offsetX, GLfloat offsetY, GLfloat largura,
 	
 	glPushMatrix();
 	
-	glRotatef(anguloAviao, 0.0f, 0.0f, 1.0f);
-	glTranslatef(offsetX, offsetY, 0.0f);
-	glScalef(largura, altura, 1.0f);
-	retangulo->DesenharHelice();
+		glRotatef(anguloAviaoGraus - 90, 0.0f, 0.0f, -1.0f);
+		glTranslatef(offsetX, offsetY, 0.0f);
+		glScalef(largura, altura, 1.0f);
+		retangulo->DesenharHelice();
 	
 	glPopMatrix();
 }

@@ -20,26 +20,29 @@ class Jogador : public Elemento {
 	GLfloat multVelTiro;
 	GLfloat vFinal = 0.0f;
 	GLfloat anguloCanhao = 0.0f;
-	GLfloat anguloAviao = 0.0f;
+	GLdouble anguloAviaoGraus = 0.0f;
+	GLdouble anguloAviaoRadianos = 0.0f;
 	const GLfloat proporcaoAviao = 0.3f;
 	Retangulo* retangulo = new Retangulo(0.0f, 0.0f, 0.0f);
 public:
 	void setMultVelAviao(GLfloat);
 	void setMultVelTiro(GLfloat);
-	void setAnguloAviao(GLfloat);
+	void setAnguloAviaoGraus(GLdouble);
+	void setAnguloAviaoRadianos(GLdouble);
 	GLfloat getMultVelAviao(void) const;
 	GLfloat getMultVelTiro(void) const;
-	GLfloat getAnguloAviao(void) const;
+	GLdouble getAnguloAviaoGraus(void) const;
+	GLdouble getAnguloAviaoRadianos(void) const;
 	bool getDecolou(void) const;
 	GLfloat getVFinal(void) const;
-	void Mover(GLfloat);
+	void Mover(GLint);
 	void AjustarAnguloAviao(GLint);
 	void Decolar(GLint, GLfloat, GLfloat);
 	void Desenhar(void);
 	~Jogador();
 private:
-	void MoverCorrigidoX(GLfloat);
-	void MoverCorrigidoY(GLfloat);
+	void MoverCorrigidoX(GLint);
+	void MoverCorrigidoY(GLint);
 	void DesenharCanhao(GLfloat, GLfloat, GLfloat);
 	void DesenharCorpo(Circulo*);
 	void DesenharCabine(Circulo*);
