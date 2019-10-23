@@ -13,6 +13,7 @@
 using namespace std;
 
 TC3 tc3;
+GLint frametime = 0;
 
 void initialize(void) {
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -41,7 +42,7 @@ void display(void) {
 	tc3.DesenharPista();
 	tc3.DesenharInimigosVoadores();
 	tc3.DesenharInimigosTerrestres();
-	tc3.DesenharJogador();
+	tc3.DesenharJogador(frametime);
 
 	glutSwapBuffers();
 }
@@ -51,7 +52,7 @@ void idle(void) {
 	static GLint tempoAnterior = 0;
 	
 	GLint tempoAtual = glutGet(GLUT_ELAPSED_TIME);
-	GLint frametime = tempoAtual - tempoAnterior;
+	frametime = tempoAtual - tempoAnterior;
 	
 	tempoAnterior = tempoAtual;
 	

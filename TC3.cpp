@@ -250,8 +250,8 @@ void TC3:: DesenharArena(void) {
 	arena->Desenhar();
 }
 
-void TC3:: DesenharJogador(void) {
-	jogador->Desenhar();
+void TC3:: DesenharJogador(GLint frametime) {
+	jogador->Desenhar(frametime);
 }
 
 void TC3:: DesenharPista(void) {
@@ -288,8 +288,8 @@ bool TC3:: PossivelConflito(GLfloat frametime) {
 	GLfloat gX = jogador->getGX();
 	GLfloat gY = jogador->getGY();
 	GLfloat anguloAviao = jogador->getAnguloAviaoRadianos();
-	GLfloat vX = jogador->getVFinal() * cos(anguloAviao);
-	GLfloat vY = jogador->getVFinal() * sin(anguloAviao);
+	GLfloat vX = jogador->getVelAviao() * cos(anguloAviao);
+	GLfloat vY = jogador->getVelAviao() * sin(anguloAviao);
 	GLfloat dX = vX * frametime;
 	GLfloat dY = vY * frametime;
 	
@@ -331,10 +331,6 @@ bool TC3:: PossivelConflitoArena(GLfloat x, GLfloat y) {
 }
 
 void TC3:: Atualizar(GLint frametime) {
-	
-	// GLint frametimeCorrigido = frametime * sqrt(2) / 2.0f;
-	
-	cout << jogador->getAnguloAviaoGraus() << endl;
 	
 	if(jogador->getDecolou() == true) {
 		

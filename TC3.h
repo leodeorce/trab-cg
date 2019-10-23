@@ -43,7 +43,7 @@ public:
 	Jogador* jogador;
 	Erros LeituraArquivos(const char*);
 	void DesenharArena(void);
-	void DesenharJogador(void);
+	void DesenharJogador(GLint);
 	void DesenharPista(void);
 	void DesenharInimigosVoadores(void);
 	void DesenharInimigosTerrestres(void);

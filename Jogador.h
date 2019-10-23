@@ -15,10 +15,11 @@
 using namespace std;
 
 class Jogador : public Elemento {
+	bool emDecolagem = false;
 	bool decolou = false;
-	GLfloat multVelAviao;
-	GLfloat multVelTiro;
-	GLfloat vFinal = 0.0f;
+	GLfloat multVelAviao = 1.0f;
+	GLfloat multVelTiro = 1.0f;
+	GLfloat velAviao = 0.0f;
 	GLfloat anguloCanhao = 0.0f;
 	GLdouble anguloAviaoGraus = 0.0f;
 	GLdouble anguloAviaoRadianos = 0.0f;
@@ -34,11 +35,11 @@ public:
 	GLdouble getAnguloAviaoGraus(void) const;
 	GLdouble getAnguloAviaoRadianos(void) const;
 	bool getDecolou(void) const;
-	GLfloat getVFinal(void) const;
+	GLfloat getVelAviao(void) const;
 	void Mover(GLint);
 	void AjustarAnguloAviao(GLint);
 	void Decolar(GLint, GLfloat, GLfloat);
-	void Desenhar(void);
+	void Desenhar(GLint);
 	~Jogador();
 private:
 	void MoverCorrigidoX(GLint);
@@ -51,8 +52,8 @@ private:
 	void DesenharAsas(GLfloat, GLfloat, GLfloat, GLfloat);
 	void DesenharAsa(GLfloat, GLfloat, GLfloat, GLfloat);
 	void DesenharCalda(GLfloat, GLfloat, GLfloat);
-	void DesenharHelices(GLfloat, GLfloat, GLfloat, GLfloat);
-	void DesenharHelice(GLfloat, GLfloat, GLfloat, GLfloat);
+	void DesenharHelices(GLfloat, GLfloat, GLfloat, GLfloat, GLint);
+	void DesenharHelice(GLfloat, GLfloat, GLfloat, GLfloat, GLdouble);
 };
 
 #endif /* JOGADOR_H */
