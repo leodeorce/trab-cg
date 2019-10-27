@@ -143,6 +143,7 @@ Erros TC3:: LeituraArena(XMLDocument& xmlArena) {
 		}
 
 		Circulo* circulo = new Circulo(rgb[0], rgb[1], rgb[2]);
+		circulo->setRaioInicial(r);
 		circulo->setRaio(r);
 
 		switch(cor) {
@@ -158,7 +159,9 @@ Erros TC3:: LeituraArena(XMLDocument& xmlArena) {
 
 			case GREEN:
 				jogador->setCirculo(circulo);
+				jogador->setGXInicial(cX);
 				jogador->setGX(cX);
+				jogador->setGYInicial(cY);
 				jogador->setGY(cY);
 				break;
 
@@ -226,6 +229,7 @@ Erros TC3:: LeituraArena(XMLDocument& xmlArena) {
 	
 	GLdouble anguloAviaoRadianos = anguloLinhaRadianos;
 	GLdouble anguloAviaoGraus = anguloLinhaGraus;
+	jogador->setAnguloAviaoGrausInicial(anguloAviaoGraus);
 	jogador->setAnguloAviaoGraus(anguloAviaoGraus);
 	jogador->setAnguloAviaoRadianos(anguloAviaoRadianos);
 	
@@ -246,11 +250,23 @@ void TC3:: AdicionarInimigoTerrestre(Inimigo* inimigo) {
 	inimigosTerrestres.push_back(inimigo);
 }
 
+void TC3:: setFrametime(GLint frametime) {
+	this->frametime = frametime;
+}
+
+void TC3:: setColisaoInimigo(bool colisaoInimigo) {
+	this->colisaoInimigo = colisaoInimigo;
+}
+
+bool TC3:: getColisaoInimigo(void) {
+	return colisaoInimigo;
+}
+
 void TC3:: DesenharArena(void) {
 	arena->Desenhar();
 }
 
-void TC3:: DesenharJogador(GLint frametime) {
+void TC3:: DesenharJogador(void) {
 	jogador->Desenhar(frametime);
 }
 
@@ -283,23 +299,27 @@ void TC3:: KeyUp(unsigned char key) {
 	}
 }
 
-bool TC3:: PossivelConflito(GLfloat frametime) {
+bool TC3:: PossivelConflito(GLint tipo) {
 		
 	GLfloat gX = jogador->getGX();
 	GLfloat gY = jogador->getGY();
 	GLfloat anguloAviao = jogador->getAnguloAviaoRadianos();
-	GLfloat vX = jogador->getVelAviao() * cos(anguloAviao);
-	GLfloat vY = jogador->getVelAviao() * sin(anguloAviao);
-	GLfloat dX = vX * frametime;
-	GLfloat dY = vY * frametime;
+	GLdouble vX = jogador->getVelAviao() * cos(anguloAviao);
+	GLdouble vY = jogador->getVelAviao() * sin(anguloAviao);
+	GLdouble dX = vX * frametime;
+	GLdouble dY = vY * frametime;
 	
-	GLfloat possivelGX = gX + dX;
-	GLfloat possivelGY = gY + dY;
+	GLdouble possivelGX = gX + dX;
+	GLdouble possivelGY = gY + dY;
 	
-	return PossivelConflitoInimigos(possivelGX, possivelGY) || PossivelConflitoArena(possivelGX, possivelGY);
+	// if(tipo == 1) {
+		return PossivelConflitoInimigos(possivelGX, possivelGY);
+	// } else {
+	// 	return PossivelConflitoArena(possivelGX, possivelGY);
+	// }
 }
 
-bool TC3:: PossivelConflitoInimigos(GLfloat x, GLfloat y) {
+bool TC3:: PossivelConflitoInimigos(GLdouble x, GLdouble y) {
 	
 	list<Inimigo*>::iterator itr;
 	Circulo* circulo = jogador->getCirculo();
@@ -317,7 +337,7 @@ bool TC3:: PossivelConflitoInimigos(GLfloat x, GLfloat y) {
 	return false;
 }
 
-bool TC3:: PossivelConflitoArena(GLfloat x, GLfloat y) {
+bool TC3:: PossivelConflitoArena(GLdouble x, GLdouble y) {
 	
 	list<Inimigo*>::iterator itr;
 	Circulo* circulo = jogador->getCirculo();
@@ -330,27 +350,76 @@ bool TC3:: PossivelConflitoArena(GLfloat x, GLfloat y) {
 	}
 }
 
-void TC3:: Atualizar(GLint frametime) {
+void TC3:: AtualizarJogador() {
 	
-	if(jogador->getDecolou() == true) {
-		
-		if(keyStatus[keyEsquerda] == 1 && keyStatus[keyDireita] == 0) {
+	if(keyStatus[keyReset] == 0) {
+	
+		if(jogador->getDecolou() == true) {
 			
-			jogador->AjustarAnguloAviao( +frametime);
+			if(keyStatus[keyEsquerda] == 1 && keyStatus[keyDireita] == 0) {
+				jogador->AjustarAnguloAviao( +frametime);
+				
+			} else if(keyStatus[keyEsquerda] == 0 && keyStatus[keyDireita] == 1){
+				jogador->AjustarAnguloAviao( -frametime);
+			}
 			
-		} else if(keyStatus[keyEsquerda] == 0 && keyStatus[keyDireita] == 1){
+			jogador->Mover(frametime);
+					
+		} else {
 			
-			jogador->AjustarAnguloAviao( -frametime);
+			if(keyStatus[keyDecolar] == 1) {
+				jogador->Decolar(frametime, pista->getX2(), pista->getY2());
+			}
 		}
 		
-		jogador->Mover(frametime);
-				
 	} else {
+		this->Reset();
+	}
+}
+
+void TC3:: AtualizarMousePosicao(GLint x, GLint y) {
+	
+	GLint dX = x - mX;
+	
+	if(dX != 0) {
+		jogador->AjustarAnguloCanhao(dX);
+	}
+	
+	this->mX = x;
+	this->mY = y;
+}
+
+void TC3:: AtualizarMouseBotoes(GLint button, GLint state) {
+	
+	if(state == GLUT_DOWN) {
 		
-		if(keyStatus[keyDecolar] == 1) {
-			jogador->Decolar(frametime, pista->getX2(), pista->getY2());
+		if(button == GLUT_LEFT_BUTTON) {
+			// jogador->Atirar(frametime);
+		}
+		
+		if(button == GLUT_RIGHT_BUTTON) {
+			// jogador->Bombardear(frametime);
 		}
 	}
+}
+
+void TC3:: Reset(void) {
+	
+	keyStatus[keyDecolar] = 0;
+	colisaoInimigo = false;
+	
+	jogador->setEmDecolagem(false);
+	jogador->setDecolou(false);
+	jogador->setVelAviao(0.0f);
+	
+	Circulo* circulo = jogador->getCirculo();
+	circulo->setRaio( circulo->getRaioInicial() );
+	
+	jogador->setGX( jogador->getGXInicial() );
+	jogador->setGY( jogador->getGYInicial() );
+	
+	jogador->setAnguloAviaoGraus( jogador->getAnguloAviaoGrausInicial() );
+	jogador->setAnguloAviaoRadianos( jogador->getAnguloAviaoGrausInicial() * 3.14159f / 180.0f);
 }
 
 void TC3:: LiberarListaInimigos(list<Inimigo*>& listaInimigos) {

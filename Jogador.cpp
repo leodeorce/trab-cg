@@ -19,12 +19,28 @@ void Jogador:: setMultVelTiro(GLfloat multVelTiro) {
 	this->multVelTiro = multVelTiro;
 }
 
+void Jogador:: setAnguloAviaoGrausInicial(GLdouble anguloAviaoGrausInicial) {
+	this->anguloAviaoGrausInicial = anguloAviaoGrausInicial;
+}
+
 void Jogador:: setAnguloAviaoGraus(GLdouble anguloAviaoGraus) {
 	this->anguloAviaoGraus = anguloAviaoGraus;
 }
 
 void Jogador:: setAnguloAviaoRadianos(GLdouble anguloAviaoRadianos) {
 	this->anguloAviaoRadianos = anguloAviaoRadianos;
+}
+
+void Jogador:: setDecolou(bool decolou) {
+	this->decolou = decolou;
+}
+
+void Jogador:: setEmDecolagem(bool emDecolagem) {
+	this->emDecolagem = emDecolagem;
+}
+
+void Jogador:: setVelAviao(GLfloat velAviao) {
+	this->velAviao = velAviao;
 }
 
 GLfloat Jogador:: getMultVelAviao(void) const {
@@ -37,6 +53,10 @@ GLfloat Jogador:: getMultVelTiro(void) const {
 
 GLdouble Jogador:: getAnguloAviaoGraus(void) const {
 	return anguloAviaoGraus;
+}
+
+GLdouble Jogador:: getAnguloAviaoGrausInicial(void) const {
+	return anguloAviaoGrausInicial;
 }
 
 GLdouble Jogador:: getAnguloAviaoRadianos(void) const {
@@ -58,7 +78,7 @@ void Jogador:: Mover(GLint frametime) {
 
 void Jogador:: AjustarAnguloAviao(GLint frametime) {
 	
-	GLfloat vAngAviao = 1.0f / 10.0f;
+	GLfloat vAngAviao = 0.1f + velAviao / 2.5f;
 	GLfloat dA = vAngAviao * (GLfloat) frametime;
 	
 	anguloAviaoGraus += dA;
@@ -73,6 +93,22 @@ void Jogador:: AjustarAnguloAviao(GLint frametime) {
 	}
 	
 	anguloAviaoRadianos = anguloAviaoGraus * 3.14159f / 180.0f;
+}
+
+void Jogador:: AjustarAnguloCanhao(GLint dX) {
+	
+	GLfloat vAngCanhao = 0.5f;
+	GLfloat dA = vAngCanhao * (GLfloat) dX;
+	
+	anguloCanhaoGraus += dA;
+	
+	if(anguloCanhaoGraus > 45.0f) {
+		anguloCanhaoGraus = 45.0f;
+	} else if(anguloCanhaoGraus < -45.0f) {
+		anguloCanhaoGraus = -45.0f;
+	}
+	
+	anguloCanhaoRadianos = anguloCanhaoGraus * 3.14159f / 180.0f;
 }
 
 void Jogador:: Decolar(GLint frametime, GLfloat xFinal, GLfloat yFinal) {
@@ -224,7 +260,7 @@ void Jogador:: DesenharCanhao(GLfloat offsetY, GLfloat largura, GLfloat altura) 
 		glTranslatef(0.0f, -offsetY, 0.0f);
 		
 		glTranslatef(0.0f, +altura / 2.0f, 0.0f);
-		glRotatef(anguloCanhao, 0.0f, 0.0f, 1.0f);
+		glRotatef(anguloCanhaoGraus, 0.0f, 0.0f, 1.0f);
 		glTranslatef(0.0f, -altura / 2.0f, 0.0f);
 		
 		glScalef(largura, altura, 1.0f);
@@ -325,11 +361,10 @@ void Jogador:: DesenharHelices(GLfloat offsetX, GLfloat offsetY, GLfloat largura
 	retangulo->setCorG(1.0f);
 	retangulo->setCorB(0.0f);
 
-	static int i = 0;
 	GLdouble grausPorFrame;
-
+	
 	if(decolou == true || emDecolagem == true) {
-		grausPorFrame = 360.0f / (velAviao * 1000000.0f);
+		grausPorFrame = 360.0f * velAviao / 1000.0f;
 	} else {
 		grausPorFrame = 0.0f;
 	}
@@ -338,7 +373,12 @@ void Jogador:: DesenharHelices(GLfloat offsetX, GLfloat offsetY, GLfloat largura
 	GLdouble grausPorSegundo = fpsAlvo * grausPorFrame;
 	GLdouble dG = grausPorSegundo * ((GLdouble) frametime);
 	static GLdouble anguloGiro = dG;
+	
 	anguloGiro += dG;
+	
+	if(decolou == false && emDecolagem == false) {
+		anguloGiro = 0.0f;
+	}
 
 	this->DesenharHelice( -offsetX, -offsetY, largura, altura, anguloGiro);
 	this->DesenharHelice( +offsetX, -offsetY, largura, altura, anguloGiro);

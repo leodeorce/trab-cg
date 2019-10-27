@@ -13,7 +13,6 @@
 using namespace std;
 
 TC3 tc3;
-GLint frametime = 0;
 
 void initialize(void) {
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -34,6 +33,18 @@ void keyUp(unsigned char key, int x, int y) {
 	tc3.KeyUp(key);
 }
 
+void passiveMouseMotion(int x, int y) {
+	tc3.AtualizarMousePosicao(x, y);
+}
+
+void mouseMotion(int x, int y) {
+	tc3.AtualizarMousePosicao(x, y);
+}
+
+void mouse(int button, int state, int x, int y) {
+	tc3.AtualizarMouseBotoes(button, state);
+}
+
 void display(void) {
 	
 	glClear (GL_COLOR_BUFFER_BIT);
@@ -42,7 +53,10 @@ void display(void) {
 	tc3.DesenharPista();
 	tc3.DesenharInimigosVoadores();
 	tc3.DesenharInimigosTerrestres();
-	tc3.DesenharJogador(frametime);
+	
+	if(tc3.getColisaoInimigo() == false) {
+		tc3.DesenharJogador();
+	}
 
 	glutSwapBuffers();
 }
@@ -52,11 +66,19 @@ void idle(void) {
 	static GLint tempoAnterior = 0;
 	
 	GLint tempoAtual = glutGet(GLUT_ELAPSED_TIME);
-	frametime = tempoAtual - tempoAnterior;
+	GLint frametime = tempoAtual - tempoAnterior;
 	
 	tempoAnterior = tempoAtual;
+	tc3.setFrametime(frametime);
 	
-	tc3.Atualizar(frametime);
+	bool colisaoInimigo = tc3.PossivelConflito(1);
+	
+	if(colisaoInimigo == true) {
+		tc3.setColisaoInimigo(colisaoInimigo);
+	}
+	
+	tc3.AtualizarJogador();
+	
 	glutPostRedisplay();
 }
 
@@ -124,6 +146,9 @@ int main(int argc, char** argv) {
 	
 	glutKeyboardFunc(keyDown);
 	glutKeyboardUpFunc(keyUp);
+	glutPassiveMotionFunc(passiveMouseMotion);
+	glutMotionFunc(mouseMotion);
+	glutMouseFunc(mouse);
 	
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);

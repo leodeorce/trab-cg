@@ -32,27 +32,37 @@ enum Erros {
 class TC3 {
 	Arena* arena;
 	Pista* pista;
+	Jogador* jogador;
+	GLint frametime = 0;
+	bool colisaoInimigo = false;
 	list<Inimigo*> inimigosVoadores;
 	list<Inimigo*> inimigosTerrestres;
 	char keyStatus[256] = {0};
 	const unsigned char keyDecolar = 'u';
 	const unsigned char keyEsquerda = 'a';
 	const unsigned char keyDireita = 'd';
+	const unsigned char keyReset = 'r';
+	GLint mX = 0;
+	GLint mY = 0;
 public:
 	Janela* janela;
-	Jogador* jogador;
 	Erros LeituraArquivos(const char*);
+	void setFrametime(GLint);
+	void setColisaoInimigo(bool);
+	bool getColisaoInimigo(void);
 	void DesenharArena(void);
-	void DesenharJogador(GLint);
+	void DesenharJogador(void);
 	void DesenharPista(void);
 	void DesenharInimigosVoadores(void);
 	void DesenharInimigosTerrestres(void);
 	void KeyDown(unsigned char);
 	void KeyUp(unsigned char);
-	bool PossivelConflito(GLfloat);
-	bool PossivelConflitoInimigos(GLfloat, GLfloat);
-	bool PossivelConflitoArena(GLfloat, GLfloat);
-	void Atualizar(GLint);
+	bool PossivelConflito(GLint);
+	bool PossivelConflitoInimigos(GLdouble, GLdouble);
+	bool PossivelConflitoArena(GLdouble, GLdouble);
+	void AtualizarJogador();
+	void AtualizarMousePosicao(GLint, GLint);
+	void AtualizarMouseBotoes(GLint, GLint);
 	~TC3();
 private:
 	Erros LeituraConfig(XMLDocument&);
@@ -61,6 +71,7 @@ private:
 	void AdicionarInimigoTerrestre(Inimigo*);
 	void DesenharInimigos(list<Inimigo*>&);
 	void LiberarListaInimigos(list<Inimigo*>&);
+	void Reset(void);
 };
 
 #endif /* TC3_H */

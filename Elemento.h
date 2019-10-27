@@ -13,13 +13,19 @@
 
 class Elemento {
 	Circulo* circulo;
+	GLfloat gXInicial = 0.0f;
 	GLfloat gX = 0.0f;
+	GLfloat gYInicial = 0.0f;
 	GLfloat gY = 0.0f;
 public:
+	void setGXInicial(GLfloat);
 	void setGX(GLfloat);
+	void setGYInicial(GLfloat);
 	void setGY(GLfloat);
 	void setCirculo(Circulo*);
+	GLfloat getGXInicial(void) const;
 	GLfloat getGX(void) const;
+	GLfloat getGYInicial(void) const;
 	GLfloat getGY(void) const;
 	Circulo* getCirculo(void) const;
 	void Desenhar(void);

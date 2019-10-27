@@ -7,8 +7,16 @@
 
 #include "Elemento.h"
 
+void Elemento:: setGXInicial(GLfloat gXInicial) {
+	this->gXInicial = gXInicial;
+}
+
 void Elemento:: setGX(GLfloat gX) {
 	this->gX = gX;
+}
+
+void Elemento:: setGYInicial(GLfloat gYInicial) {
+	this->gYInicial = gYInicial;
 }
 
 void Elemento:: setGY(GLfloat gY) {
@@ -19,8 +27,16 @@ void Elemento:: setCirculo(Circulo* circulo) {
 	this->circulo = circulo;
 }
 
+GLfloat Elemento:: getGXInicial(void) const {
+	return gXInicial;
+}
+
 GLfloat Elemento:: getGX(void) const {
 	return gX;
+}
+
+GLfloat Elemento:: getGYInicial(void) const {
+	return gYInicial;
 }
 
 GLfloat Elemento:: getGY(void) const {
