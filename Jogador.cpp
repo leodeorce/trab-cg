@@ -11,8 +11,16 @@
 
 using namespace std;
 
+void Jogador:: setMultVelAviaoInicial(GLfloat multVelAviaoInicial) {
+	this->multVelAviaoInicial = multVelAviaoInicial;
+}
+
 void Jogador:: setMultVelAviao(GLfloat multVelAviao) {
 	this->multVelAviao = multVelAviao;
+}
+
+void Jogador:: setMultVelTiroInicial(GLfloat multVelTiroInicial) {
+	this->multVelTiroInicial = multVelTiroInicial;
 }
 
 void Jogador:: setMultVelTiro(GLfloat multVelTiro) {
@@ -43,12 +51,28 @@ void Jogador:: setVelAviao(GLfloat velAviao) {
 	this->velAviao = velAviao;
 }
 
+GLfloat Jogador:: getMultVelAviaoInicial(void) const {
+	return multVelAviaoInicial;
+}
+
 GLfloat Jogador:: getMultVelAviao(void) const {
 	return multVelAviao;
 }
 
+GLfloat Jogador:: getMultVelTiroInicial(void) const {
+	return multVelTiroInicial;
+}
+
 GLfloat Jogador:: getMultVelTiro(void) const {
 	return multVelTiro;
+}
+
+GLdouble Jogador:: getAnguloCanhaoGraus(void) const {
+	return anguloCanhaoGraus;
+}
+
+GLdouble Jogador:: getAnguloCanhaoRadianos(void) const {
+	return anguloCanhaoRadianos;
 }
 
 GLdouble Jogador:: getAnguloAviaoGraus(void) const {
@@ -72,8 +96,8 @@ GLfloat Jogador:: getVelAviao(void) const {
 }
 
 void Jogador:: Mover(GLint frametime) {
-	this->MoverCorrigidoX(frametime);
-	this->MoverCorrigidoY(frametime);
+	this->MoverAviaoX(frametime);
+	this->MoverAviaoY(frametime);
 }
 
 void Jogador:: AjustarAnguloAviao(GLint frametime) {
@@ -189,20 +213,56 @@ void Jogador:: Decolar(GLint frametime, GLfloat xFinal, GLfloat yFinal) {
 		}
 
 		GLfloat vResultante = sqrt(pow(vX, 2) + pow(vY, 2));
-		velAviao = vResultante * multVelAviao;
+		velAviao = vResultante;
 	}
 }
 
-void Jogador:: MoverCorrigidoX(GLint frametime) {
-	GLdouble vX = cos(anguloAviaoRadianos) * (GLdouble) velAviao;
+void Jogador:: MoverAviaoX(GLint frametime) {
+	GLdouble vX = cos(anguloAviaoRadianos) * (GLdouble) velAviao * (GLdouble) multVelAviao;
 	GLdouble dX = vX * (GLdouble) frametime;
 	this->MoverX(dX);
 }
 
-void Jogador:: MoverCorrigidoY(GLint frametime) {
-	GLdouble vY = - sin(anguloAviaoRadianos) * (GLdouble) velAviao;
+void Jogador:: MoverAviaoY(GLint frametime) {
+	GLdouble vY = - sin(anguloAviaoRadianos) * (GLdouble) velAviao * (GLdouble) multVelAviao;
 	GLdouble dY = vY * (GLdouble) frametime;
 	this->MoverY(dY);
+}
+
+Tiro* Jogador:: Atirar(void) {
+	
+	GLint aviaoX = this->getGX();
+	GLint aviaoY = this->getGY();
+	
+	GLfloat correcaoAnguloCanhao = anguloAviaoRadianos - anguloCanhaoRadianos;
+	
+	GLfloat correcaoXAviao = cos(anguloAviaoRadianos) * offsetYCanhao;
+	GLfloat correcaoXCanhao = cos(correcaoAnguloCanhao) * (alturaCanhao / 2.0f);
+	
+	GLfloat correcaoYAviao = - sin(anguloAviaoRadianos) * offsetYCanhao;
+	GLfloat correcaoYCanhao = - sin(correcaoAnguloCanhao) * (alturaCanhao / 2.0f);
+	
+	GLfloat tiroX = aviaoX + correcaoXAviao + correcaoXCanhao;
+	GLfloat tiroY = aviaoY + correcaoYAviao + correcaoYCanhao;
+	
+	Tiro* tiro = new Tiro();
+	
+	tiro->setGXInicial(tiroX);
+	tiro->setGX(tiroX);
+	tiro->setGYInicial(tiroY);
+	tiro->setGY(tiroY);
+	tiro->setVel(velAviao);
+	tiro->setMultVel(multVelTiro);
+	tiro->setAnguloTrajetoriaRad(correcaoAnguloCanhao);
+	
+	Circulo* circulo = new Circulo(1.0f, 1.0f, 1.0f);
+	
+	circulo->setRaioInicial(larguraCanhao);
+	circulo->setRaio(larguraCanhao);
+	
+	tiro->setCirculo(circulo);
+	
+	return tiro;
 }
 
 void Jogador:: Desenhar(GLint frametime) {
@@ -211,13 +271,18 @@ void Jogador:: Desenhar(GLint frametime) {
 	GLfloat raio = circulo->getRaio();
 	GLfloat raioProp = proporcaoAviao * raio;
 		
-	GLfloat larguraCanhao = raio / 7.0f;
-	GLfloat alturaCanhao = 2.5f * larguraCanhao;
-	GLfloat offsetYCanhao = raio + (0.5f * alturaCanhao);
+	larguraCanhao = raio / 7.0f;
+	alturaCanhao = 2.5f * larguraCanhao;
+	offsetYCanhao = raio + (0.5f * alturaCanhao);
 	
 	glPushMatrix();
 	
 		glTranslatef(this->getGX(), this->getGY(), 0.0f);
+		
+		// if(decolou == true) {
+		// 	cout << "jogadorGX: " << this->getGX() << endl;
+		// 	cout << "jogadorGY: " << this->getGY() << endl;
+		// }
 		
 		this->DesenharCanhao(offsetYCanhao, larguraCanhao, alturaCanhao);
 		this->DesenharCorpo(circulo);

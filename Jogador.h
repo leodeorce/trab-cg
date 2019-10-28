@@ -11,13 +11,16 @@
 #include <GL/glut.h>
 #include "Elemento.h"
 #include "Retangulo.h"
+#include "Tiro.h"
 
 using namespace std;
 
 class Jogador : public Elemento {
 	bool emDecolagem = false;
 	bool decolou = false;
+	GLfloat multVelAviaoInicial = 1.0f;
 	GLfloat multVelAviao = 1.0f;
+	GLfloat multVelTiroInicial = 1.0f;
 	GLfloat multVelTiro = 1.0f;
 	GLfloat velAviao = 0.0f;
 	GLfloat anguloCanhaoGraus = 0.0f;
@@ -28,7 +31,9 @@ class Jogador : public Elemento {
 	const GLfloat proporcaoAviao = 0.3f;
 	Retangulo* retangulo = new Retangulo(0.0f, 0.0f, 0.0f);
 public:
+	void setMultVelAviaoInicial(GLfloat);
 	void setMultVelAviao(GLfloat);
+	void setMultVelTiroInicial(GLfloat);
 	void setMultVelTiro(GLfloat);
 	void setAnguloAviaoGrausInicial(GLdouble);
 	void setAnguloAviaoGraus(GLdouble);
@@ -36,8 +41,12 @@ public:
 	void setDecolou(bool);
 	void setEmDecolagem(bool);
 	void setVelAviao(GLfloat);
+	GLfloat getMultVelAviaoInicial(void) const;
 	GLfloat getMultVelAviao(void) const;
+	GLfloat getMultVelTiroInicial(void) const;
 	GLfloat getMultVelTiro(void) const;
+	GLdouble getAnguloCanhaoGraus(void) const;
+	GLdouble getAnguloCanhaoRadianos(void) const;
 	GLdouble getAnguloAviaoGrausInicial(void) const;
 	GLdouble getAnguloAviaoGraus(void) const;
 	GLdouble getAnguloAviaoRadianos(void) const;
@@ -47,11 +56,15 @@ public:
 	void AjustarAnguloAviao(GLint);
 	void AjustarAnguloCanhao(GLint);
 	void Decolar(GLint, GLfloat, GLfloat);
+	Tiro* Atirar(void);
 	void Desenhar(GLint);
 	~Jogador();
 private:
-	void MoverCorrigidoX(GLint);
-	void MoverCorrigidoY(GLint);
+	GLfloat offsetYCanhao = 0.0f;
+	GLfloat alturaCanhao = 0.0f;
+	GLfloat larguraCanhao = 0.0f;
+	void MoverAviaoX(GLint);
+	void MoverAviaoY(GLint);
 	void DesenharCanhao(GLfloat, GLfloat, GLfloat);
 	void DesenharCorpo(Circulo*);
 	void DesenharCabine(Circulo*);

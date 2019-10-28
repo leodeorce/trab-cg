@@ -15,7 +15,7 @@ using namespace std;
 TC3 tc3;
 
 void initialize(void) {
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(
@@ -47,12 +47,13 @@ void mouse(int button, int state, int x, int y) {
 
 void display(void) {
 	
-	glClear (GL_COLOR_BUFFER_BIT);
-	
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	tc3.DesenharArena();
 	tc3.DesenharPista();
 	tc3.DesenharInimigosVoadores();
 	tc3.DesenharInimigosTerrestres();
+	tc3.DesenharTiros();
 	
 	if(tc3.getColisaoInimigo() == false) {
 		tc3.DesenharJogador();
@@ -78,6 +79,7 @@ void idle(void) {
 	}
 	
 	tc3.AtualizarJogador();
+	tc3.AtualizarTiros();
 	
 	glutPostRedisplay();
 }
