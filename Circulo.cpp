@@ -16,6 +16,10 @@ GLfloat Circulo:: getRaio(void) const {
 	return raio;
 }
 
+GLint Circulo:: getStep(void) const {
+	return step;
+}
+
 GLfloat Circulo:: getRaioInicial(void) const {
 	return raioInicial;
 }
@@ -23,6 +27,10 @@ GLfloat Circulo:: getRaioInicial(void) const {
 void Circulo:: setRaio(GLfloat raio) {
 	this->raio = raio;
 	step = round((9.0f * (float) raio / 70.0f) + (108.0f / 7.0f));
+}
+
+void Circulo:: setStep(GLint step) {
+	this->step = step;
 }
 
 void Circulo:: setRaioInicial(GLfloat raioInicial) {

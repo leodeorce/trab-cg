@@ -9,6 +9,7 @@
 #define JOGADOR_H
 
 #include <GL/glut.h>
+#include "Bomba.h"
 #include "Elemento.h"
 #include "Retangulo.h"
 #include "Tiro.h"
@@ -55,8 +56,11 @@ public:
 	void Mover(GLint);
 	void AjustarAnguloAviao(GLint);
 	void AjustarAnguloCanhao(GLint);
+	void AjustarMultVelAviao(GLfloat);
+	void AjustarMultVelTiro(GLfloat);
 	void Decolar(GLint, GLfloat, GLfloat);
 	Tiro* Atirar(void);
+	Bomba* Bombardear(void);
 	void Desenhar(GLint);
 	~Jogador();
 private:

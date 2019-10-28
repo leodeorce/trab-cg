@@ -51,8 +51,8 @@ void Elemento:: Desenhar(void) {
 	
 	glPushMatrix();
 	
-	glTranslatef(gX, gY, 0.0f);
-	circulo->Desenhar();
+		glTranslatef(gX, gY, 0.0f);
+		circulo->Desenhar();
 	
 	glPopMatrix();
 }

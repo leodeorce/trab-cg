@@ -49,15 +49,18 @@ void display(void) {
 	
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	tc3.DesenharArena();
+	tc3.DesenharArenaCirculo();
 	tc3.DesenharPista();
 	tc3.DesenharInimigosVoadores();
 	tc3.DesenharInimigosTerrestres();
 	tc3.DesenharTiros();
+	tc3.DesenharBombas();
 	
 	if(tc3.getColisaoInimigo() == false) {
 		tc3.DesenharJogador();
 	}
+	
+	tc3.DesenharArenaContorno();
 
 	glutSwapBuffers();
 }
@@ -80,6 +83,7 @@ void idle(void) {
 	
 	tc3.AtualizarJogador();
 	tc3.AtualizarTiros();
+	tc3.AtualizarBombas();
 	
 	glutPostRedisplay();
 }

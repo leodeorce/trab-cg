@@ -5,7 +5,6 @@
  * Descricao: TC3
 */
 
-#include <iostream>
 #include <cmath>
 #include "Jogador.h"
 
@@ -135,6 +134,18 @@ void Jogador:: AjustarAnguloCanhao(GLint dX) {
 	anguloCanhaoRadianos = anguloCanhaoGraus * 3.14159f / 180.0f;
 }
 
+void Jogador:: AjustarMultVelAviao(GLfloat dM) {
+	if((multVelAviao + dM) >= 0.1f) {
+		multVelAviao += dM;
+	}
+}
+
+void Jogador:: AjustarMultVelTiro(GLfloat dM) {
+	if((multVelTiro + dM) >= 0.1f) {
+		multVelTiro += dM;
+	}
+}
+
 void Jogador:: Decolar(GLint frametime, GLfloat xFinal, GLfloat yFinal) {
 	
 	emDecolagem = true;
@@ -231,8 +242,8 @@ void Jogador:: MoverAviaoY(GLint frametime) {
 
 Tiro* Jogador:: Atirar(void) {
 	
-	GLint aviaoX = this->getGX();
-	GLint aviaoY = this->getGY();
+	GLfloat aviaoX = this->getGX();
+	GLfloat aviaoY = this->getGY();
 	
 	GLfloat correcaoAnguloCanhao = anguloAviaoRadianos - anguloCanhaoRadianos;
 	
@@ -251,7 +262,7 @@ Tiro* Jogador:: Atirar(void) {
 	tiro->setGX(tiroX);
 	tiro->setGYInicial(tiroY);
 	tiro->setGY(tiroY);
-	tiro->setVel(velAviao);
+	tiro->setVel(1.25f * velAviao);
 	tiro->setMultVel(multVelTiro);
 	tiro->setAnguloTrajetoriaRad(correcaoAnguloCanhao);
 	
@@ -263,6 +274,35 @@ Tiro* Jogador:: Atirar(void) {
 	tiro->setCirculo(circulo);
 	
 	return tiro;
+}
+
+Bomba* Jogador:: Bombardear(void) {
+	
+	GLfloat aviaoX = this->getGX();
+	GLfloat aviaoY = this->getGY();
+	
+	Circulo* circuloBomba = new Circulo(1.0f, 1.0f, 1.0f);
+	Circulo* circuloJogador = this->getCirculo();
+	GLfloat raioBomba = circuloJogador->getRaio() / 2.0f;
+	
+	circuloBomba->setRaioInicial(raioBomba);
+	circuloBomba->setRaio(raioBomba);
+	
+	GLfloat acel = - velAviao / 4000.0f;
+	
+	Bomba* bomba = new Bomba();
+	
+	bomba->setCirculo(circuloBomba);
+	bomba->setGXInicial(aviaoX);
+	bomba->setGX(aviaoX);
+	bomba->setGYInicial(aviaoY);
+	bomba->setGY(aviaoY);
+	bomba->setVel(velAviao);
+	bomba->setMultVel(multVelAviao);
+	bomba->setAnguloTrajetoriaRad(anguloAviaoRadianos);
+	bomba->setAcel(acel);
+	
+	return bomba;
 }
 
 void Jogador:: Desenhar(GLint frametime) {
@@ -278,11 +318,6 @@ void Jogador:: Desenhar(GLint frametime) {
 	glPushMatrix();
 	
 		glTranslatef(this->getGX(), this->getGY(), 0.0f);
-		
-		// if(decolou == true) {
-		// 	cout << "jogadorGX: " << this->getGX() << endl;
-		// 	cout << "jogadorGY: " << this->getGY() << endl;
-		// }
 		
 		this->DesenharCanhao(offsetYCanhao, larguraCanhao, alturaCanhao);
 		this->DesenharCorpo(circulo);
@@ -429,7 +464,7 @@ void Jogador:: DesenharHelices(GLfloat offsetX, GLfloat offsetY, GLfloat largura
 	GLdouble grausPorFrame;
 	
 	if(decolou == true || emDecolagem == true) {
-		grausPorFrame = 360.0f * velAviao / 1000.0f;
+		grausPorFrame = 360.0f * (velAviao * multVelAviao) / 1000.0f;
 	} else {
 		grausPorFrame = 0.0f;
 	}

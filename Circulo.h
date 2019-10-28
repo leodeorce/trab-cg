@@ -19,8 +19,10 @@ public:
 	Circulo(GLfloat, GLfloat, GLfloat);
 	GLfloat getRaioInicial(void) const;
 	GLfloat getRaio(void) const;
+	GLint getStep(void) const;
 	void setRaioInicial(GLfloat);
 	void setRaio(GLfloat);
+	void setStep(GLint);
 	void Desenhar(void) const;
 };
 

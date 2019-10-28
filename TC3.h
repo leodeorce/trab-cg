@@ -12,6 +12,7 @@
 #include <list>
 #include <vector>
 #include "Arena.h"
+#include "Bomba.h"
 #include "Inimigo.h"
 #include "Janela.h"
 #include "Jogador.h"
@@ -38,6 +39,7 @@ class TC3 {
 	GLint frametime = 0;
 	bool colisaoInimigo = false;
 	vector<Tiro*> tiros;
+	vector<Bomba*> bombas;
 	list<Inimigo*> inimigosVoadores;
 	list<Inimigo*> inimigosTerrestres;
 	char keyStatus[256] = {0};
@@ -45,25 +47,33 @@ class TC3 {
 	const unsigned char keyEsquerda = 'a';
 	const unsigned char keyDireita = 'd';
 	const unsigned char keyReset = 'r';
+	const unsigned char keyVelUp = '=';
+	const unsigned char keyVelDown = '-';
+	const unsigned char keyNumpadVelUp = '+';
+	const unsigned char keyNumpadVelDown = '-';
 	GLint mX = 0;
 	GLint mY = 0;
+	const GLfloat ajusteMult = 0.01f;
 public:
 	Janela* janela;
 	Erros LeituraArquivos(const char*);
 	void setFrametime(GLint);
 	void setColisaoInimigo(bool);
 	bool getColisaoInimigo(void);
-	void DesenharArena(void);
+	void DesenharArenaCirculo(void);
+	void DesenharArenaContorno(void);
 	void DesenharJogador(void);
 	void DesenharPista(void);
 	void DesenharInimigosVoadores(void);
 	void DesenharInimigosTerrestres(void);
 	void DesenharTiros(void);
+	void DesenharBombas(void);
 	void KeyDown(unsigned char);
 	void KeyUp(unsigned char);
 	bool PossivelConflito(GLint);
 	void AtualizarJogador(void);
 	void AtualizarTiros(void);
+	void AtualizarBombas(void);
 	void AtualizarMousePosicao(GLint, GLint);
 	void AtualizarMouseBotoes(GLint, GLint);
 	void TeleportarJogador(void);
@@ -78,6 +88,7 @@ private:
 	GLfloat DistanciaPontoAReta(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
 	void DesenharInimigos(list<Inimigo*>&);
 	void LiberarTiros(void);
+	void LiberarBombas(void);
 	void LiberarListaInimigos(list<Inimigo*>&);
 	void Reset(void);
 };

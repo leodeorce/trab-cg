@@ -5,8 +5,6 @@
 
 CC = g++
 
-PARAMETROS = ../cfg/
-
 LFLAGS = -lGL -lGLU -lglut
 
 CFLAGS = -std=c++11
@@ -27,8 +25,3 @@ $(EXECUTAVEL): $(OBJETOS)
 
 clean:
 	rm -rf *.o
-
-run:
-	./$(EXECUTAVEL) $(PARAMETROS)
-
-rerun: clean all run

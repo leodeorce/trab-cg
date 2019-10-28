@@ -5,7 +5,6 @@
  * Descricao: TC3
 */
 
-#include <iostream>
 #include <cmath>
 #include <string>
 #include "TC3.h"
@@ -262,8 +261,12 @@ bool TC3:: getColisaoInimigo(void) {
 	return colisaoInimigo;
 }
 
-void TC3:: DesenharArena(void) {
-	arena->Desenhar();
+void TC3:: DesenharArenaCirculo(void) {
+	arena->DesenharCirculo();
+}
+
+void TC3:: DesenharArenaContorno(void) {
+	arena->DesenharContorno();
 }
 
 void TC3:: DesenharJogador(void) {
@@ -292,6 +295,13 @@ void TC3:: DesenharInimigos(list<Inimigo*>& listaInimigos) {
 void TC3:: DesenharTiros(void) {
 	vector<Tiro*>::iterator itr;
 	for(itr = tiros.begin(); itr != tiros.end(); itr++) {
+		(*itr)->Desenhar();
+	}
+}
+
+void TC3:: DesenharBombas(void) {
+	vector<Bomba*>::iterator itr;
+	for(itr = bombas.begin(); itr != bombas.end(); itr++) {
 		(*itr)->Desenhar();
 	}
 }
@@ -362,6 +372,18 @@ void TC3:: AtualizarJogador(void) {
 	
 		if(jogador->getDecolou() == true && colisaoInimigo == false) {
 			
+			if((keyStatus[keyVelUp] == 1 || keyStatus[keyNumpadVelUp] == 1)
+				&& (keyStatus[keyVelDown] == 0 || keyStatus[keyNumpadVelDown] == 0)) {
+				jogador->AjustarMultVelAviao( +ajusteMult);
+				jogador->AjustarMultVelTiro( +ajusteMult);
+			}
+			
+			if((keyStatus[keyVelUp] == 0 || keyStatus[keyNumpadVelUp] == 0)
+				&& (keyStatus[keyVelDown] == 1 || keyStatus[keyNumpadVelDown] == 1)) {
+				jogador->AjustarMultVelAviao( -ajusteMult);
+				jogador->AjustarMultVelTiro( -ajusteMult);
+			}
+			
 			if(this->PossivelConflito(2) == false) {
 				
 				if(keyStatus[keyEsquerda] == 1 && keyStatus[keyDireita] == 0) {
@@ -400,8 +422,8 @@ void TC3:: AtualizarTiros(void) {
 			Tiro* tiro = *itr;
 			Circulo* circulo = tiro->getCirculo();
 			GLfloat raio = circulo->getRaio();
-			GLint x = tiro->getGX();
-			GLint y = tiro->getGY();
+			GLfloat x = tiro->getGX();
+			GLfloat y = tiro->getGY();
 			
 			if(arena->ExisteConflito(raio, x, y, true) == false) {
 				tiro->Mover(frametime);
@@ -409,6 +431,46 @@ void TC3:: AtualizarTiros(void) {
 			} else {
 				delete(*itr);
 				itr = tiros.erase(itr);
+			}
+		}
+	}
+}
+
+void TC3:: AtualizarBombas(void) {
+	
+	if(bombas.size() > 0) {
+		
+		vector<Bomba*>::iterator itr = bombas.begin();
+		
+		while(itr != bombas.end()) {
+			
+			Bomba* bomba = *itr;
+			Circulo* circulo = bomba->getCirculo();
+			GLfloat raioAtual = circulo->getRaio();
+			GLfloat vel = bomba->getVel();
+			GLfloat acel = bomba->getAcel();
+			GLfloat x = bomba->getGX();
+			GLfloat y = bomba->getGY();
+			
+			bomba->Mover(frametime);
+			
+			GLfloat novaVel = vel + (acel * frametime);
+			
+			if(novaVel > 0.0f && arena->ExisteConflito(raioAtual, x, y, true) == false) {
+				
+				GLfloat raioInicial = circulo->getRaioInicial();
+				
+				GLfloat vR = raioInicial / 8000.0f;
+				GLfloat dR = vR * frametime;
+				
+				circulo->setRaio(raioAtual - dR);
+				bomba->setVel(novaVel);
+				
+				itr++;
+				
+			} else {
+				delete bomba;
+				itr = bombas.erase(itr);
 			}
 		}
 	}
@@ -438,7 +500,8 @@ void TC3:: AtualizarMouseBotoes(GLint button, GLint state) {
 			}
 			
 			if(button == GLUT_RIGHT_BUTTON) {
-				// jogador->Bombardear(frametime);
+				Bomba* bomba = jogador->Bombardear();
+				bombas.push_back(bomba);
 			}
 		}
 	}
@@ -490,6 +553,8 @@ void TC3:: Reset(void) {
 	jogador->setEmDecolagem(false);
 	jogador->setDecolou(false);
 	jogador->setVelAviao(0.0f);
+	jogador->setMultVelAviao(jogador->getMultVelAviaoInicial());
+	jogador->setMultVelTiro(jogador->getMultVelTiroInicial());
 	
 	Circulo* circulo = jogador->getCirculo();
 	circulo->setRaio( circulo->getRaioInicial() );
@@ -501,7 +566,9 @@ void TC3:: Reset(void) {
 	jogador->setAnguloAviaoRadianos( jogador->getAnguloAviaoGrausInicial() * 3.14159f / 180.0f);
 	
 	this->LiberarTiros();
+	this->LiberarBombas();
 	tiros.clear();
+	bombas.clear();
 }
 
 void TC3:: LiberarTiros(void) {
@@ -513,6 +580,19 @@ void TC3:: LiberarTiros(void) {
 		while(itr != tiros.end()) {
 			delete *itr;
 			itr = tiros.erase(itr);
+		}
+	}
+}
+
+void TC3:: LiberarBombas(void) {
+	
+	if(bombas.size() > 0) {
+		
+		vector<Bomba*>::iterator itr = bombas.begin();
+		
+		while(itr != bombas.end()) {
+			delete *itr;
+			itr = bombas.erase(itr);
 		}
 	}
 }
@@ -538,4 +618,5 @@ TC3:: ~TC3() {
 	this->LiberarListaInimigos(inimigosVoadores);
 	this->LiberarListaInimigos(inimigosTerrestres);
 	this->LiberarTiros();
+	this->LiberarBombas();
 }
