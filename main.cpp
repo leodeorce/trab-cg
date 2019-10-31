@@ -2,65 +2,65 @@
  * Arquivo: main.cpp
  * Autor: Leonardo Oliveira
  * Disciplina: Computacao Grafica 2019/2
- * Descricao: TC3
+ * Descricao: TC4
  */
 
 #include <GL/glut.h>
 #include <iostream>
 #include <string>
-#include "TC3.h"
+#include "TC4.h"
 
 using namespace std;
 
-TC3 tc3;
+TC4 tc4;
 
 void initialize(void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(
-		tc3.janela->getXI(), tc3.janela->getXF(),
-		tc3.janela->getYI(), tc3.janela->getYF(),
+		tc4.janela->getXI(), tc4.janela->getXF(),
+		tc4.janela->getYI(), tc4.janela->getYF(),
 		0.0f, 1.0f
 	);
 }
 
 void keyDown(unsigned char key, int x, int y) {
-	tc3.KeyDown(key);
+	tc4.KeyDown(key);
 }
 
 void keyUp(unsigned char key, int x, int y) {
-	tc3.KeyUp(key);
+	tc4.KeyUp(key);
 }
 
 void passiveMouseMotion(int x, int y) {
-	tc3.AtualizarMousePosicao(x, y);
+	tc4.AtualizarMousePosicao(x, y);
 }
 
 void mouseMotion(int x, int y) {
-	tc3.AtualizarMousePosicao(x, y);
+	tc4.AtualizarMousePosicao(x, y);
 }
 
 void mouse(int button, int state, int x, int y) {
-	tc3.AtualizarMouseBotoes(button, state);
+	tc4.AtualizarMouseBotoes(button, state);
 }
 
 void display(void) {
 	
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	tc3.DesenharArenaCirculo();
-	tc3.DesenharPista();
-	tc3.DesenharInimigosVoadores();
-	tc3.DesenharInimigosTerrestres();
-	tc3.DesenharTiros();
-	tc3.DesenharBombas();
+	tc4.DesenharArenaCirculo();
+	tc4.DesenharPista();
+	tc4.DesenharInimigosVoadores();
+	tc4.DesenharInimigosTerrestres();
+	tc4.DesenharTiros();
+	tc4.DesenharBombas();
 	
-	if(tc3.getColisaoInimigo() == false) {
-		tc3.DesenharJogador();
+	if(tc4.getColisaoInimigo() == false) {
+		tc4.DesenharJogador();
 	}
 	
-	tc3.DesenharArenaContorno();
+	tc4.DesenharArenaContorno();
 
 	glutSwapBuffers();
 }
@@ -73,17 +73,17 @@ void idle(void) {
 	GLint frametime = tempoAtual - tempoAnterior;
 	
 	tempoAnterior = tempoAtual;
-	tc3.setFrametime(frametime);
+	tc4.setFrametime(frametime);
 	
-	bool colisaoInimigo = tc3.PossivelConflito(1);
+	bool colisaoInimigo = tc4.PossivelConflito(1);
 	
 	if(colisaoInimigo == true) {
-		tc3.setColisaoInimigo(colisaoInimigo);
+		tc4.setColisaoInimigo(colisaoInimigo);
 	}
 	
-	tc3.AtualizarJogador();
-	tc3.AtualizarTiros();
-	tc3.AtualizarBombas();
+	tc4.AtualizarJogador();
+	tc4.AtualizarTiros();
+	tc4.AtualizarBombas();
 	
 	glutPostRedisplay();
 }
@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
 	}
 	
 	const char* chArqConfig = strArqConfig.c_str();
-	Erros erroArquivo = tc3.LeituraArquivos(chArqConfig);
+	Erros erroArquivo = tc4.LeituraArquivos(chArqConfig);
 	
 	if(erroArquivo != SUCESSO) {
 		return RetornaErro(erroArquivo);
@@ -144,9 +144,9 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowSize(tc3.janela->Largura(), tc3.janela->Altura());
+	glutInitWindowSize(tc4.janela->Largura(), tc4.janela->Altura());
 	glutInitWindowPosition(100, 100);
-	glutCreateWindow(tc3.janela->getTitulo().c_str());
+	glutCreateWindow(tc4.janela->getTitulo().c_str());
 	
 	initialize();
 	

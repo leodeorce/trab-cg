@@ -25,3 +25,7 @@ $(EXECUTAVEL): $(OBJETOS)
 
 clean:
 	rm -rf *.o
+
+run:
+	./$(EXECUTAVEL) ../cfg/
+

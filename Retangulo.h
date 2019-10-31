@@ -2,7 +2,7 @@
  * Arquivo: Retangulo.h
  * Autor: Leonardo Oliveira
  * Disciplina: Computacao Grafica 2019/2
- * Descricao: TC3
+ * Descricao: TC4
 */
 
 #ifndef RETANGULO_H

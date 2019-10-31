@@ -2,7 +2,7 @@
  * Arquivo: Elemento.h
  * Autor: Leonardo Oliveira
  * Disciplina: Computacao Grafica 2019/2
- * Descricao: TC3
+ * Descricao: TC4
 */
 
 #ifndef ELEMENTO_H
