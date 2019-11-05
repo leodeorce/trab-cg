@@ -12,9 +12,12 @@
 #include "Figura.h"
 
 class Circulo : public Figura {
+
+protected:
 	GLint step;
 	GLfloat raioInicial = 0.0f;
 	GLfloat raio = 0.0f;
+	
 public:
 	Circulo(GLfloat, GLfloat, GLfloat);
 	GLfloat getRaioInicial(void) const;
@@ -23,6 +26,7 @@ public:
 	void setRaioInicial(GLfloat);
 	void setRaio(GLfloat);
 	void setStep(GLint);
+	bool ExisteConflito(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat) const;
 	void Desenhar(void) const;
 };
 

@@ -18,10 +18,12 @@ enum Cor {
 };
 
 class Figura {
+	
 protected:
 	GLfloat corR;
 	GLfloat corG;
 	GLfloat corB;
+	
 public:
 	Figura(GLfloat, GLfloat, GLfloat);
 	GLfloat getCorR(void) const;

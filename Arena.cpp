@@ -57,25 +57,3 @@ void Arena:: DesenharContorno(void) {
 	
 	glPopMatrix();
 }
-
-bool Arena:: ExisteConflito(GLfloat raio, GLfloat x, GLfloat y, bool objetoSairArena) const {
-	
-	GLfloat gX = this->getGX();
-	GLfloat gY = this->getGY();
-	Circulo* circuloArena = this->getCirculo();
-	
-	GLfloat distCentros = sqrt(pow(gX - x, 2) + pow(gY - y, 2));
-	
-	GLfloat multiplicador = - 1.0f;
-	if(objetoSairArena == true) {
-		multiplicador = 1.0f;
-	}
-	
-	GLfloat distCentrosLimite = circuloArena->getRaio() + (multiplicador * raio);
-	
-	if(distCentros > distCentrosLimite) {
-		return true;
-	} else {
-		return false;
-	}
-}

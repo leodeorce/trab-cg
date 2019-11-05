@@ -56,3 +56,15 @@ void Circulo:: Desenhar(void) const {
 		
 	glEnd();
 }
+
+bool Circulo:: ExisteConflito(GLfloat raio, GLfloat x, GLfloat y, GLfloat gX, GLfloat gY) const {
+	
+	GLfloat distCentros = sqrt(pow(gX - x, 2) + pow(gY - y, 2));
+	GLfloat distCentrosLimite = this->raio + raio;
+	
+	if(distCentros < distCentrosLimite) {
+		return true;
+	} else {
+		return false;
+	}
+}

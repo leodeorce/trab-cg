@@ -14,9 +14,12 @@
 using namespace std;
 
 class Tiro : public Elemento {
+	
+protected:
 	GLfloat vel = 0.0f;
 	GLfloat multVel = 0;
 	GLdouble anguloTrajetoriaRad = 0.0f;
+	
 public:
 	void setVel(GLfloat);
 	void setMultVel(GLfloat);
@@ -25,6 +28,7 @@ public:
 	GLfloat getMultVel(void);
 	GLdouble getAnguloTrajetoriaRad(void);
 	void Mover(GLint);
+	
 private:
 	void MoverTiroX(GLint);
 	void MoverTiroY(GLint);

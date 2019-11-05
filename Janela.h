@@ -14,11 +14,14 @@
 using namespace std;
 
 class Janela {
+
+protected:
 	GLint xI = 0;
 	GLint xF = 0;
 	GLint yI = 0;
 	GLint yF = 0;
 	string titulo;
+	
 public:
 	GLint getXI(void) const;
 	GLint getXF(void) const;

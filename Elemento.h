@@ -12,11 +12,14 @@
 #include "Circulo.h"
 
 class Elemento {
+
+protected:
 	Circulo* circulo;
 	GLfloat gXInicial = 0.0f;
 	GLfloat gX = 0.0f;
 	GLfloat gYInicial = 0.0f;
 	GLfloat gY = 0.0f;
+	
 public:
 	void setGXInicial(GLfloat);
 	void setGX(GLfloat);
@@ -31,6 +34,7 @@ public:
 	void Desenhar(void);
 	void MoverX(GLfloat);
 	void MoverY(GLfloat);
+	bool ExisteConflito(GLfloat, GLfloat, GLfloat) const;
 	~Elemento();
 };
 

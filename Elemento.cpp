@@ -65,6 +65,10 @@ void Elemento:: MoverY(GLfloat dY) {
 	gY = gY + dY;
 }
 
+bool Elemento:: ExisteConflito(GLfloat raio, GLfloat x, GLfloat y) const {
+	return circulo->ExisteConflito(raio, x, y, gX, gY);
+}
+
 Elemento:: ~Elemento() {
 	delete circulo;
 }

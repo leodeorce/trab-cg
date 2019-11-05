@@ -12,8 +12,11 @@
 #include "Figura.h"
 
 class Retangulo : public Figura {
+
+protected:
 	GLfloat largura = 1.0f;
 	GLfloat altura = 1.0f;
+	
 public:
 	Retangulo(GLfloat, GLfloat, GLfloat);
 	GLfloat getLargura(void) const;

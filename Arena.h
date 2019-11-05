@@ -15,13 +15,15 @@
 using namespace std;
 
 class Arena : public Elemento {
+
+protected:
 	string arquivo;
+	
 public:
 	void setNomeArquivo(string);
 	string getNomeArquivo(void) const;
 	void DesenharCirculo(void);
 	void DesenharContorno(void);
-	bool ExisteConflito(GLfloat, GLfloat, GLfloat, bool) const;
 };
 
 #endif /* ARENA_H */

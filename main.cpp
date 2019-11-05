@@ -51,8 +51,8 @@ void display(void) {
 
 	tc4.DesenharArenaCirculo();
 	tc4.DesenharPista();
-	tc4.DesenharInimigosVoadores();
-	tc4.DesenharInimigosTerrestres();
+	tc4.DesenharInimigosAviao();
+	tc4.DesenharInimigosBase();
 	tc4.DesenharTiros();
 	tc4.DesenharBombas();
 	

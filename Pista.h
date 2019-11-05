@@ -11,10 +11,13 @@
 #include "Figura.h"
 
 class Pista : public Figura {
+
+protected:
 	GLfloat x1 = 0.0f;
 	GLfloat y1 = 0.0f;
     GLfloat x2 = 0.0f;
 	GLfloat y2 = 0.0f;
+	
 public:
 	Pista(GLfloat, GLfloat, GLfloat);
 	GLfloat getX1(void) const;
