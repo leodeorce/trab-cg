@@ -5,13 +5,21 @@
  * Descricao: TC4
 */
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
+#include <time.h>
 #include "TC4.h"
 
-Erros TC4:: LeituraArquivos(const char* chArqConfig) {
-	
+void TC4:: setFrametime(GLint frametime) { this->frametime = frametime; }
+void TC4:: setJogadorPerde(bool jogadorPerde) { this->jogadorPerde = jogadorPerde; }
+
+bool TC4:: getJogadorPerde(void) { return jogadorPerde; }
+
+Erros TC4:: LeituraArquivos(const char* chArqConfig)
+{
 	XMLDocument xmlConfig;
 	XMLError erroLoad = xmlConfig.LoadFile(chArqConfig);
 
@@ -44,13 +52,11 @@ Erros TC4:: LeituraArquivos(const char* chArqConfig) {
 	return SUCESSO;
 }
 
-Erros TC4:: LeituraConfig(XMLDocument& xmlConfig) {
-
+Erros TC4:: LeituraConfig(XMLDocument& xmlConfig)
+{
 	XMLNode* raiz = xmlConfig.FirstChild();
 
-	/*
-	 * Lendo a configuracao do arquivo a ser lido:
-	 */
+	/* Lendo a configuracao do arquivo a ser lido: */
 
 	XMLElement* elemento1 = raiz->FirstChildElement("arquivoDaArena");
 	if(elemento1 == 0) return ERRO_LEITURA_CONFIG_XML;
@@ -81,9 +87,7 @@ Erros TC4:: LeituraConfig(XMLDocument& xmlConfig) {
 	arena = new Arena();
 	arena->setNomeArquivo(arquivo);
 	
-	/*
-	 * Lendo o multiplicador da velocidade do aviao jogador:
-	 */
+	/* Lendo o multiplicador da velocidade do aviao jogador: */
 
 	elemento1 = raiz->FirstChildElement("jogador");
 	if(elemento1 == 0) return ERRO_LEITURA_CONFIG_XML;
@@ -93,32 +97,32 @@ Erros TC4:: LeituraConfig(XMLDocument& xmlConfig) {
 	
 	jogador = new Jogador();
 	jogador->setMultVelAviao(multVelAviao);
+	jogador->setMultVelAviaoInicial(multVelAviao);
 	
-	/*
-	 * Lendo o multiplicador da velocidade do tiro do jogador:
-	 */
+	/* Lendo o multiplicador da velocidade do tiro do jogador: */
 
 	GLfloat multVelTiro;
 	if(elemento1->QueryFloatAttribute("velTiro", &multVelTiro)) return ERRO_LEITURA_CONFIG_XML;
 	
 	jogador->setMultVelTiro(multVelTiro);
+	jogador->setMultVelTiroInicial(multVelTiro);
 	
-	/*
-	 * Lendo os dados dos inimigos:
-	 */
+	/* Lendo os dados dos inimigos: */
 	
 	elemento1 = raiz->FirstChildElement("inimigo");
 	if(elemento1 == 0) return ERRO_LEITURA_CONFIG_XML;
 	
 	if(elemento1->QueryFloatAttribute("freqTiro", &inimFreqTiro)) return ERRO_LEITURA_CONFIG_XML;
-	if(elemento1->QueryFloatAttribute("vel", &inimVel)) return ERRO_LEITURA_CONFIG_XML;
-	if(elemento1->QueryFloatAttribute("velTiro", &inimVelTiro)) return ERRO_LEITURA_CONFIG_XML;
+	if(elemento1->QueryFloatAttribute("vel", &inimMultVel)) return ERRO_LEITURA_CONFIG_XML;
+	if(elemento1->QueryFloatAttribute("velTiro", &inimMultVelTiro)) return ERRO_LEITURA_CONFIG_XML;
+	
+	msEntreTiros = 1000.0 * (1.0 / inimFreqTiro);
 	
 	return SUCESSO;
 }
 
-Erros TC4:: LeituraArena(XMLDocument& xmlArena) {
-
+Erros TC4:: LeituraArena(XMLDocument& xmlArena)
+{
 	XMLNode* raiz = xmlArena.FirstChild();
 	XMLNode* svg = raiz->NextSibling();
 
@@ -147,13 +151,13 @@ Erros TC4:: LeituraArena(XMLDocument& xmlArena) {
 		GLfloat rgb[3];
 		switch(cor) {
 			case RED:
-				rgb[0] = 1.0f; rgb[1] = 0.0f; rgb[2] = 0.0f; break;
+				rgb[0] = 1.0; rgb[1] = 0.0; rgb[2] = 0.0; break;
 			case GREEN:
-				rgb[0] = 0.0f; rgb[1] = 1.0f; rgb[2] = 0.0f; break;
+				rgb[0] = 0.0; rgb[1] = 1.0; rgb[2] = 0.0; break;
 			case BLUE:
-				rgb[0] = 0.0f; rgb[1] = 0.0f; rgb[2] = 1.0f; break;
+				rgb[0] = 0.0; rgb[1] = 0.0; rgb[2] = 1.0; break;
 			case ORANGE:
-				rgb[0] = 1.0f; rgb[1] = 0.647f; rgb[2] = 0.0f; break;
+				rgb[0] = 1.0; rgb[1] = 0.647; rgb[2] = 0.0; break;
 			default:
 				return ERRO_LEITURA_ARENA_SVG;
 		}
@@ -167,11 +171,12 @@ Erros TC4:: LeituraArena(XMLDocument& xmlArena) {
 			case RED: {
 				InimigoAviao* inimigoAviao = new InimigoAviao();
 				inimigoAviao->setCirculo(circulo);
+				inimigoAviao->setGXInicial(cX);
 				inimigoAviao->setGX(cX);
+				inimigoAviao->setGYInicial(cY);
 				inimigoAviao->setGY(cY);
-				inimigoAviao->setFreqTiro(inimFreqTiro);
-				inimigoAviao->setMultVelAviao(inimVel);
-				inimigoAviao->setMultVelTiro(inimVelTiro);
+				inimigoAviao->setMultVelAviao(inimMultVel);
+				inimigoAviao->setMultVelTiro(inimMultVelTiro);
 				AdicionarInimigoAviao(inimigoAviao);
 				break;
 			}
@@ -211,7 +216,10 @@ Erros TC4:: LeituraArena(XMLDocument& xmlArena) {
 		elemento = elemento->NextSiblingElement("circle");
 
 	} while(elemento != 0);
-
+	
+	AtribuirEstadosInimigos();
+	AtribuirAngulosInimigos();
+	
 	elemento = svg->FirstChildElement("line");
 	if(elemento == 0) return ERRO_LEITURA_ARENA_SVG;
 
@@ -223,13 +231,13 @@ Erros TC4:: LeituraArena(XMLDocument& xmlArena) {
 	elemento->QueryFloatAttribute("x2", &x2);
 	elemento->QueryFloatAttribute("y2", &y2);
 	
-	GLdouble tangente = 0.0f;
+	GLdouble tangente = 0.0;
 	GLdouble anguloLinhaRadianos;
 	GLdouble anguloLinhaGraus;
 	
 	if(x1 <= x2 && y1 <= y2) {
 		tangente = - (y2 - y1) / (x2 - x1);
-		anguloLinhaRadianos = 360.0f + atan(tangente);
+		anguloLinhaRadianos = 360.0 + atan(tangente);
 	}
 	if(x1 <= x2 && y1  > y2) {
 		tangente = + (y1 - y2) / (x2 - x1);
@@ -237,14 +245,14 @@ Erros TC4:: LeituraArena(XMLDocument& xmlArena) {
 	}
 	if(x1  > x2 && y1 <= y2) {
 		tangente = - (y2 - y1) / (x1 - x2);
-		anguloLinhaRadianos = 180.0f + atan(tangente);
+		anguloLinhaRadianos = 180.0 + atan(tangente);
 	}
 	if(x1  > x2 && y1  > y2) {
 		tangente = + (y1 - y2) / (x1 - x2);
-		anguloLinhaRadianos = 180.0f + atan(tangente);
+		anguloLinhaRadianos = 180.0 + atan(tangente);
 	}
 	
-	anguloLinhaGraus = anguloLinhaRadianos * 180.0f / 3.14159f;
+	anguloLinhaGraus = anguloLinhaRadianos * 180.0 / 3.14159;
 	
 	GLdouble anguloAviaoRadianos = anguloLinhaRadianos;
 	GLdouble anguloAviaoGraus = anguloLinhaGraus;
@@ -252,91 +260,104 @@ Erros TC4:: LeituraArena(XMLDocument& xmlArena) {
 	jogador->setAnguloAviaoGraus(anguloAviaoGraus);
 	jogador->setAnguloAviaoRadianos(anguloAviaoRadianos);
 	
-	pista = new Pista(0.0f, 0.0f, 0.0f);
+	pista = new Pista(0.0, 0.0, 0.0);
 	pista->setX1(x1);
 	pista->setY1(y1);
 	pista->setX2(x2);
 	pista->setY2(y2);
-
+	
+	GLfloat deltaX = x2 - x1;
+	GLfloat deltaY = y2 - y1;
+	GLfloat vX = deltaX / 4000.0;
+	GLfloat vY = deltaY / 4000.0;
+	GLfloat vResultante = sqrt(pow(vX, 2) + pow(vY, 2));
+	inimVel = vResultante;
+	
+	for(InimigoAviao* inimigoAviao : inimigosAviao) {
+		inimigoAviao->setVelAviao(inimVel);
+	}
+	
 	return SUCESSO;
 }
 
-void TC4:: AdicionarInimigoAviao(InimigoAviao* inimigoAviao) {
+void TC4:: AdicionarInimigoAviao(InimigoAviao* inimigoAviao)
+{
 	inimigosAviao.push_back(inimigoAviao);
 }
 
-void TC4:: AdicionarInimigoBase(InimigoBase* inimigoBase) {
+void TC4:: AdicionarInimigoBase(InimigoBase* inimigoBase)
+{
 	inimigosBase.push_back(inimigoBase);
 }
 
-void TC4:: setFrametime(GLint frametime) {
-	this->frametime = frametime;
-}
-
-void TC4:: setColisaoInimigo(bool colisaoInimigo) {
-	this->colisaoInimigo = colisaoInimigo;
-}
-
-bool TC4:: getColisaoInimigo(void) {
-	return colisaoInimigo;
-}
-
-void TC4:: DesenharArenaCirculo(void) {
+void TC4:: DesenharArenaCirculo(void)
+{
 	arena->DesenharCirculo();
 }
 
-void TC4:: DesenharArenaContorno(void) {
+void TC4:: DesenharArenaContorno(void)
+{
 	arena->DesenharContorno();
 }
 
-void TC4:: DesenharJogador(void) {
+void TC4:: DesenharJogador(void)
+{
 	jogador->Desenhar(frametime);
 }
 
-void TC4:: DesenharPista(void) {
+void TC4:: DesenharPista(void)
+{
 	pista->Desenhar();
 }
 
-void TC4:: DesenharInimigosAviao(void) {
-	list<InimigoAviao*>::iterator itr;
-	for(itr = inimigosAviao.begin(); itr != inimigosAviao.end(); ++itr) {
-		(*itr)->Desenhar(frametime);
+void TC4:: DesenharInimigosAviao(void)
+{
+	for(InimigoAviao* inimigoAviao : inimigosAviao) {
+		if(inimigoAviao->getEstado() != 0) {
+			inimigoAviao->Desenhar(frametime);
+		}
 	}
 }
 
-void TC4:: DesenharInimigosBase(void) {
-	list<InimigoBase*>::iterator itr;
-	for(itr = inimigosBase.begin(); itr != inimigosBase.end(); ++itr) {
-		(*itr)->Desenhar();
+void TC4:: DesenharInimigosBase(void)
+{
+	for(InimigoBase* inimigoBase : inimigosBase) {
+		inimigoBase->Desenhar();
 	}
 }
 
-void TC4:: DesenharTiros(void) {
-	vector<Tiro*>::iterator itr;
-	for(itr = tiros.begin(); itr != tiros.end(); itr++) {
-		(*itr)->Desenhar();
+void TC4:: DesenharTiros(void)
+{
+	for(Tiro* tiro : tirosJogador) {
+		tiro->Desenhar();
+	}
+	
+	for(Tiro* tiro : tirosInimigos) {
+		tiro->Desenhar();
 	}
 }
 
-void TC4:: DesenharBombas(void) {
-	vector<Bomba*>::iterator itr;
-	for(itr = bombas.begin(); itr != bombas.end(); itr++) {
-		(*itr)->Desenhar();
+void TC4:: DesenharBombas(void)
+{
+	for(Bomba* bomba : bombas) {
+		bomba->Desenhar();
 	}
 }
 
-void TC4:: KeyDown(unsigned char key) {
+void TC4:: KeyDown(unsigned char key)
+{
 	keyStatus[key] = 1;
 }
 
-void TC4:: KeyUp(unsigned char key) {
+void TC4:: KeyUp(unsigned char key)
+{
 	if(key != keyDecolar) {
 		keyStatus[key] = 0;
 	}
 }
 
-bool TC4:: PossivelConflito(GLint tipo) {
-	
+bool TC4:: PossivelConflito(GLint tipo)
+{
 	GLfloat gX = jogador->getGX();
 	GLfloat gY = jogador->getGY();
 	GLfloat anguloAviaoRadianos = jogador->getAnguloAviaoRadianos();
@@ -359,11 +380,14 @@ bool TC4:: PossivelConflito(GLint tipo) {
 		case 2:
 			return PossivelConflitoArena(raio, possivelGX, possivelGY);
 			break;
+		case 3:
+			return PossivelConflitoTiros(raio, possivelGX, possivelGY);
+			break;
 	}
 }
 
-bool TC4:: PossivelConflitoArena(GLfloat raio, GLfloat x, GLfloat y) {
-	
+bool TC4:: PossivelConflitoArena(GLfloat raio, GLfloat x, GLfloat y)
+{
 	if(arena->ExisteConflito(raio, x, y) == true) {
 		return true;
 	} else {
@@ -371,36 +395,58 @@ bool TC4:: PossivelConflitoArena(GLfloat raio, GLfloat x, GLfloat y) {
 	}
 }
 
-bool TC4:: PossivelConflitoInimigos(GLfloat raio, GLfloat x, GLfloat y) {
-	
-	list<InimigoAviao*>::iterator itr;
-	for(itr = inimigosAviao.begin(); itr != inimigosAviao.end(); ++itr) {
-			
-		InimigoAviao* inimigoAviao = *itr;
-		if(inimigoAviao->ExisteConflito(raio, x, y) == true) {
-			return true;
+bool TC4:: PossivelConflitoInimigos(GLfloat raio, GLfloat x, GLfloat y)
+{
+	if(jogador->getDecolou() == true) {
+		for(InimigoAviao* inimigoAviao : inimigosAviao) {
+			if(inimigoAviao->getEstado() != 0) {
+				if(inimigoAviao->ExisteConflito(raio, x, y) == true) {
+					return true;
+				}
+			}
 		}
 	}
 	
 	return false;
 }
 
-void TC4:: AtualizarJogador(void) {
+bool TC4:: PossivelConflitoTiros(GLfloat raio, GLfloat x, GLfloat y)
+{
+	if(jogador->getDecolou() == true) {
+		
+		vector<Tiro*>::iterator itr;
+		for(itr = tirosInimigos.begin(); itr != tirosInimigos.end(); ++itr) {
+				
+			Tiro* tiro = *itr;
+			if(tiro->ExisteConflito(raio, x, y) == true) {
+				
+				delete tiro;
+				tirosInimigos.erase(itr);
+				
+				return true;
+			}
+		}
+	}
 	
+	return false;
+}
+
+void TC4:: AtualizarJogador(void)
+{
 	if(keyStatus[keyReset] == 0) {
 	
-		if(jogador->getDecolou() == true && colisaoInimigo == false) {
+		if(jogador->getDecolou() == true && jogadorPerde == false) {
 			
 			if((keyStatus[keyVelUp] == 1 || keyStatus[keyNumpadVelUp] == 1)
 				&& (keyStatus[keyVelDown] == 0 || keyStatus[keyNumpadVelDown] == 0)) {
-				jogador->AjustarMultVelAviao( +ajusteMult);
-				jogador->AjustarMultVelTiro( +ajusteMult);
+				jogador->AjustarMultVelAviao( +ajusteMultVel);
+				jogador->AjustarMultVelTiro( +ajusteMultVel);
 			}
 			
 			if((keyStatus[keyVelUp] == 0 || keyStatus[keyNumpadVelUp] == 0)
 				&& (keyStatus[keyVelDown] == 1 || keyStatus[keyNumpadVelDown] == 1)) {
-				jogador->AjustarMultVelAviao( -ajusteMult);
-				jogador->AjustarMultVelTiro( -ajusteMult);
+				jogador->AjustarMultVelAviao( -ajusteMultVel);
+				jogador->AjustarMultVelTiro( -ajusteMultVel);
 			}
 			
 			if(this->PossivelConflito(2) == true) {
@@ -430,13 +476,84 @@ void TC4:: AtualizarJogador(void) {
 	}
 }
 
-void TC4:: AtualizarTiros(void) {
+void TC4:: AtualizarInimigos(void)
+{
+	for(InimigoAviao* inimigoAviao : inimigosAviao) {
+		
+		if(inimigoAviao->getEstado() != 0) {
+			
+			inimigoAviao->Mover(frametime);
+			
+			Circulo* circuloAviao = inimigoAviao->getCirculo();
+			GLfloat raio = circuloAviao->getRaio();
+			
+			GLfloat x = inimigoAviao->getGX();
+			GLfloat y = inimigoAviao->getGY();
+			
+			if(this->PossivelConflitoArena(raio, x, y) != true) {
+				
+				GLint estado = inimigoAviao->getEstado();
+				inimigoAviao->setEstado(1);
+				
+				inimigoAviao->Mover(-frametime);
+				this->TeleportarInimigoAviao(inimigoAviao);
+				
+				inimigoAviao->setEstado(estado);
+			}
+			
+		}
+	}
 	
-	if(tiros.size() > 0) {
+	// if(inimigosAviao.size() > 0) {
 		
-		vector<Tiro*>::iterator itr = tiros.begin();
+	// 	for(InimigoAviao* inimigoAviao : inimigosAviao) {
+				
+	// 		Circulo* circuloAviao = inimigoAviao->getCirculo();
+			
+	// 		GLfloat raio = circuloAviao->getRaio();
+	// 		GLfloat x = inimigoAviao->getGX();
+	// 		GLfloat y = inimigoAviao->getGY();
+			
+	// 		bool levouTiro = false;
+			
+	// 		if(tirosJogador.size() > 0) {
+			
+	// 			vector<Tiro*>::iterator itrTiro = tirosJogador.begin();
+	// 			while(itrTiro != tirosJogador.end()) {
+					
+	// 				Tiro* tiro = *itrTiro;
+	// 				if(tiro->ExisteConflito(raio, x, y) == true) {
+	// 					levouTiro = true;
+	// 					delete tiro;
+	// 					tirosJogador.erase(itrTiro);
+	// 					break;
+	// 				}
+					
+	// 				itrTiro++;
+	// 			}
+	// 		}
+				
+	// 		if(levouTiro == true) {
+	// 			inimigoAviao->setEstado(0);
+	// 		}
+	// 	}
+	// }
+	
+	static GLint tempoCorrido = 0;
+	tempoCorrido += frametime;
+	
+	if(tempoCorrido > 10000) {
+		tempoCorrido = 0;
+		AtribuirEstadosInimigos();
+	}
+}
+
+void TC4:: AtualizarTiros(void)
+{
+	if(tirosJogador.size() > 0) {
 		
-		while(itr != tiros.end()) {
+		vector<Tiro*>::iterator itr = tirosJogador.begin();
+		while(itr != tirosJogador.end()) {
 			
 			Tiro* tiro = *itr;
 			Circulo* circulo = tiro->getCirculo();
@@ -445,41 +562,93 @@ void TC4:: AtualizarTiros(void) {
 			GLfloat y = tiro->getGY();
 			
 			if(arena->ExisteConflito(raio, x, y) == true) {
+				
 				tiro->Mover(frametime);
-				itr++;
+				bool tiroAcertouInimigo = false;
+				
+				if(inimigosAviao.size() > 0) {
+					for(InimigoAviao* inimigoAviao : inimigosAviao) {
+						if(inimigoAviao->getEstado() != 0) {
+							if(inimigoAviao->ExisteConflito(raio, x, y) == true) {
+								tiroAcertouInimigo = true;
+								inimigoAviao->setEstado(0);
+								break;
+							}
+						}
+					}
+				}
+				
+				if(tiroAcertouInimigo == true) {
+					delete tiro;
+					itr = tirosJogador.erase(itr);
+				} else {
+					itr++;
+				}
+				
+			} else {
+				delete tiro;
+				itr = tirosJogador.erase(itr);
+			}
+		}
+	}
+	
+	if(tirosInimigos.size() > 0) {
+		
+		vector<Tiro*>::iterator itr = tirosInimigos.begin();
+		while(itr != tirosInimigos.end()) {
+			
+			Tiro* tiro = *itr;
+			Circulo* circulo = tiro->getCirculo();
+			GLfloat raio = circulo->getRaio();
+			
+			GLfloat x = tiro->getGX();
+			GLfloat y = tiro->getGY();
+			
+			if(arena->ExisteConflito(raio, x, y) == true) {
+				
+				if(jogador->ExisteConflito(raio, x, y) == false) {
+					
+					tiro->Mover(frametime);
+					itr++;
+					
+				} else {
+					delete tiro;
+					tirosInimigos.erase(itr);
+					jogadorPerde = true;
+				}
+				
 			} else {
 				delete(*itr);
-				itr = tiros.erase(itr);
+				itr = tirosInimigos.erase(itr);
 			}
 		}
 	}
 }
 
-void TC4:: AtualizarBombas(void) {
-	
+void TC4:: AtualizarBombas(void)
+{
 	if(bombas.size() > 0) {
 		
 		vector<Bomba*>::iterator itr = bombas.begin();
-		
 		while(itr != bombas.end()) {
 			
 			Bomba* bomba = *itr;
 			Circulo* circulo = bomba->getCirculo();
 			GLfloat raioAtual = circulo->getRaio();
+			
 			GLfloat vel = bomba->getVel();
 			GLfloat acel = bomba->getAcel();
 			GLfloat x = bomba->getGX();
 			GLfloat y = bomba->getGY();
 			
 			bomba->Mover(frametime);
-			
 			GLfloat novaVel = vel + (acel * frametime);
 			
-			if(novaVel > 0.0f && arena->ExisteConflito(raioAtual, x, y) == true) {
+			if(novaVel > 0.0 && arena->ExisteConflito(raioAtual, x, y) == true) {
 				
 				GLfloat raioInicial = circulo->getRaioInicial();
 				
-				GLfloat vR = raioInicial / 8000.0f;
+				GLfloat vR = raioInicial / 8000.0;
 				GLfloat dR = vR * frametime;
 				
 				circulo->setRaio(raioAtual - dR);
@@ -495,8 +664,8 @@ void TC4:: AtualizarBombas(void) {
 	}
 }
 
-void TC4:: AtualizarMousePosicao(GLint x, GLint y) {
-	
+void TC4:: AtualizarMousePosicao(GLint x, GLint y)
+{
 	GLint dX = x - mX;
 	
 	if(dX != 0) {
@@ -507,15 +676,15 @@ void TC4:: AtualizarMousePosicao(GLint x, GLint y) {
 	this->mY = y;
 }
 
-void TC4:: AtualizarMouseBotoes(GLint button, GLint state) {
-	
-	if(jogador->getDecolou() == true && colisaoInimigo == false) {
+void TC4:: AtualizarMouseBotoes(GLint button, GLint state)
+{
+	if(jogador->getDecolou() == true && jogadorPerde == false) {
 		
 		if(state == GLUT_DOWN) {
 			
 			if(button == GLUT_LEFT_BUTTON) {
-				Tiro* tiro = jogador->Atirar();
-				tiros.push_back(tiro);
+				Tiro* tiro = jogador->Atirar( 1.0, 1.0, 1.0 );
+				tirosJogador.push_back(tiro);
 			}
 			
 			if(button == GLUT_RIGHT_BUTTON) {
@@ -526,8 +695,8 @@ void TC4:: AtualizarMouseBotoes(GLint button, GLint state) {
 	}
 }
 
-void TC4:: TeleportarJogador(void) {
-	
+void TC4:: TeleportarJogador(void)
+{
 	Circulo* circuloArena = arena->getCirculo();
 	GLfloat centroXArena = arena->getGX();
 	GLfloat centroYArena = arena->getGY();
@@ -542,7 +711,7 @@ void TC4:: TeleportarJogador(void) {
 	
 	GLfloat tangenteAnguloAviao = tan(anguloAviaoRadianos);
 	GLfloat a = tangenteAnguloAviao;
-	GLfloat b = - 1.0f;
+	GLfloat b = - 1.0;
 	GLfloat c = 0;
 	
 	GLfloat distRetaAviao = DistanciaPontoAReta(gX, gY, a, b, c);
@@ -552,26 +721,104 @@ void TC4:: TeleportarJogador(void) {
 	
 	GLfloat velAviao = jogador->getVelAviao();
 	GLfloat multVelAviao = jogador->getMultVelAviao();
-	GLfloat deslocamento = - ((2.0f * pitagoras) / (velAviao * multVelAviao)) + 10.0f;
+	GLfloat deslocamento = - ((2.0 * pitagoras) / (velAviao * multVelAviao)) + 10.0;
 	
 	jogador->Mover(deslocamento);
 }
 
-GLfloat TC4:: DistanciaPontoAReta(GLfloat x, GLfloat y, GLfloat a, GLfloat b, GLfloat c) {
+void TC4:: TeleportarInimigoAviao(InimigoAviao* InimigoAviao)
+{
+	Circulo* circuloArena = arena->getCirculo();
+	GLfloat centroXArena = arena->getGX();
+	GLfloat centroYArena = arena->getGY();
+	GLfloat raioArena = circuloArena->getRaio();
+	
+	Circulo* circuloInimigoAviao = InimigoAviao->getCirculo();
+	GLfloat raioInimigoAviao = circuloInimigoAviao->getRaio();
+	
+	GLdouble anguloAviaoRadianos = InimigoAviao->getAnguloAviaoRadianos();
+	GLfloat gX = - (centroXArena - InimigoAviao->getGX());
+	GLfloat gY = centroYArena - InimigoAviao->getGY();
+	
+	GLfloat tangenteAnguloAviao = tan(anguloAviaoRadianos);
+	GLfloat a = tangenteAnguloAviao;
+	GLfloat b = - 1.0;
+	GLfloat c = 0;
+	
+	GLfloat distRetaAviao = DistanciaPontoAReta(gX, gY, a, b, c);
+	
+	GLfloat distCentroAviao = raioArena + raioInimigoAviao;
+	GLfloat pitagoras = (GLfloat) sqrt(pow(distCentroAviao, 2) - pow(distRetaAviao, 2));
+	
+	GLfloat velAviao = InimigoAviao->getVelAviao();
+	GLfloat multVelAviao = InimigoAviao->getMultVelAviao();
+	GLfloat deslocamento = - ((2.0 * pitagoras) / (velAviao * multVelAviao)) + 10.0;
+	
+	InimigoAviao->Mover(deslocamento);
+}
+
+void TC4:: InimigosAtirar(void)
+{
+	static GLint tempoCorrido = 0;
+	
+	if(jogador->getDecolou() == true) {
+		
+		tempoCorrido += frametime;
+		if(tempoCorrido > msEntreTiros) {
+			
+			tempoCorrido = 0;
+			for(InimigoAviao* inimigoAviao : inimigosAviao) {
+				
+				if(inimigoAviao->getEstado() != 0) {
+					Tiro* tiro = inimigoAviao->Atirar( 1.0, 0.0, 0.0 );
+					tirosInimigos.push_back(tiro);
+				}
+			}
+		}
+	}
+}
+
+void TC4:: AtribuirEstadosInimigos(void)
+{
+	srand( time(NULL) );
+	
+	for(InimigoAviao* inimigoAviao : inimigosAviao) {
+		if(inimigoAviao->getEstado() != 0) {
+			GLint estado = rand() % 3 + 1;
+			inimigoAviao->setEstado(estado);
+		}
+	}
+}
+
+void TC4:: AtribuirAngulosInimigos(void)
+{
+	srand( time(NULL) );
+	
+	for(InimigoAviao* inimigoAviao : inimigosAviao) {
+		if(inimigoAviao->getEstado() != 0) {
+			GLdouble anguloGraus = rand() % 360;
+			inimigoAviao->setAnguloAviaoGraus(anguloGraus);
+			inimigoAviao->setAnguloAviaoRadianos(anguloGraus * 3.141593 / 180.0);
+		}
+	}
+}
+
+GLfloat TC4:: DistanciaPontoAReta(GLfloat x, GLfloat y, GLfloat a, GLfloat b, GLfloat c)
+{
 	GLfloat num = abs((a * x) + (b * y) + c);
 	GLfloat den = (GLfloat) sqrt(pow(a, 2) + pow(b, 2));
 	GLfloat resultado = num / den;
 	return resultado;
 }
 
-void TC4:: Reset(void) {
-	
+void TC4:: Reset(void)
+{
 	keyStatus[keyDecolar] = 0;
-	colisaoInimigo = false;
+	jogadorPerde = false;
 	
 	jogador->setEmDecolagem(false);
 	jogador->setDecolou(false);
-	jogador->setVelAviao(0.0f);
+	jogador->setVelAviao(0.0);
 	jogador->setMultVelAviao(jogador->getMultVelAviaoInicial());
 	jogador->setMultVelTiro(jogador->getMultVelTiroInicial());
 	
@@ -582,33 +829,47 @@ void TC4:: Reset(void) {
 	jogador->setGY( jogador->getGYInicial() );
 	
 	jogador->setAnguloAviaoGraus( jogador->getAnguloAviaoGrausInicial() );
-	jogador->setAnguloAviaoRadianos( jogador->getAnguloAviaoGrausInicial() * 3.14159f / 180.0f);
+	jogador->setAnguloAviaoRadianos( jogador->getAnguloAviaoGrausInicial() * 3.14159 / 180.0);
 	
 	this->LiberarTiros();
 	this->LiberarBombas();
-	tiros.clear();
+	tirosJogador.clear();
+	tirosInimigos.clear();
 	bombas.clear();
+	
+	for(InimigoAviao* inimigoAviao : inimigosAviao) {
+		inimigoAviao->setGX( inimigoAviao->getGXInicial() );
+		inimigoAviao->setGY( inimigoAviao->getGYInicial() );
+		inimigoAviao->setEstado(1);
+	}
+	
+	AtribuirEstadosInimigos();
+	AtribuirAngulosInimigos();
 }
 
-void TC4:: LiberarTiros(void) {
-	
-	if(tiros.size() > 0) {
-		
-		vector<Tiro*>::iterator itr = tiros.begin();
-		
-		while(itr != tiros.end()) {
+void TC4:: LiberarTiros(void)
+{
+	if(tirosJogador.size() > 0) {
+		vector<Tiro*>::iterator itr = tirosJogador.begin();
+		while(itr != tirosJogador.end()) {
 			delete *itr;
-			itr = tiros.erase(itr);
+			itr = tirosJogador.erase(itr);
+		}
+	}
+	
+	if(tirosInimigos.size() > 0) {
+		vector<Tiro*>::iterator itr = tirosInimigos.begin();
+		while(itr != tirosInimigos.end()) {
+			delete *itr;
+			itr = tirosInimigos.erase(itr);
 		}
 	}
 }
 
-void TC4:: LiberarBombas(void) {
-	
+void TC4:: LiberarBombas(void)
+{
 	if(bombas.size() > 0) {
-		
 		vector<Bomba*>::iterator itr = bombas.begin();
-		
 		while(itr != bombas.end()) {
 			delete *itr;
 			itr = bombas.erase(itr);
@@ -616,8 +877,8 @@ void TC4:: LiberarBombas(void) {
 	}
 }
 
-TC4:: ~TC4() {
-	
+TC4:: ~TC4()
+{
 	delete janela;
 	delete jogador;
 	delete arena;
@@ -627,9 +888,7 @@ TC4:: ~TC4() {
 	this->LiberarBombas();
 	
 	if(inimigosAviao.size() > 0) {
-		
-		list<InimigoAviao*>::iterator itr = inimigosAviao.begin();
-		
+		vector<InimigoAviao*>::iterator itr = inimigosAviao.begin();
 		while(itr != inimigosAviao.end()) {
 			delete *itr;
 			itr = inimigosAviao.erase(itr);
@@ -637,9 +896,7 @@ TC4:: ~TC4() {
 	}
 	
 	if(inimigosBase.size() > 0) {
-		
-		list<InimigoBase*>::iterator itr = inimigosBase.begin();
-		
+		vector<InimigoBase*>::iterator itr = inimigosBase.begin();
 		while(itr != inimigosBase.end()) {
 			delete *itr;
 			itr = inimigosBase.erase(itr);

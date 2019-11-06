@@ -15,10 +15,10 @@ class Elemento {
 
 protected:
 	Circulo* circulo;
-	GLfloat gXInicial = 0.0f;
-	GLfloat gX = 0.0f;
-	GLfloat gYInicial = 0.0f;
-	GLfloat gY = 0.0f;
+	GLfloat gXInicial = 0.0;
+	GLfloat gX = 0.0;
+	GLfloat gYInicial = 0.0;
+	GLfloat gY = 0.0;
 	
 public:
 	void setGXInicial(GLfloat);

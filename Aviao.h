@@ -21,21 +21,21 @@ class Aviao : public Elemento {
 protected:
 	bool emDecolagem = false;
 	bool decolou = false;
-	GLfloat multVelAviaoInicial = 1.0f;
-	GLfloat multVelAviao = 1.0f;
-	GLfloat multVelTiroInicial = 1.0f;
-	GLfloat multVelTiro = 1.0f;
-	GLfloat velAviao = 1.0f;
-	GLdouble anguloAviaoGrausInicial = 0.0f;
-	GLdouble anguloAviaoGraus = 0.0f;
-	GLdouble anguloAviaoRadianos = 0.0f;
-	GLdouble anguloCanhaoGraus = 0.0f;
-	GLdouble anguloCanhaoRadianos = 0.0f;
-	GLfloat offsetYCanhao = 0.0f;
-	GLfloat alturaCanhao = 0.0f;
-	GLfloat larguraCanhao = 0.0f;
-	const GLfloat proporcaoAviao = 0.3f;
-	Retangulo* retangulo = new Retangulo(0.0f, 0.0f, 0.0f);
+	GLfloat multVelAviaoInicial = 1.0;
+	GLfloat multVelAviao = 1.0;
+	GLfloat multVelTiroInicial = 1.0;
+	GLfloat multVelTiro = 1.0;
+	GLfloat velAviao = 1.0;
+	GLdouble anguloAviaoGrausInicial = 0.0;
+	GLdouble anguloAviaoGraus = 0.0;
+	GLdouble anguloAviaoRadianos = 0.0;
+	GLdouble anguloCanhaoGraus = 0.0;
+	GLdouble anguloCanhaoRadianos = 0.0;
+	GLfloat offsetYCanhao = 0.0;
+	GLfloat alturaCanhao = 0.0;
+	GLfloat larguraCanhao = 0.0;
+	const GLfloat proporcaoAviao = 0.3;
+	Retangulo* retangulo = new Retangulo(0.0, 0.0, 0.0);
 	
 public:
 	void setDecolou(bool);
@@ -66,7 +66,7 @@ public:
 	void AjustarMultVelTiro(GLfloat);
 	void Decolar(GLint, GLfloat, GLfloat);
 	void Mover(GLint);
-	Tiro* Atirar(void);
+	Tiro* Atirar(GLfloat, GLfloat, GLfloat);
 	Bomba* Bombardear(void);
 	void Desenhar(GLint);
 	~Aviao();

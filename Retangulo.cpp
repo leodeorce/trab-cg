@@ -8,30 +8,18 @@
 #include <cmath>
 #include "Retangulo.h"
 
-Retangulo:: Retangulo(GLfloat corR, GLfloat corG, GLfloat corB)
-	: Figura(corR, corG, corB) {
-}
+Retangulo:: Retangulo(GLfloat corR, GLfloat corG, GLfloat corB) : Figura(corR, corG, corB) { }
 
-GLfloat Retangulo:: getLargura(void) const {
-	return largura;
-}
+void Retangulo:: setLargura(GLfloat largura) { this->largura = largura; }
+void Retangulo:: setAltura(GLfloat altura) { this->altura = altura; }
 
-GLfloat Retangulo:: getAltura(void) const {
-	return altura;
-}
+GLfloat Retangulo:: getLargura(void) const { return largura; }
+GLfloat Retangulo:: getAltura(void) const { return altura; }
 
-void Retangulo:: setLargura(GLfloat largura) {
-	this->largura = largura;
-}
-
-void Retangulo:: setAltura(GLfloat altura) {
-	this->altura = altura;
-}
-
-void Retangulo:: Desenhar(void) const {
-	
-	GLfloat x = largura / 2.0f;
-	GLfloat y = altura / 2.0f;
+void Retangulo:: Desenhar(void) const
+{
+	GLfloat x = largura / 2.0;
+	GLfloat y = altura / 2.0;
 	
 	glColor3f(corR, corG, corB);
 	glBegin(GL_QUADS);
@@ -44,39 +32,39 @@ void Retangulo:: Desenhar(void) const {
 	glEnd();
 }
 
-void Retangulo:: DesenharCisalhado(void) const {
-	
-	GLfloat x = largura / 2.0f;
-	GLfloat y = altura / 2.0f;
+void Retangulo:: DesenharCisalhado(void) const
+{
+	GLfloat x = largura / 2.0;
+	GLfloat y = altura / 2.0;
 	
 	glColor3f(corR, corG, corB);
 	glBegin(GL_POLYGON);
 		
-		glVertex2f( +x, + 0.25f * y);
-		glVertex2f( +x, - 0.75f * y);
-		glVertex2f( -x, - 0.25f * y);
-		glVertex2f( -x, + 0.75f * y);
+		glVertex2f( +x, + 0.25 * y);
+		glVertex2f( +x, - 0.75 * y);
+		glVertex2f( -x, - 0.25 * y);
+		glVertex2f( -x, + 0.75 * y);
 		
 	glEnd();
 }
 
-void Retangulo:: DesenharHelice(void) const {
-	
-	GLfloat x = largura / 2.0f;
-	GLfloat y = altura / 2.0f;
+void Retangulo:: DesenharHelice(void) const
+{
+	GLfloat x = largura / 2.0;
+	GLfloat y = altura / 2.0;
 	
 	glColor3f(corR, corG, corB);
 	glBegin(GL_POLYGON);
 	
 		glVertex2f( -x, -y);
 		glVertex2f( -x, +y);
-		glVertex2f( 0.0f, 0.0f);
+		glVertex2f( 0.0, 0.0);
 		
 	glEnd();
 	glBegin(GL_POLYGON);
 	
 		glVertex2f( +x, -y);
-		glVertex2f( 0.0f, 0.0f);
+		glVertex2f( 0.0, 0.0);
 		glVertex2f( +x, +y);
 		
 	glEnd();

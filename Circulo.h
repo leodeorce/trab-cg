@@ -15,17 +15,17 @@ class Circulo : public Figura {
 
 protected:
 	GLint step;
-	GLfloat raioInicial = 0.0f;
-	GLfloat raio = 0.0f;
+	GLfloat raioInicial = 0.0;
+	GLfloat raio = 0.0;
 	
 public:
 	Circulo(GLfloat, GLfloat, GLfloat);
-	GLfloat getRaioInicial(void) const;
-	GLfloat getRaio(void) const;
-	GLint getStep(void) const;
 	void setRaioInicial(GLfloat);
 	void setRaio(GLfloat);
 	void setStep(GLint);
+	GLfloat getRaioInicial(void) const;
+	GLfloat getRaio(void) const;
+	GLint getStep(void) const;
 	bool ExisteConflito(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat) const;
 	void Desenhar(void) const;
 };

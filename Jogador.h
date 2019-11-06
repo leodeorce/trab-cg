@@ -14,9 +14,7 @@
 using namespace std;
 
 class Jogador : public Aviao {
-	
 public:
-	
 };
 
 #endif /* JOGADOR_H */

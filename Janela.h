@@ -23,16 +23,16 @@ protected:
 	string titulo;
 	
 public:
-	GLint getXI(void) const;
-	GLint getXF(void) const;
-	GLint getYI(void) const;
-	GLint getYF(void) const;
-	string getTitulo(void) const;
 	void setXI(GLint);
 	void setXF(GLint);
 	void setYI(GLint);
 	void setYF(GLint);
 	void setTitulo(string);
+	GLint getXI(void) const;
+	GLint getXF(void) const;
+	GLint getYI(void) const;
+	GLint getYF(void) const;
+	string getTitulo(void) const;
 	GLint Largura(void) const;
 	GLint Altura(void) const;
 };

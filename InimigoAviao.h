@@ -14,13 +14,15 @@
 using namespace std;
 
 class InimigoAviao : public Aviao {
-
-protected:
-	GLfloat freqTiro = 0.0f;
-	
+	GLint estado = 1;
 public:
-	void setFreqTiro(GLfloat);
-	GLfloat getFreqTiro(void) const;
+	void setEstado(GLint);
+	GLint getEstado(void) const;
+	void Mover(GLint);
+private:
+	void MoverLinhaReta(GLint);
+	void MoverCirculo(GLint);
+	void MoverZigueZague(GLint);
 };
 
 #endif /* INIMIGOAVIAO_H */

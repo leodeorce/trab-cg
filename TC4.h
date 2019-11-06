@@ -9,7 +9,6 @@
 #define TC4_H
 
 #include <GL/glut.h>
-#include <list>
 #include <vector>
 #include "Arena.h"
 #include "Bomba.h"
@@ -39,12 +38,16 @@ protected:
 	Arena* arena;
 	Pista* pista;
 	Jogador* jogador;
+	
 	GLint frametime = 0;
-	bool colisaoInimigo = false;
-	vector<Tiro*> tiros;
+	bool jogadorPerde = false;
+	
+	vector<Tiro*> tirosJogador;
+	vector<Tiro*> tirosInimigos;
 	vector<Bomba*> bombas;
-	list<InimigoAviao*> inimigosAviao;
-	list<InimigoBase*> inimigosBase;
+	vector<InimigoAviao*> inimigosAviao;
+	vector<InimigoBase*> inimigosBase;
+	
 	char keyStatus[256] = {0};
 	const unsigned char keyDecolar = 'u';
 	const unsigned char keyEsquerda = 'a';
@@ -54,19 +57,24 @@ protected:
 	const unsigned char keyVelDown = '-';
 	const unsigned char keyNumpadVelUp = '+';
 	const unsigned char keyNumpadVelDown = '-';
+	
 	GLint mX = 0;
 	GLint mY = 0;
-	const GLfloat ajusteMult = 0.01f;
-	GLfloat inimFreqTiro = 0.2f;
-	GLfloat inimVel = 2.0f;
-	GLfloat inimVelTiro = 1.0f;
+	const GLfloat ajusteMultVel = 0.01;
+	
+	GLfloat inimVel = 0.05;
+	GLfloat inimFreqTiro = 0.2;
+	GLfloat inimMultVel = 2.0;
+	GLfloat inimMultVelTiro = 1.0;
+	GLfloat msEntreTiros = 5000.0;
 	
 public:
 	Janela* janela;
+	
 	Erros LeituraArquivos(const char*);
 	void setFrametime(GLint);
-	void setColisaoInimigo(bool);
-	bool getColisaoInimigo(void);
+	void setJogadorPerde(bool);
+	bool getJogadorPerde(void);
 	void DesenharArenaCirculo(void);
 	void DesenharArenaContorno(void);
 	void DesenharJogador(void);
@@ -79,11 +87,16 @@ public:
 	void KeyUp(unsigned char);
 	bool PossivelConflito(GLint);
 	void AtualizarJogador(void);
+	void AtualizarInimigos(void);
 	void AtualizarTiros(void);
 	void AtualizarBombas(void);
 	void AtualizarMousePosicao(GLint, GLint);
 	void AtualizarMouseBotoes(GLint, GLint);
 	void TeleportarJogador(void);
+	void TeleportarInimigoAviao(InimigoAviao*);
+	void InimigosAtirar(void);
+	void AtribuirEstadosInimigos(void);
+	void AtribuirAngulosInimigos(void);
 	~TC4();
 	
 private:
@@ -93,8 +106,8 @@ private:
 	void AdicionarInimigoBase(InimigoBase*);
 	bool PossivelConflitoArena(GLfloat, GLfloat, GLfloat);
 	bool PossivelConflitoInimigos(GLfloat, GLfloat, GLfloat);
+	bool PossivelConflitoTiros(GLfloat, GLfloat, GLfloat);
 	GLfloat DistanciaPontoAReta(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
-	void DesenharInimigos(list<InimigoAviao*>&);
 	void LiberarTiros(void);
 	void LiberarBombas(void);
 	void Reset(void);

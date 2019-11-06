@@ -14,15 +14,15 @@
 class Retangulo : public Figura {
 
 protected:
-	GLfloat largura = 1.0f;
-	GLfloat altura = 1.0f;
+	GLfloat largura = 1.0;
+	GLfloat altura = 1.0;
 	
 public:
 	Retangulo(GLfloat, GLfloat, GLfloat);
-	GLfloat getLargura(void) const;
-	GLfloat getAltura(void) const;
 	void setLargura(GLfloat);
 	void setAltura(GLfloat);
+	GLfloat getLargura(void) const;
+	GLfloat getAltura(void) const;
 	void Desenhar(void) const;
 	void DesenharCisalhado(void) const;
 	void DesenharHelice(void) const;

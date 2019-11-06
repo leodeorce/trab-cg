@@ -13,21 +13,21 @@
 class Pista : public Figura {
 
 protected:
-	GLfloat x1 = 0.0f;
-	GLfloat y1 = 0.0f;
-    GLfloat x2 = 0.0f;
-	GLfloat y2 = 0.0f;
+	GLfloat x1 = 0.0;
+	GLfloat y1 = 0.0;
+    GLfloat x2 = 0.0;
+	GLfloat y2 = 0.0;
 	
 public:
 	Pista(GLfloat, GLfloat, GLfloat);
-	GLfloat getX1(void) const;
-	GLfloat getY1(void) const;
-	GLfloat getX2(void) const;
-	GLfloat getY2(void) const;
 	void setX1(GLfloat);
 	void setY1(GLfloat);
 	void setX2(GLfloat);
 	void setY2(GLfloat);
+	GLfloat getX1(void) const;
+	GLfloat getY1(void) const;
+	GLfloat getX2(void) const;
+	GLfloat getY2(void) const;
 	void Desenhar(void) const;
 };
 

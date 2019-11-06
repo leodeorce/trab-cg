@@ -16,10 +16,10 @@ using namespace std;
 class Bomba : public Elemento {
 
 protected:
-	GLfloat vel = 0.0f;
-	GLfloat multVel = 0.0f;
-	GLfloat acel = 0.0f;
-	GLdouble anguloTrajetoriaRad = 0.0f;
+	GLfloat vel = 0.0;
+	GLfloat multVel = 0.0;
+	GLfloat acel = 0.0;
+	GLdouble anguloTrajetoriaRad = 0.0;
 	
 public:
 	void setVel(GLfloat);

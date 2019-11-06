@@ -26,12 +26,12 @@ protected:
 	
 public:
 	Figura(GLfloat, GLfloat, GLfloat);
-	GLfloat getCorR(void) const;
-	GLfloat getCorG(void) const;
-	GLfloat getCorB(void) const;
 	void setCorR(GLfloat);
 	void setCorG(GLfloat);
 	void setCorB(GLfloat);
+	GLfloat getCorR(void) const;
+	GLfloat getCorG(void) const;
+	GLfloat getCorB(void) const;
 };
 
 #endif /* FIGURA_H */
