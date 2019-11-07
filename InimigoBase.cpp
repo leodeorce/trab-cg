@@ -10,4 +10,6 @@
 
 using namespace std;
 
+void InimigoBase:: setEstado(GLint estado) { this->estado = estado; }
 
+GLint InimigoBase:: getEstado(void) const { return estado; }

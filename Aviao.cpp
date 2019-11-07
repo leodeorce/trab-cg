@@ -56,7 +56,7 @@ void Aviao:: AjustarAnguloAviao(GLint frametime)
 
 void Aviao:: AjustarAnguloCanhao(GLint dX)
 {
-	GLfloat vAngCanhao = 0.5;
+	GLfloat vAngCanhao = 0.4;
 	GLfloat dA = vAngCanhao * (GLfloat) dX;
 	
 	anguloCanhaoGraus += dA;
@@ -234,7 +234,7 @@ Bomba* Aviao:: Bombardear(void)
 	circuloBomba->setRaioInicial(raioBomba);
 	circuloBomba->setRaio(raioBomba);
 	
-	GLfloat acel = - velAviao / 4000.0;
+	GLfloat acel = - velAviao / 2000.0;
 	
 	Bomba* bomba = new Bomba();
 	
@@ -401,43 +401,43 @@ void Aviao:: DesenharCalda(GLfloat offsetY, GLfloat largura, GLfloat altura)
 
 void Aviao:: DesenharHelices(GLfloat offsetX, GLfloat offsetY, GLfloat largura, GLfloat altura, GLint frametime)
 {
-	GLfloat corOriginalR = retangulo->getCorR();
-	GLfloat corOriginalG = retangulo->getCorG();
-	GLfloat corOriginalB = retangulo->getCorB();
-	
-	retangulo->setCorR(1.0);
-	retangulo->setCorG(1.0);
-	retangulo->setCorB(0.0);
+	if(frametime > 0) {
+		
+		GLfloat corOriginalR = retangulo->getCorR();
+		GLfloat corOriginalG = retangulo->getCorG();
+		GLfloat corOriginalB = retangulo->getCorB();
+		
+		retangulo->setCorR(1.0);
+		retangulo->setCorG(1.0);
+		retangulo->setCorB(0.0);
 
-	GLdouble grausPorFrame;
-	
-	if(decolou == true || emDecolagem == true) {
-		grausPorFrame = 360.0 * (velAviao * multVelAviao) / 1000.0;
-	} else {
-		grausPorFrame = 0.0;
+		GLdouble grausPorFrame = 0.0;
+		
+		if(decolou == true || emDecolagem == true) {
+			grausPorFrame = 360.0 * (velAviao * multVelAviao) / 1000.0;
+		}
+		
+		GLdouble fpsAlvo = 1000.0 / frametime;
+		GLdouble grausPorSegundo = fpsAlvo * grausPorFrame;
+		GLdouble dG = grausPorSegundo * ((GLdouble) frametime);
+		
+		anguloGiro += dG;
+		
+		if(decolou == false && emDecolagem == false) {
+			anguloGiro = 0.0;
+		}
+
+		this->DesenharHelice( -offsetX, -offsetY, largura, altura, anguloGiro);
+		this->DesenharHelice( +offsetX, -offsetY, largura, altura, anguloGiro);
+
+		if(anguloGiro > 360.0) {
+			anguloGiro = 0.0;
+		}
+
+		retangulo->setCorR(corOriginalR);
+		retangulo->setCorG(corOriginalG);
+		retangulo->setCorB(corOriginalB);
 	}
-
-	GLdouble fpsAlvo = 30;
-	GLdouble grausPorSegundo = fpsAlvo * grausPorFrame;
-	GLdouble dG = grausPorSegundo * ((GLdouble) frametime);
-	static GLdouble anguloGiro = dG;
-	
-	anguloGiro += dG;
-	
-	if(decolou == false && emDecolagem == false) {
-		anguloGiro = 0.0;
-	}
-
-	this->DesenharHelice( -offsetX, -offsetY, largura, altura, anguloGiro);
-	this->DesenharHelice( +offsetX, -offsetY, largura, altura, anguloGiro);
-
-	if(anguloGiro > 360) {
-		anguloGiro = 0;
-	}
-
-	retangulo->setCorR(corOriginalR);
-	retangulo->setCorG(corOriginalG);
-	retangulo->setCorB(corOriginalB);
 }
 
 void Aviao:: DesenharHelice(GLfloat offsetX, GLfloat offsetY, GLfloat largura, GLfloat altura, GLdouble dG)

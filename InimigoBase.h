@@ -14,9 +14,13 @@
 using namespace std;
 
 class InimigoBase : public Elemento {
+
+protected:
+	GLint estado = 1;
 	
 public:
-	// void Desenhar(void);
+	void setEstado(GLint);
+	GLint getEstado(void) const;
 };
 
 #endif /* INIMIGOBASE_H */

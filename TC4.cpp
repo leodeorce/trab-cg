@@ -177,6 +177,7 @@ Erros TC4:: LeituraArena(XMLDocument& xmlArena)
 				inimigoAviao->setGY(cY);
 				inimigoAviao->setMultVelAviao(inimMultVel);
 				inimigoAviao->setMultVelTiro(inimMultVelTiro);
+				inimigoAviao->setDecolou(true);
 				AdicionarInimigoAviao(inimigoAviao);
 				break;
 			}
@@ -204,6 +205,7 @@ Erros TC4:: LeituraArena(XMLDocument& xmlArena)
 				inimigoBase->setCirculo(circulo);
 				inimigoBase->setGX(cX);
 				inimigoBase->setGY(cY);
+				inimigoBase->setEstado(1);
 				AdicionarInimigoBase(inimigoBase);
 				break;
 			}
@@ -216,6 +218,9 @@ Erros TC4:: LeituraArena(XMLDocument& xmlArena)
 		elemento = elemento->NextSiblingElement("circle");
 
 	} while(elemento != 0);
+	
+	qtdeBasesInicial = inimigosBase.size();
+	qtdeBasesAtual = qtdeBasesInicial;
 	
 	AtribuirEstadosInimigos();
 	AtribuirAngulosInimigos();
@@ -322,7 +327,9 @@ void TC4:: DesenharInimigosAviao(void)
 void TC4:: DesenharInimigosBase(void)
 {
 	for(InimigoBase* inimigoBase : inimigosBase) {
-		inimigoBase->Desenhar();
+		if(inimigoBase->getEstado() != 0) {
+			inimigoBase->Desenhar();
+		}
 	}
 }
 
@@ -380,9 +387,6 @@ bool TC4:: PossivelConflito(GLint tipo)
 		case 2:
 			return PossivelConflitoArena(raio, possivelGX, possivelGY);
 			break;
-		case 3:
-			return PossivelConflitoTiros(raio, possivelGX, possivelGY);
-			break;
 	}
 }
 
@@ -410,31 +414,10 @@ bool TC4:: PossivelConflitoInimigos(GLfloat raio, GLfloat x, GLfloat y)
 	return false;
 }
 
-bool TC4:: PossivelConflitoTiros(GLfloat raio, GLfloat x, GLfloat y)
-{
-	if(jogador->getDecolou() == true) {
-		
-		vector<Tiro*>::iterator itr;
-		for(itr = tirosInimigos.begin(); itr != tirosInimigos.end(); ++itr) {
-				
-			Tiro* tiro = *itr;
-			if(tiro->ExisteConflito(raio, x, y) == true) {
-				
-				delete tiro;
-				tirosInimigos.erase(itr);
-				
-				return true;
-			}
-		}
-	}
-	
-	return false;
-}
-
 void TC4:: AtualizarJogador(void)
 {
-	if(keyStatus[keyReset] == 0) {
-	
+	if(jogadorPerde == false && jogadorVence == false) {
+		
 		if(jogador->getDecolou() == true && jogadorPerde == false) {
 			
 			if((keyStatus[keyVelUp] == 1 || keyStatus[keyNumpadVelUp] == 1)
@@ -470,156 +453,144 @@ void TC4:: AtualizarJogador(void)
 				jogador->Decolar(frametime, pista->getX2(), pista->getY2());
 			}
 		}
+	}
+}
+
+void TC4:: AtualizarJogo(void)
+{
+	if(keyStatus[keyReset] == 0) {
+		
+		if(jogadorVence == true) {
+			this->EscreverFim("GANHOU");
+		} else if(jogadorPerde == true) {
+			this->EscreverFim("PERDEU");
+		}
 		
 	} else {
 		this->Reset();
 	}
 }
 
+void TC4:: EscreverFim(string str)
+{
+	
+}
+
 void TC4:: AtualizarInimigos(void)
 {
-	for(InimigoAviao* inimigoAviao : inimigosAviao) {
+	if(jogadorPerde == false && jogadorVence == false) {
 		
-		if(inimigoAviao->getEstado() != 0) {
+		for(InimigoAviao* inimigoAviao : inimigosAviao) {
 			
-			inimigoAviao->Mover(frametime);
-			
-			Circulo* circuloAviao = inimigoAviao->getCirculo();
-			GLfloat raio = circuloAviao->getRaio();
-			
-			GLfloat x = inimigoAviao->getGX();
-			GLfloat y = inimigoAviao->getGY();
-			
-			if(this->PossivelConflitoArena(raio, x, y) != true) {
+			if(inimigoAviao->getEstado() != 0) {
 				
-				GLint estado = inimigoAviao->getEstado();
-				inimigoAviao->setEstado(1);
+				inimigoAviao->Mover(frametime);
 				
-				inimigoAviao->Mover(-frametime);
-				this->TeleportarInimigoAviao(inimigoAviao);
+				Circulo* circuloAviao = inimigoAviao->getCirculo();
+				GLfloat raio = circuloAviao->getRaio();
 				
-				inimigoAviao->setEstado(estado);
+				GLfloat x = inimigoAviao->getGX();
+				GLfloat y = inimigoAviao->getGY();
+				
+				if(this->PossivelConflitoArena(raio, x, y) != true) {
+					
+					GLint estado = inimigoAviao->getEstado();
+					inimigoAviao->setEstado(1);
+					
+					inimigoAviao->Mover(-frametime);
+					this->TeleportarInimigoAviao(inimigoAviao);
+					
+					inimigoAviao->setEstado(estado);
+				}
+				
 			}
-			
 		}
-	}
-	
-	// if(inimigosAviao.size() > 0) {
 		
-	// 	for(InimigoAviao* inimigoAviao : inimigosAviao) {
-				
-	// 		Circulo* circuloAviao = inimigoAviao->getCirculo();
-			
-	// 		GLfloat raio = circuloAviao->getRaio();
-	// 		GLfloat x = inimigoAviao->getGX();
-	// 		GLfloat y = inimigoAviao->getGY();
-			
-	// 		bool levouTiro = false;
-			
-	// 		if(tirosJogador.size() > 0) {
-			
-	// 			vector<Tiro*>::iterator itrTiro = tirosJogador.begin();
-	// 			while(itrTiro != tirosJogador.end()) {
-					
-	// 				Tiro* tiro = *itrTiro;
-	// 				if(tiro->ExisteConflito(raio, x, y) == true) {
-	// 					levouTiro = true;
-	// 					delete tiro;
-	// 					tirosJogador.erase(itrTiro);
-	// 					break;
-	// 				}
-					
-	// 				itrTiro++;
-	// 			}
-	// 		}
-				
-	// 		if(levouTiro == true) {
-	// 			inimigoAviao->setEstado(0);
-	// 		}
-	// 	}
-	// }
-	
-	static GLint tempoCorrido = 0;
-	tempoCorrido += frametime;
-	
-	if(tempoCorrido > 10000) {
-		tempoCorrido = 0;
-		AtribuirEstadosInimigos();
+		static GLint tempoCorrido = 0;
+		tempoCorrido += frametime;
+		
+		if(tempoCorrido > 10000) {
+			tempoCorrido = 0;
+			AtribuirEstadosInimigos();
+		}
 	}
 }
 
 void TC4:: AtualizarTiros(void)
 {
-	if(tirosJogador.size() > 0) {
+	if(jogadorPerde == false && jogadorVence == false) {
 		
-		vector<Tiro*>::iterator itr = tirosJogador.begin();
-		while(itr != tirosJogador.end()) {
+		if(tirosJogador.size() > 0) {
 			
-			Tiro* tiro = *itr;
-			Circulo* circulo = tiro->getCirculo();
-			GLfloat raio = circulo->getRaio();
-			GLfloat x = tiro->getGX();
-			GLfloat y = tiro->getGY();
-			
-			if(arena->ExisteConflito(raio, x, y) == true) {
+			vector<Tiro*>::iterator itr = tirosJogador.begin();
+			while(itr != tirosJogador.end()) {
 				
-				tiro->Mover(frametime);
-				bool tiroAcertouInimigo = false;
+				Tiro* tiro = *itr;
+				Circulo* circulo = tiro->getCirculo();
+				GLfloat raio = circulo->getRaio();
+				GLfloat x = tiro->getGX();
+				GLfloat y = tiro->getGY();
 				
-				if(inimigosAviao.size() > 0) {
-					for(InimigoAviao* inimigoAviao : inimigosAviao) {
-						if(inimigoAviao->getEstado() != 0) {
-							if(inimigoAviao->ExisteConflito(raio, x, y) == true) {
-								tiroAcertouInimigo = true;
-								inimigoAviao->setEstado(0);
-								break;
+				if(arena->ExisteConflito(raio, x, y) == true) {
+					
+					tiro->Mover(frametime);
+					bool tiroAcertouInimigo = false;
+					
+					if(inimigosAviao.size() > 0) {
+						for(InimigoAviao* inimigoAviao : inimigosAviao) {
+							if(inimigoAviao->getEstado() != 0) {
+								if(inimigoAviao->ExisteConflito(raio, x, y) == true) {
+									tiroAcertouInimigo = true;
+									inimigoAviao->setEstado(0);
+									break;
+								}
 							}
 						}
 					}
-				}
-				
-				if(tiroAcertouInimigo == true) {
+					
+					if(tiroAcertouInimigo == true) {
+						delete tiro;
+						itr = tirosJogador.erase(itr);
+					} else {
+						itr++;
+					}
+					
+				} else {
 					delete tiro;
 					itr = tirosJogador.erase(itr);
-				} else {
-					itr++;
 				}
-				
-			} else {
-				delete tiro;
-				itr = tirosJogador.erase(itr);
 			}
 		}
-	}
-	
-	if(tirosInimigos.size() > 0) {
 		
-		vector<Tiro*>::iterator itr = tirosInimigos.begin();
-		while(itr != tirosInimigos.end()) {
+		if(tirosInimigos.size() > 0) {
 			
-			Tiro* tiro = *itr;
-			Circulo* circulo = tiro->getCirculo();
-			GLfloat raio = circulo->getRaio();
-			
-			GLfloat x = tiro->getGX();
-			GLfloat y = tiro->getGY();
-			
-			if(arena->ExisteConflito(raio, x, y) == true) {
+			vector<Tiro*>::iterator itr = tirosInimigos.begin();
+			while(itr != tirosInimigos.end()) {
 				
-				if(jogador->ExisteConflito(raio, x, y) == false) {
+				Tiro* tiro = *itr;
+				Circulo* circulo = tiro->getCirculo();
+				GLfloat raio = circulo->getRaio();
+				
+				GLfloat x = tiro->getGX();
+				GLfloat y = tiro->getGY();
+				
+				if(arena->ExisteConflito(raio, x, y) == true) {
 					
-					tiro->Mover(frametime);
-					itr++;
+					if(jogador->ExisteConflito(raio, x, y) == false) {
+						
+						tiro->Mover(frametime);
+						itr++;
+						
+					} else {
+						delete tiro;
+						tirosInimigos.erase(itr);
+						jogadorPerde = true;
+					}
 					
 				} else {
-					delete tiro;
-					tirosInimigos.erase(itr);
-					jogadorPerde = true;
+					delete(*itr);
+					itr = tirosInimigos.erase(itr);
 				}
-				
-			} else {
-				delete(*itr);
-				itr = tirosInimigos.erase(itr);
 			}
 		}
 	}
@@ -627,38 +598,62 @@ void TC4:: AtualizarTiros(void)
 
 void TC4:: AtualizarBombas(void)
 {
-	if(bombas.size() > 0) {
-		
-		vector<Bomba*>::iterator itr = bombas.begin();
-		while(itr != bombas.end()) {
+	if(jogadorPerde == false && jogadorVence == false) {
+		if(bombas.size() > 0) {
 			
-			Bomba* bomba = *itr;
-			Circulo* circulo = bomba->getCirculo();
-			GLfloat raioAtual = circulo->getRaio();
-			
-			GLfloat vel = bomba->getVel();
-			GLfloat acel = bomba->getAcel();
-			GLfloat x = bomba->getGX();
-			GLfloat y = bomba->getGY();
-			
-			bomba->Mover(frametime);
-			GLfloat novaVel = vel + (acel * frametime);
-			
-			if(novaVel > 0.0 && arena->ExisteConflito(raioAtual, x, y) == true) {
+			vector<Bomba*>::iterator itr = bombas.begin();
+			while(itr != bombas.end()) {
 				
-				GLfloat raioInicial = circulo->getRaioInicial();
+				Bomba* bomba = *itr;
+				Circulo* circulo = bomba->getCirculo();
+				GLfloat raioAtual = circulo->getRaio();
 				
-				GLfloat vR = raioInicial / 8000.0;
-				GLfloat dR = vR * frametime;
+				GLfloat vel = bomba->getVel();
+				GLfloat acel = bomba->getAcel();
+				GLfloat x = bomba->getGX();
+				GLfloat y = bomba->getGY();
 				
-				circulo->setRaio(raioAtual - dR);
-				bomba->setVel(novaVel);
+				bomba->Mover(frametime);
+				GLfloat novaVel = vel + (acel * frametime);
 				
-				itr++;
-				
-			} else {
-				delete bomba;
-				itr = bombas.erase(itr);
+				if(novaVel > 0.0 && arena->ExisteConflito(raioAtual, x, y) == true) {
+					
+					GLfloat raioInicial = circulo->getRaioInicial();
+					
+					GLfloat vR = raioInicial / 8000.0;
+					GLfloat dR = vR * frametime;
+					
+					circulo->setRaio(raioAtual - dR);
+					bomba->setVel(novaVel);
+					
+					itr++;
+					
+				} else {
+					
+					if(inimigosBase.size() > 0) {
+						
+						vector<InimigoBase*>::iterator itrInimigo = inimigosBase.begin();
+						while(itrInimigo != inimigosBase.end()) {
+							
+							InimigoBase* inimigoBase = *itrInimigo;
+							if(inimigoBase->ExisteConflito( - 0.95 * raioAtual, x, y) == true) {
+								
+								qtdeBasesAtual--;
+								if(qtdeBasesAtual == 0) {
+									jogadorVence = true;
+								}
+								
+								inimigoBase->setEstado(0);
+								break;
+							} else {
+								itrInimigo++;
+							}
+						}
+					}
+					
+					delete bomba;
+					itr = bombas.erase(itr);
+				}
 			}
 		}
 	}
@@ -666,30 +661,36 @@ void TC4:: AtualizarBombas(void)
 
 void TC4:: AtualizarMousePosicao(GLint x, GLint y)
 {
-	GLint dX = x - mX;
-	
-	if(dX != 0) {
-		jogador->AjustarAnguloCanhao(dX);
+	if(jogadorPerde == false && jogadorVence == false) {
+		
+		GLint dX = x - mX;
+		
+		if(dX != 0) {
+			jogador->AjustarAnguloCanhao(dX);
+		}
+		
+		this->mX = x;
+		this->mY = y;
 	}
-	
-	this->mX = x;
-	this->mY = y;
 }
 
 void TC4:: AtualizarMouseBotoes(GLint button, GLint state)
 {
-	if(jogador->getDecolou() == true && jogadorPerde == false) {
+	if(jogadorPerde == false && jogadorVence == false) {
 		
-		if(state == GLUT_DOWN) {
+		if(jogador->getDecolou() == true && jogadorPerde == false) {
 			
-			if(button == GLUT_LEFT_BUTTON) {
-				Tiro* tiro = jogador->Atirar( 1.0, 1.0, 1.0 );
-				tirosJogador.push_back(tiro);
-			}
-			
-			if(button == GLUT_RIGHT_BUTTON) {
-				Bomba* bomba = jogador->Bombardear();
-				bombas.push_back(bomba);
+			if(state == GLUT_DOWN) {
+				
+				if(button == GLUT_LEFT_BUTTON) {
+					Tiro* tiro = jogador->Atirar( 1.0, 1.0, 1.0 );
+					tirosJogador.push_back(tiro);
+				}
+				
+				if(button == GLUT_RIGHT_BUTTON) {
+					Bomba* bomba = jogador->Bombardear();
+					bombas.push_back(bomba);
+				}
 			}
 		}
 	}
@@ -760,15 +761,14 @@ void TC4:: TeleportarInimigoAviao(InimigoAviao* InimigoAviao)
 void TC4:: InimigosAtirar(void)
 {
 	static GLint tempoCorrido = 0;
+	tempoCorrido += frametime;
 	
-	if(jogador->getDecolou() == true) {
+	if(tempoCorrido > msEntreTiros) {
 		
-		tempoCorrido += frametime;
-		if(tempoCorrido > msEntreTiros) {
-			
-			tempoCorrido = 0;
-			for(InimigoAviao* inimigoAviao : inimigosAviao) {
+		tempoCorrido = 0;
+		if(jogador->getDecolou() == true) {
 				
+			for(InimigoAviao* inimigoAviao : inimigosAviao) {
 				if(inimigoAviao->getEstado() != 0) {
 					Tiro* tiro = inimigoAviao->Atirar( 1.0, 0.0, 0.0 );
 					tirosInimigos.push_back(tiro);
@@ -815,6 +815,7 @@ void TC4:: Reset(void)
 {
 	keyStatus[keyDecolar] = 0;
 	jogadorPerde = false;
+	jogadorVence = false;
 	
 	jogador->setEmDecolagem(false);
 	jogador->setDecolou(false);
@@ -841,6 +842,10 @@ void TC4:: Reset(void)
 		inimigoAviao->setGX( inimigoAviao->getGXInicial() );
 		inimigoAviao->setGY( inimigoAviao->getGYInicial() );
 		inimigoAviao->setEstado(1);
+	}
+	
+	for(InimigoBase* inimigoBase : inimigosBase) {
+		inimigoBase->setEstado(1);
 	}
 	
 	AtribuirEstadosInimigos();

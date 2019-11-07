@@ -60,13 +60,17 @@ protected:
 	
 	GLint mX = 0;
 	GLint mY = 0;
-	const GLfloat ajusteMultVel = 0.01;
+	const GLfloat ajusteMultVel = 0.05;
 	
 	GLfloat inimVel = 0.05;
 	GLfloat inimFreqTiro = 0.2;
 	GLfloat inimMultVel = 2.0;
 	GLfloat inimMultVelTiro = 1.0;
 	GLfloat msEntreTiros = 5000.0;
+	
+	GLint qtdeBasesInicial = 0;
+	GLint qtdeBasesAtual = 0;
+	bool jogadorVence = false;
 	
 public:
 	Janela* janela;
@@ -90,6 +94,8 @@ public:
 	void AtualizarInimigos(void);
 	void AtualizarTiros(void);
 	void AtualizarBombas(void);
+	void AtualizarJogo(void);
+	void EscreverFim(string);
 	void AtualizarMousePosicao(GLint, GLint);
 	void AtualizarMouseBotoes(GLint, GLint);
 	void TeleportarJogador(void);

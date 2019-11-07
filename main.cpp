@@ -85,9 +85,6 @@ void idle(void)
 	
 	if(jogadorPerde == false) {
 		jogadorPerde = tc4.PossivelConflito(1);
-		if(jogadorPerde  == false) {
-			jogadorPerde = tc4.PossivelConflito(3);
-		}
 	}
 		
 	if(jogadorPerde == true) {
@@ -100,6 +97,8 @@ void idle(void)
 	tc4.AtualizarJogador();
 	tc4.AtualizarTiros();
 	tc4.AtualizarBombas();
+	
+	tc4.AtualizarJogo();
 		
 	glutPostRedisplay();
 }

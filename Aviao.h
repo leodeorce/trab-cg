@@ -72,6 +72,7 @@ public:
 	~Aviao();
 	
 private:
+	GLdouble anguloGiro = 0.0;
 	void MoverAviaoX(GLint);
 	void MoverAviaoY(GLint);
 	void DesenharCanhao(GLfloat, GLfloat, GLfloat);
