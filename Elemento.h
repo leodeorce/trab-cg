@@ -31,7 +31,7 @@ public:
 	GLfloat getGYInicial(void) const;
 	GLfloat getGY(void) const;
 	Circulo* getCirculo(void) const;
-	void Desenhar(void);
+	virtual void Desenhar(void);
 	void MoverX(GLfloat);
 	void MoverY(GLfloat);
 	bool ExisteConflito(GLfloat, GLfloat, GLfloat) const;

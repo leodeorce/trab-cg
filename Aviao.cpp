@@ -251,7 +251,7 @@ Bomba* Aviao:: Bombardear(void)
 	return bomba;
 }
 
-void Aviao:: Desenhar(GLint frametime)
+void Aviao:: Desenhar(GLint frametime, bool girarHelice)
 {
 	Circulo* circulo = this->getCirculo();
 	GLfloat raio = circulo->getRaio();
@@ -293,7 +293,7 @@ void Aviao:: Desenhar(GLint frametime)
 		GLfloat offsetXHelice = 2.35 * raioProp;
 		GLfloat offsetYHelice = 2.125 * raio / 7.0;
 		
-		this->DesenharHelices(offsetXHelice, offsetYHelice, larguraHelice, alturaHelice, frametime);
+		this->DesenharHelices(offsetXHelice, offsetYHelice, larguraHelice, alturaHelice, frametime, girarHelice);
 	
 	glPopMatrix();
 }
@@ -399,7 +399,8 @@ void Aviao:: DesenharCalda(GLfloat offsetY, GLfloat largura, GLfloat altura)
 	glPopMatrix();
 }
 
-void Aviao:: DesenharHelices(GLfloat offsetX, GLfloat offsetY, GLfloat largura, GLfloat altura, GLint frametime)
+void Aviao:: DesenharHelices(GLfloat offsetX, GLfloat offsetY, GLfloat largura,
+	GLfloat altura, GLint frametime, bool girarHelice)
 {
 	if(frametime > 0) {
 		
@@ -424,6 +425,10 @@ void Aviao:: DesenharHelices(GLfloat offsetX, GLfloat offsetY, GLfloat largura, 
 		anguloGiro += dG;
 		
 		if(decolou == false && emDecolagem == false) {
+			anguloGiro = 0.0;
+		}
+		
+		if(girarHelice == false) {
 			anguloGiro = 0.0;
 		}
 

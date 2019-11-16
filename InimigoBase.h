@@ -21,6 +21,7 @@ protected:
 public:
 	void setEstado(GLint);
 	GLint getEstado(void) const;
+	void Desenhar(void);
 };
 
 #endif /* INIMIGOBASE_H */

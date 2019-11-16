@@ -68,7 +68,7 @@ public:
 	void Mover(GLint);
 	Tiro* Atirar(GLfloat, GLfloat, GLfloat);
 	Bomba* Bombardear(void);
-	void Desenhar(GLint);
+	void Desenhar(GLint, bool);
 	~Aviao();
 	
 private:
@@ -83,7 +83,7 @@ private:
 	void DesenharAsas(GLfloat, GLfloat, GLfloat, GLfloat);
 	void DesenharAsa(GLfloat, GLfloat, GLfloat, GLfloat);
 	void DesenharCalda(GLfloat, GLfloat, GLfloat);
-	void DesenharHelices(GLfloat, GLfloat, GLfloat, GLfloat, GLint);
+	void DesenharHelices(GLfloat, GLfloat, GLfloat, GLfloat, GLint, bool);
 	void DesenharHelice(GLfloat, GLfloat, GLfloat, GLfloat, GLdouble);
 };
 

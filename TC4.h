@@ -40,7 +40,6 @@ protected:
 	Jogador* jogador;
 	
 	GLint frametime = 0;
-	bool jogadorPerde = false;
 	
 	vector<Tiro*> tirosJogador;
 	vector<Tiro*> tirosInimigos;
@@ -60,7 +59,7 @@ protected:
 	
 	GLint mX = 0;
 	GLint mY = 0;
-	const GLfloat ajusteMultVel = 0.05;
+	const GLfloat ajusteMultVel = 0.01;
 	
 	GLfloat inimVel = 0.05;
 	GLfloat inimFreqTiro = 0.2;
@@ -71,13 +70,16 @@ protected:
 	GLint qtdeBasesInicial = 0;
 	GLint qtdeBasesAtual = 0;
 	bool jogadorVence = false;
+	bool jogadorPerde = false;
 	
 public:
 	Janela* janela;
 	
 	Erros LeituraArquivos(const char*);
 	void setFrametime(GLint);
+	void setJogadorVence(bool);
 	void setJogadorPerde(bool);
+	bool getJogadorVence(void);
 	bool getJogadorPerde(void);
 	void DesenharArenaCirculo(void);
 	void DesenharArenaContorno(void);
@@ -95,7 +97,6 @@ public:
 	void AtualizarTiros(void);
 	void AtualizarBombas(void);
 	void AtualizarJogo(void);
-	void EscreverFim(string);
 	void AtualizarMousePosicao(GLint, GLint);
 	void AtualizarMouseBotoes(GLint, GLint);
 	void TeleportarJogador(void);
@@ -103,6 +104,7 @@ public:
 	void InimigosAtirar(void);
 	void AtribuirEstadosInimigos(void);
 	void AtribuirAngulosInimigos(void);
+	void DesenharTela(const char*, GLfloat, GLfloat, GLfloat);
 	~TC4();
 	
 private:

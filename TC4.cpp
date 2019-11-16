@@ -14,8 +14,10 @@
 #include "TC4.h"
 
 void TC4:: setFrametime(GLint frametime) { this->frametime = frametime; }
+void TC4:: setJogadorVence(bool jogadorVence) { this->jogadorVence = jogadorVence; }
 void TC4:: setJogadorPerde(bool jogadorPerde) { this->jogadorPerde = jogadorPerde; }
 
+bool TC4:: getJogadorVence(void) { return jogadorVence; }
 bool TC4:: getJogadorPerde(void) { return jogadorPerde; }
 
 Erros TC4:: LeituraArquivos(const char* chArqConfig)
@@ -307,7 +309,13 @@ void TC4:: DesenharArenaContorno(void)
 
 void TC4:: DesenharJogador(void)
 {
-	jogador->Desenhar(frametime);
+	bool girarHelice = true;
+	
+	if(jogadorPerde == true || jogadorVence == true) {
+		girarHelice = false;
+	}
+	
+	jogador->Desenhar(frametime, girarHelice);
 }
 
 void TC4:: DesenharPista(void)
@@ -317,9 +325,15 @@ void TC4:: DesenharPista(void)
 
 void TC4:: DesenharInimigosAviao(void)
 {
+	bool girarHelice = true;
+	
+	if(jogadorPerde == true || jogadorVence == true) {
+		girarHelice = false;
+	}
+	
 	for(InimigoAviao* inimigoAviao : inimigosAviao) {
 		if(inimigoAviao->getEstado() != 0) {
-			inimigoAviao->Desenhar(frametime);
+			inimigoAviao->Desenhar(frametime, girarHelice);
 		}
 	}
 }
@@ -456,26 +470,6 @@ void TC4:: AtualizarJogador(void)
 	}
 }
 
-void TC4:: AtualizarJogo(void)
-{
-	if(keyStatus[keyReset] == 0) {
-		
-		if(jogadorVence == true) {
-			this->EscreverFim("GANHOU");
-		} else if(jogadorPerde == true) {
-			this->EscreverFim("PERDEU");
-		}
-		
-	} else {
-		this->Reset();
-	}
-}
-
-void TC4:: EscreverFim(string str)
-{
-	
-}
-
 void TC4:: AtualizarInimigos(void)
 {
 	if(jogadorPerde == false && jogadorVence == false) {
@@ -599,6 +593,7 @@ void TC4:: AtualizarTiros(void)
 void TC4:: AtualizarBombas(void)
 {
 	if(jogadorPerde == false && jogadorVence == false) {
+		
 		if(bombas.size() > 0) {
 			
 			vector<Bomba*>::iterator itr = bombas.begin();
@@ -630,21 +625,27 @@ void TC4:: AtualizarBombas(void)
 					
 				} else {
 					
-					if(inimigosBase.size() > 0) {
+					if(qtdeBasesAtual > 0) {
 						
 						vector<InimigoBase*>::iterator itrInimigo = inimigosBase.begin();
 						while(itrInimigo != inimigosBase.end()) {
 							
 							InimigoBase* inimigoBase = *itrInimigo;
-							if(inimigoBase->ExisteConflito( - 0.95 * raioAtual, x, y) == true) {
+							if(inimigoBase->getEstado() != 0) {
 								
-								qtdeBasesAtual--;
-								if(qtdeBasesAtual == 0) {
-									jogadorVence = true;
+								if(inimigoBase->ExisteConflito( - 0.95 * raioAtual, x, y) == true) {
+									
+									qtdeBasesAtual--;
+									if(qtdeBasesAtual == 0) {
+										jogadorVence = true;
+									}
+									
+									inimigoBase->setEstado(0);
+									break;
+									
+								} else {
+									itrInimigo++;
 								}
-								
-								inimigoBase->setEstado(0);
-								break;
 							} else {
 								itrInimigo++;
 							}
@@ -656,6 +657,13 @@ void TC4:: AtualizarBombas(void)
 				}
 			}
 		}
+	}
+}
+
+void TC4:: AtualizarJogo(void)
+{
+	if(keyStatus[keyReset] == 1) {
+		this->Reset();
 	}
 }
 
@@ -725,6 +733,12 @@ void TC4:: TeleportarJogador(void)
 	GLfloat deslocamento = - ((2.0 * pitagoras) / (velAviao * multVelAviao)) + 10.0;
 	
 	jogador->Mover(deslocamento);
+	
+	if(this->PossivelConflito(2) == false) {
+		do {
+			jogador->Mover(10.0);
+		} while(this->PossivelConflito(2) == false);
+	}
 }
 
 void TC4:: TeleportarInimigoAviao(InimigoAviao* InimigoAviao)
@@ -756,6 +770,12 @@ void TC4:: TeleportarInimigoAviao(InimigoAviao* InimigoAviao)
 	GLfloat deslocamento = - ((2.0 * pitagoras) / (velAviao * multVelAviao)) + 10.0;
 	
 	InimigoAviao->Mover(deslocamento);
+	gX = InimigoAviao->getGX();
+	gY = InimigoAviao->getGY();
+	
+	while(arena->ExisteConflito(raioInimigoAviao, gX, gY) == false) {
+		InimigoAviao->Mover(10.0);
+	}
 }
 
 void TC4:: InimigosAtirar(void)
@@ -801,6 +821,49 @@ void TC4:: AtribuirAngulosInimigos(void)
 			inimigoAviao->setAnguloAviaoRadianos(anguloGraus * 3.141593 / 180.0);
 		}
 	}
+}
+
+void TC4:: DesenharTela(const char* str, GLfloat corR, GLfloat corG, GLfloat corB)
+{
+	char* c;
+	
+	glPushMatrix();
+		
+		// largura = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*) str);
+		// glRasterPos2f(arena->getGX() + 0.5 - (GLfloat) largura / 2.0, arena->getGY());
+		// glColor3f(0.0, 0.0, 0.0);
+		// tam = strlen((const char*) str);
+		// for (i = 0; i < tam; i++) {
+		// 	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, str[i]);
+		// }
+		
+		glLineWidth(7.0);
+		
+		glTranslatef(arena->getGX() - 75.0, arena->getGY() + 15.0, 0.0);
+		glScalef(0.4, -0.3, 0.0);
+		glColor3f(0.0, 0.0, 0.0);
+	
+		for (c = (char*) str; *c != '\0'; c++) {
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, *c);
+		}
+		
+	glPopMatrix();
+	
+	glPushMatrix();
+		
+		glLineWidth(3.0);
+		
+		glTranslatef(arena->getGX() - 75.0, arena->getGY() + 15.0, 0.0);
+		glScalef(0.4, -0.3, 0.0);
+		glColor3f(corR, corG, corB);
+	
+		for (c = (char*) str; *c != '\0'; c++) {
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, *c);
+		}
+		
+	glPopMatrix();
+	
+	glLineWidth(1.0);
 }
 
 GLfloat TC4:: DistanciaPontoAReta(GLfloat x, GLfloat y, GLfloat a, GLfloat b, GLfloat c)
@@ -850,6 +913,8 @@ void TC4:: Reset(void)
 	
 	AtribuirEstadosInimigos();
 	AtribuirAngulosInimigos();
+	
+	qtdeBasesAtual = qtdeBasesInicial;
 }
 
 void TC4:: LiberarTiros(void)

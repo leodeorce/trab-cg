@@ -67,6 +67,17 @@ void display(void)
 	
 	tc4.DesenharInimigosAviao();
 	tc4.DesenharArenaContorno();
+	
+	if(tc4.getJogadorVence() == true) {
+		
+		const char* str = "Ganhou";
+		tc4.DesenharTela(str, 0.0, 1.0, 0.0);
+		
+	} else if(tc4.getJogadorPerde() == true) {
+		
+		const char* str = "Perdeu";
+		tc4.DesenharTela(str, 1.0, 0.0, 0.0);
+	}
 
 	glutSwapBuffers();
 }
@@ -89,7 +100,7 @@ void idle(void)
 		
 	if(jogadorPerde == true) {
 		tc4.setJogadorPerde(jogadorPerde);
-	} else {
+	} else if(tc4.getJogadorVence() == false) {
 		tc4.InimigosAtirar();
 	}
 			
@@ -99,7 +110,7 @@ void idle(void)
 	tc4.AtualizarBombas();
 	
 	tc4.AtualizarJogo();
-		
+	
 	glutPostRedisplay();
 }
 
