@@ -730,15 +730,9 @@ void TC4:: TeleportarJogador(void)
 	
 	GLfloat velAviao = jogador->getVelAviao();
 	GLfloat multVelAviao = jogador->getMultVelAviao();
-	GLfloat deslocamento = - ((2.0 * pitagoras) / (velAviao * multVelAviao)) + 10.0;
+	GLfloat deslocamento = - ((2.0 * pitagoras) / (velAviao * multVelAviao)) + 30.0;
 	
 	jogador->Mover(deslocamento);
-	
-	if(this->PossivelConflito(2) == false) {
-		do {
-			jogador->Mover(10.0);
-		} while(this->PossivelConflito(2) == false);
-	}
 }
 
 void TC4:: TeleportarInimigoAviao(InimigoAviao* InimigoAviao)
@@ -767,15 +761,9 @@ void TC4:: TeleportarInimigoAviao(InimigoAviao* InimigoAviao)
 	
 	GLfloat velAviao = InimigoAviao->getVelAviao();
 	GLfloat multVelAviao = InimigoAviao->getMultVelAviao();
-	GLfloat deslocamento = - ((2.0 * pitagoras) / (velAviao * multVelAviao)) + 10.0;
+	GLfloat deslocamento = - ((2.0 * pitagoras) / (velAviao * multVelAviao)) + 30.0;
 	
 	InimigoAviao->Mover(deslocamento);
-	gX = InimigoAviao->getGX();
-	gY = InimigoAviao->getGY();
-	
-	while(arena->ExisteConflito(raioInimigoAviao, gX, gY) == false) {
-		InimigoAviao->Mover(10.0);
-	}
 }
 
 void TC4:: InimigosAtirar(void)
