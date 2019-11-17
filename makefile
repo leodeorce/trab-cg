@@ -1,7 +1,7 @@
 ### Makefile ###
 
 # Leonardo Deorce Lima de Oliveira
-# TC3 - Computacao Grafica - 2019/2
+# TC4 - Computacao Grafica - 2019/2
 
 CC = g++
 
@@ -25,7 +25,3 @@ $(EXECUTAVEL): $(OBJETOS)
 
 clean:
 	rm -rf *.o
-
-run:
-	./$(EXECUTAVEL) ../cfg/
-
