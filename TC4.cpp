@@ -817,14 +817,6 @@ void TC4:: DesenharTela(const char* str, GLfloat corR, GLfloat corG, GLfloat cor
 	
 	glPushMatrix();
 		
-		// largura = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*) str);
-		// glRasterPos2f(arena->getGX() + 0.5 - (GLfloat) largura / 2.0, arena->getGY());
-		// glColor3f(0.0, 0.0, 0.0);
-		// tam = strlen((const char*) str);
-		// for (i = 0; i < tam; i++) {
-		// 	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, str[i]);
-		// }
-		
 		glLineWidth(7.0);
 		
 		glTranslatef(arena->getGX() - 75.0, arena->getGY() + 15.0, 0.0);
